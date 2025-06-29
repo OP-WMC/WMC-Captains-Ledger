@@ -1,0 +1,135 @@
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import Layout from './components/Layout';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+import Missions from './pages/Missions';
+import SendMoney from './pages/SendMoney';
+import Attendance from './pages/Attendance';
+
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-avengers-dark flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-avengers-blue border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-avengers-silver font-orbitron">Loading Command Center...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  return user ? children : <Navigate to="/login" />;
+};
+
+// Placeholder components for other pages
+const Stats = () => (
+  <div className="glass-card">
+    <h1 className="text-2xl font-orbitron font-bold text-white mb-4">Statistics</h1>
+    <p className="text-avengers-silver">Statistics and charts page coming soon...</p>
+  </div>
+);
+
+const Announcements = () => (
+  <div className="glass-card">
+    <h1 className="text-2xl font-orbitron font-bold text-white mb-4">Announcements</h1>
+    <p className="text-avengers-silver">Announcements page coming soon...</p>
+  </div>
+);
+
+const Feedback = () => (
+  <div className="glass-card">
+    <h1 className="text-2xl font-orbitron font-bold text-white mb-4">Feedback</h1>
+    <p className="text-avengers-silver">Feedback form page coming soon...</p>
+  </div>
+);
+
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <div className="App">
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            
+            {/* Protected Routes */}
+            <Route path="/" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Dashboard />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Dashboard />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/missions" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Missions />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/send-money" element={
+              <ProtectedRoute>
+                <Layout>
+                  <SendMoney />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/attendance" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Attendance />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/stats" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Stats />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/announcements" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Announcements />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/feedback" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Feedback />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            
+            {/* Redirect to dashboard for any unknown routes */}
+            <Route path="*" element={<Navigate to="/dashboard" />} />
+          </Routes>
+        </div>
+      </Router>
+    </AuthProvider>
+  );
+}
+
+export default App;
