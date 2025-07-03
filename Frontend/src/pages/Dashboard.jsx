@@ -1,4 +1,3 @@
-import { useAuth } from '../context/AuthContext';
 import { mockMissions, mockStats, mockAnnouncements } from '../services/mockData';
 import { 
   Shield, 
@@ -13,7 +12,10 @@ import {
 } from 'lucide-react';
 
 const Dashboard = () => {
-  const { user, isAdmin } = useAuth();
+  const user = JSON.parse(localStorage.getItem("user"));
+const isAdmin = user?.role === 'admin';
+
+console.log(user?.name, user?.role); 
 
   const userMissions = mockMissions.filter(mission => 
     mission.assignedMembers.includes(user?.name)
@@ -47,6 +49,7 @@ const Dashboard = () => {
     }
   };
 
+  
   return (
     <div className="space-y-6">
       {/* Welcome Header */}

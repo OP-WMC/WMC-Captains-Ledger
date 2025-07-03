@@ -1,8 +1,11 @@
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { Shield, Eye, EyeOff, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom'; // ✅ Import navigate
+import { Eye, EyeOff, ArrowRight } from 'lucide-react';
+import axios from '../api/axios';
 
 const Login = () => {
+  const navigate = useNavigate(); // ✅ Initialize navigate
+
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -10,7 +13,6 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,14 +20,19 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const result = login(formData.email, formData.password);
-      if (result.success) {
-        window.location.href = '/dashboard';
-      } else {
-        setError(result.error);
-      }
+      const res = await axios.post('/auth/login', {
+        email: formData.email,
+        password: formData.password,
+      });
+
+      // ✅ Save token and user to localStorage
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
+
+      // ✅ Navigate to dashboard without full page reload
+      navigate('/dashboard');
     } catch (err) {
-      setError('An error occurred during login');
+      setError(err?.response?.data?.error || 'Login failed');
     } finally {
       setLoading(false);
     }
@@ -45,21 +52,24 @@ const Login = () => {
       <div className="relative w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-avengers-blue to-avengers-light-blue rounded-full mb-4">
-            <Shield className="w-10 h-10 text-white" />
-          </div>
-          <h1 className="text-3xl font-orbitron font-bold text-white mb-2">
-            Captain's Ledger
-          </h1>
-          <p className="text-avengers-silver">
-            Avengers Command Center
-          </p>
-        </div>
+  {/* Replacing Shield logo with an image */}
+  <img
+    src="https://lh3.googleusercontent.com/aida-public/AB6AXuB386jr-Vc8_1tTYkdtJx0ydP6zbDnj5FA4lq-08bp5ilD7DfBcDhd5CwLgeeIXP_nX3u3Bzz-raB5Ls8aHj1RWnrO9la4xqQfQjAlZzc40zkP4quMnIEWuIc-mSLYES7v6Jown1NjJmkg4yE_DPZUQKuS0UMABwYIiuVwgJU3IEUQKMj9nDr3qADaa70IDTJvl_fVwUg5N0wjfgb7uc7iUy_Ek9NrUB9ZNF35sFIS-OcfsdbZWWm8kCUF67Czr2FWdPzcBgzEfOuz1"
+    alt="Avengers Logo"
+    className="w-20 h-20 rounded-full mx-auto mb-4 object-cover"
+  />
+  <h1 className="text-3xl font-orbitron font-bold text-white mb-2">
+    Captain's Ledger
+  </h1>
+  <p className="text-avengers-silver">
+    Avengers Command Center
+  </p>
+</div>
 
         {/* Login Form */}
         <div className="glass-card">
           <h2 className="text-2xl font-orbitron font-semibold text-white mb-6 text-center">
-            Agent Authentication
+            Avenger's Authentication
           </h2>
 
           {error && (
@@ -79,7 +89,7 @@ const Login = () => {
                 value={formData.email}
                 onChange={handleChange}
                 className="input-field w-full"
-                placeholder="agent@avengers.com"
+                placeholder="avengers@gmail.com"
                 required
               />
             </div>
@@ -126,7 +136,7 @@ const Login = () => {
 
           <div className="mt-6 text-center">
             <p className="text-avengers-silver text-sm">
-              New agent?{' '}
+              New avenger?{' '}
               <a href="/register" className="text-avengers-light-blue hover:text-avengers-blue font-medium">
                 Register here
               </a>

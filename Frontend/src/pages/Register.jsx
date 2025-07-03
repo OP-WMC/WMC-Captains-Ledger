@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
 import { Shield, Eye, EyeOff, ArrowRight, ArrowLeft } from 'lucide-react';
+import axios from '../api/axios'; // Make sure this is configured like in login
+import { useNavigate } from 'react-router-dom'; // Add this at the top if not already
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -14,37 +15,41 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { register } = useAuth();
+  const navigate = useNavigate(); 
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError('');
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
+  if (formData.password !== formData.confirmPassword) {
+    setError('Passwords do not match');
+    return;
+  }
 
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
-      return;
-    }
+  if (formData.password.length < 6) {
+    setError('Password must be at least 6 characters long');
+    return;
+  }
 
-    setLoading(true);
+  setLoading(true);
 
-    try {
-      const result = register(formData.name, formData.email, formData.password, formData.codename);
-      if (result.success) {
-        window.location.href = '/dashboard';
-      } else {
-        setError(result.error);
-      }
-    } catch (err) {
-      setError('An error occurred during registration');
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    await axios.post('/auth/register', {
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+      codename: formData.codename,
+      role: 'user' // Optional: send 'admin' if needed
+    });
+
+    alert('Registered successfully. Please log in.');
+    navigate('/login');
+  } catch (err) {
+    setError(err?.response?.data?.error || 'Registration failed');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleChange = (e) => {
     setFormData({
