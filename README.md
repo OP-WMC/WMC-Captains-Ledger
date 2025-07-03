@@ -87,37 +87,45 @@ A full-stack web application prototype for managing an Avengers command center l
    git clone <repository-url>
    cd captains-ledger
    ```
-
+**NOW FIRST GO TO BACKEND FOLDER **
+```bash
+   cd Backend
+   ```
 2. **Install dependencies**
    ```bash
    npm install
    ```
+**Set up environment variables**
+
+Create a .env file in the backend directory.
+
+Add the necessary configuration, for example:
+
+PORT=5000
+MONGO_URI=
+JWT_SECRET=
+EMAIL_USER=
+EMAIL_PASS=
 
 3. **Start development server**
    ```bash
    npm run dev
    ```
-
+**NOW IN NEW TERMINAL OPEN 
+```bash
+cd Frontend
+```
+ **Install dependencies**
+   ```bash
+   npm install
+   ```
+**Start development server**
+   ```bash
+   npm run dev
+   ```
 4. **Open in browser**
    Navigate to `http://localhost:5173`
-
-### Build for Production
-```bash
-npm run build
-```
-
-## 🔐 Demo Credentials
-
-### Admin Access
-- **Email:** captain@avengers.com
-- **Password:** password123
-- **Role:** Admin (Captain America)
-
-### Agent Access
-- **Email:** bucky@avengers.com
-- **Password:** password123
-- **Role:** Agent (Winter Soldier)
-
+   
 ## 📱 Pages & Routes
 
 ### Public Routes
