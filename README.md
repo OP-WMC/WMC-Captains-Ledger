@@ -85,7 +85,6 @@ A full-stack web application prototype for managing an Avengers command center l
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd captains-ledger
    ```
 **NOW FIRST GO TO BACKEND FOLDER **
 ```bash
