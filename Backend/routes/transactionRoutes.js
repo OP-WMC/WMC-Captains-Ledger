@@ -30,13 +30,13 @@ router.post('/stripe-checkout', verifyToken, async (req, res) => {
         },
       ],
       mode: 'payment',
-      success_url: 'http://localhost:5173/success',
-      cancel_url: 'http://localhost:5173/send-money',
+      success_url: 'http://localhost:5173/transaction-success',
+cancel_url: 'http://localhost:5173/send-money',
     });
 
     res.status(200).json({ url: session.url });
   } catch (err) {
-    console.error("Stripe error:", err.message);
+    console.error("Stripe error:", err);
     res.status(500).json({ error: "Stripe checkout failed" });
   }
 });

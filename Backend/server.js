@@ -13,7 +13,7 @@ app.use(express.json());
 app.use("/api/auth", require("./routes/authRoutes"));
 
 const transactionsRoute = require('./routes/transactionRoutes');
-app.use('/transactions', transactionsRoute);
+app.use('/api/transactions', transactionsRoute);
 
 const PORT = process.env.PORT || 5000;
 mongoose.connect(process.env.MONGO_URI)
