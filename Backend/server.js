@@ -9,8 +9,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ROUTES
+// // ROUTES
 app.use("/api/auth", require("./routes/authRoutes"));
+
+const transactionsRoute = require('./routes/transactionRoutes');
+app.use('/transactions', transactionsRoute);
 
 const PORT = process.env.PORT || 5000;
 mongoose.connect(process.env.MONGO_URI)
