@@ -2,12 +2,23 @@ const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
-
-dotenv.config();
+const bodyParser = require("body-parser");
 
 const app = express();
+dotenv.config();
+
 app.use(cors());
-app.use(express.json());
+
+// ✅ Stripe webhook must come BEFORE express.json()
+app.use("/webhook", express.raw({ type: "application/json" }));
+const stripeWebhookRoute = require("./routes/stripeWebhook");
+app.use("/webhook", stripeWebhookRoute);
+
+
+
+// ✅ Use JSON parser for all other API routes
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // // ROUTES
 app.use("/api/auth", require("./routes/authRoutes"));

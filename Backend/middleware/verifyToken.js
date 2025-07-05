@@ -1,16 +1,16 @@
+// middleware/verifyToken.js
 const jwt = require("jsonwebtoken");
 
-const verifyToken = (req, res, next) => {
-  const authHeader = req.headers["authorization"];
-  if (!authHeader) return res.status(401).json({ error: "No token provided" });
+module.exports = (req, res, next) => {
+  const token = req.header("Authorization")?.replace("Bearer ", "");
 
-  const token = authHeader.split(" ")[1]; // Remove "Bearer"
+  if (!token) return res.status(401).json({ error: "Access denied" });
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) return res.status(401).json({ error: "Invalid token" });
-    req.user = decoded;
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded; // ✅ Make sure decoded contains email
     next();
-  });
+  } catch (err) {
+    res.status(400).json({ error: "Invalid token" });
+  }
 };
-
-module.exports = verifyToken;
