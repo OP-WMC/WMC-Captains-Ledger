@@ -1,16 +1,33 @@
-// middleware/verifyToken.js
 const jwt = require("jsonwebtoken");
 
-module.exports = (req, res, next) => {
-  const token = req.header("Authorization")?.replace("Bearer ", "");
+const verifyToken = (req, res, next) => {
+  const authHeader = req.headers.authorization;
 
-  if (!token) return res.status(401).json({ error: "Access denied" });
+  // Check if Authorization header is present
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ message: "Access denied. No token provided." });
+  }
+
+  const token =  authHeader && authHeader.split(" ")[1];
 
   try {
+    // Verify and decode the JWT token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // ✅ Make sure decoded contains email
+
+    // Extract _id, email, role from decoded payload
+    req.user = {
+      _id: decoded._id,
+      email: decoded.email,
+      role: decoded.role,
+    };
+
+    console.log("✅ Decoded token user:", req.user); // Debug log
+
     next();
   } catch (err) {
-    res.status(400).json({ error: "Invalid token" });
+    console.error("❌ Invalid or expired token:", err.message);
+    return res.status(403).json({ message: "Invalid or expired token." });
   }
 };
+
+module.exports = verifyToken;

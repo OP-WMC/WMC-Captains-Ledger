@@ -8,6 +8,7 @@ const SendMoney = () => {
   const [formData, setFormData] = useState({ recipient: "", amount: "" });
   const [users, setUsers] = useState([]);
   const [userTransactions, setUserTransactions] = useState([]);
+  const [transactions, setTransactions] = useState([]); // ✅ New state for transactions
   const [loading, setLoading] = useState(false);
 
   // ✅ Fetch users from DB (excluding current user)
@@ -28,7 +29,18 @@ const SendMoney = () => {
     fetchUsers();
   }, []);
 
-  
+  // ✅ Fetch user transactions
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    axios
+      .get("http://localhost:5000/api/transactions/my-transactions", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => setTransactions(res.data))
+      .catch((err) => console.error("Error fetching transactions:", err));
+  }, []);
 
   // ✅ Stripe Payment
   const handleSubmit = async (e) => {
@@ -86,7 +98,7 @@ const SendMoney = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, recipient: e.target.value })
                 }
-                className="input-field w-full"
+                className="input-field w-full rounded-md px-3 py-2 text-white bg-blue-700 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 required
               >
                 <option value="">Choose an Avenger</option>
@@ -133,13 +145,46 @@ const SendMoney = () => {
           </form>
         </div>
 
-        {/* Optional: Static transaction history placeholder */}
+
         <div className="glass-card">
-          <h2 className="text-xl font-orbitron font-semibold text-white mb-4">
-            Transaction History (Coming Soon)
-          </h2>
-          <p className="text-avengers-silver">This feature is under development.</p>
-        </div>
+  <h2 className="text-xl font-orbitron font-semibold text-white mb-4">
+    Transaction History
+  </h2>
+
+  <table className="w-full text-sm text-left text-avengers-silver">
+    <thead className="border-b border-gray-600 text-white">
+      <tr>
+        <th className="py-2">From</th>
+        <th className="py-2">To</th>
+        <th className="py-2">Amount</th>
+        <th className="py-2">Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {transactions.length === 0 ? (
+        <tr>
+          <td colSpan="4" className="py-4 text-center text-avengers-silver">
+            No transactions yet.
+          </td>
+        </tr>
+      ) : (
+        transactions.map((txn) => (
+          <tr key={txn._id} className="border-b border-gray-700">
+            <td className="py-2">{txn.sender?.name}</td>
+            <td className="py-2">{txn.receiver?.name}</td>
+            <td className={`py-2 font-semibold ${txn.sender?._id === user?._id ? "text-red-500" : "text-green-400"}`}>
+              ₹{txn.amount}
+            </td>
+            <td className="py-2">{new Date(txn.timestamp || txn.createdAt).toLocaleString()}</td>
+          </tr>
+        ))
+      )}
+    </tbody>
+  </table>
+</div>
+
+
+
       </div>
     </div>
   );

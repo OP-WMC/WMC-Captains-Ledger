@@ -35,6 +35,16 @@ exports.handleStripeWebhook = async (req, res) => {
         console.log("❌ Sender or receiver not found.");
         return res.status(404).send("User not found.");
       }
+      const amount = session.amount_total / 100;
+      if (sender.balance < amount) {
+    console.log("❌ Insufficient balance.");
+    return res.status(400).send("Insufficient balance");
+  }
+
+      sender.balance -= amount;
+  receiver.balance += amount;
+  await sender.save();
+  await receiver.save();
 
       await Transaction.create({
         sender: sender._id,

@@ -1,55 +1,58 @@
-import { mockMissions, mockStats, mockAnnouncements } from '../services/mockData';
-import { 
-  Shield, 
-  Users, 
-  DollarSign, 
-  Calendar, 
-  TrendingUp, 
+import { useEffect, useState } from 'react';
+import axios from '../api/axios'; // Use your Axios instance
+import {
+  Shield,
+  Users,
+  DollarSign,
+  Calendar,
+  TrendingUp,
   AlertTriangle,
   CheckCircle,
   Clock,
-  XCircle
+  XCircle,
 } from 'lucide-react';
 
+import { mockMissions, mockStats, mockAnnouncements } from '../services/mockData';
+
 const Dashboard = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
-const isAdmin = user?.role === 'admin';
+  const [user, setUser] = useState(null); // ← only user state needed now
 
-console.log(user?.name, user?.role); 
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    axios.get("/users/me", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then(res => setUser(res.data))
+      .catch(err => console.error("❌ Error fetching user:", err));
+  }, []);
 
-  const userMissions = mockMissions.filter(mission => 
+  const isAdmin = user?.role === 'admin';
+  const userMissions = mockMissions.filter(mission =>
     mission.assignedMembers.includes(user?.name)
   );
-
+  
   const recentAnnouncements = mockAnnouncements.slice(0, 3);
 
   const getStatusIcon = (status) => {
     switch (status) {
-      case 'completed':
-        return <CheckCircle className="w-5 h-5 text-green-400" />;
-      case 'ongoing':
-        return <Clock className="w-5 h-5 text-yellow-400" />;
-      case 'failed':
-        return <XCircle className="w-5 h-5 text-red-400" />;
-      default:
-        return <AlertTriangle className="w-5 h-5 text-gray-400" />;
+      case 'completed': return <CheckCircle className="w-5 h-5 text-green-400" />;
+      case 'ongoing': return <Clock className="w-5 h-5 text-yellow-400" />;
+      case 'failed': return <XCircle className="w-5 h-5 text-red-400" />;
+      default: return <AlertTriangle className="w-5 h-5 text-gray-400" />;
     }
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'completed':
-        return 'status-completed';
-      case 'ongoing':
-        return 'status-ongoing';
-      case 'failed':
-        return 'status-failed';
-      default:
-        return 'bg-gray-500/20 text-gray-400 border border-gray-500/30';
+      case 'completed': return 'status-completed';
+      case 'ongoing': return 'status-ongoing';
+      case 'failed': return 'status-failed';
+      default: return 'bg-gray-500/20 text-gray-400 border border-gray-500/30';
     }
   };
 
-  
   return (
     <div className="space-y-6">
       {/* Welcome Header */}
@@ -64,13 +67,16 @@ console.log(user?.name, user?.role);
             </p>
           </div>
           <div className="text-right">
-            <p className="text-avengers-silver text-sm">Current Balance</p>
-            <p className="text-2xl font-orbitron font-bold text-avengers-gold">
+            <p className="text-avengers-silver text-sm flex items-center justify-end gap-1">
+              💰 Wallet Balance:
+            </p>
+            <p className="text-2xl font-bold font-orbitron text-avengers-gold">
               ₹{user?.balance?.toLocaleString()}
             </p>
           </div>
         </div>
       </div>
+
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

@@ -4,9 +4,14 @@ exports.createStripeCheckout = async (req, res) => {
   try {
     const { amount, receiverEmail } = req.body;
 
-    // ✅ DEBUG: Check req.user
-    console.log("✅ Logged in user:", req.user);
-    console.log("✅ Sender Email:", req.user?.email);
+    //  DEBUG: Check req.user
+    console.log(" Logged in user:", req.user);
+    console.log(" Sender Email:", req.user?.email);
+
+     //  Check wallet balance before allowing payment
+    if (req.user.balance < amount) {
+      return res.status(400).json({ message: "Insufficient wallet balance" });
+    }
 
     const session = await stripe.checkout.sessions.create({
       
@@ -29,7 +34,7 @@ exports.createStripeCheckout = async (req, res) => {
 
       
       metadata: {
-        senderEmail: req.user?.email,         // ✅ MUST be defined
+        senderEmail: req.user?.email,         //  MUST be defined
         receiverEmail: receiverEmail,
       },
 
