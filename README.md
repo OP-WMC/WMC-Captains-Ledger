@@ -40,25 +40,6 @@ A full-stack web application prototype for managing an Avengers command center l
 - **Performance Metrics** - Individual and team performance tracking
 - **Data Visualization** - Interactive charts using Recharts
 
-## 🎨 Design & Theme
-
-### Color Palette
-- **Avengers Blue** - Primary brand color (#1e3a8a)
-- **Avengers Red** - Accent color for alerts (#dc2626)
-- **Silver** - Text and UI elements (#cbd5e1)
-- **Dark** - Background and cards (#0f172a)
-- **Gold** - Financial highlights (#f59e0b)
-
-### Typography
-- **Orbitron** - Futuristic font for headings and buttons
-- **Rajdhani** - Clean, modern font for body text
-
-### UI Elements
-- **Glass-morphism Effects** - Translucent cards with backdrop blur
-- **Gradient Buttons** - Modern gradient buttons with hover effects
-- **Responsive Layout** - Mobile-first design approach
-- **Smooth Animations** - Subtle transitions and hover effects
-
 ## 🚀 Technology Stack
 
 ### Frontend
@@ -105,6 +86,9 @@ MONGO_URI=
 JWT_SECRET=
 EMAIL_USER=
 EMAIL_PASS=
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+
 
 3. **Start development server**
    ```bash
@@ -147,11 +131,6 @@ cd Frontend
 - Conditional rendering based on user roles
 - Protected routes with authentication checks
 
-### Mock Data System
-- Comprehensive mock data for all features
-- Realistic Avengers-themed content
-- Simulated API responses
-
 ### Responsive Design
 - Mobile-first approach
 - Collapsible sidebar for mobile devices
@@ -167,10 +146,8 @@ cd Frontend
 
 ### Advanced Features
 - **Email Notifications** - Automated email system
-- **File Upload** - Mission documents and images
 - **Calendar Integration** - Mission scheduling
 - **Push Notifications** - Real-time alerts
-- **Advanced Analytics** - Machine learning insights
 
 ### Security Enhancements
 - **Two-Factor Authentication** - Enhanced security
