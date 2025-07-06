@@ -168,7 +168,6 @@ const Attendance = () => {
             </div>
           </div>
         )}
-
         {/* User Attendance Marking */}
         {!isAdmin && (
           <div className="glass-card">

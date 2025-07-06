@@ -7,13 +7,16 @@ const Landing = () => {
       
       {/* YOUTUBE VIDEO BACKGROUND */}
       <div className="fixed top-0 left-0 w-full h-full -z-20 overflow-hidden">
-        <iframe
-          src="https://www.youtube.com/embed/3cKVH-ebghs?autoplay=1&mute=1&controls=0&loop=1&playlist=3cKVH-ebghs"
-          frameBorder="0"
-          allow="autoplay; fullscreen"
-          allowFullScreen
-          className="w-full h-full pointer-events-none"
-        ></iframe>
+        {/* <iframe width="1372" height="642" src="https://www.youtube.com/embed/3cKVH-ebghs?list=TLGGp2f31s6QX5IwNjA3MjAyNQ" title="5 second clip" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> */}
+      <iframe
+  src="https://www.youtube.com/embed/3cKVH-ebghs?autoplay=1&mute=1&controls=0&loop=1&playlist=3cKVH-ebghs&modestbranding=1&rel=0&playsinline=1"
+  allow="autoplay; fullscreen"
+  className="w-full h-full object-cover"
+  frameBorder="0"
+/>
+
+
+
       </div>
 
       {/* OVERLAY */}

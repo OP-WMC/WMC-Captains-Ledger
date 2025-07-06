@@ -12,13 +12,15 @@ import {
   XCircle,
 } from 'lucide-react';
 
-import { mockMissions, mockStats, mockAnnouncements } from '../services/mockData';
+import {  mockStats, mockAnnouncements } from '../services/mockData';
 
 const Dashboard = () => {
   const [user, setUser] = useState(null); // ← only user state needed now
+const [missions, setMissions] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    //fetch user profile
     axios.get("/users/me", {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -26,11 +28,21 @@ const Dashboard = () => {
     })
       .then(res => setUser(res.data))
       .catch(err => console.error("❌ Error fetching user:", err));
+
+      // Fetch missions
+    axios.get("http://localhost:5000/api/missions")
+      .then(res => setMissions(res.data))
+      .catch(err => console.error("❌ Error fetching missions:", err));
   }, []);
 
   const isAdmin = user?.role === 'admin';
-  const userMissions = mockMissions.filter(mission =>
-    mission.assignedMembers.includes(user?.name)
+  const userMissions = missions.filter(
+    (m) =>
+      Array.isArray(m.assignedMembers) &&
+      user?.name &&
+      m.assignedMembers.some(
+        (name) => name.trim().toLowerCase() === user.name.trim().toLowerCase()
+      )
   );
   
   const recentAnnouncements = mockAnnouncements.slice(0, 3);
@@ -138,25 +150,27 @@ const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
         {/* Missions Section */}
         <div className="glass-card">
           <h2 className="text-xl font-orbitron font-semibold text-white mb-4">
             {isAdmin ? 'All Missions' : 'Your Missions'}
           </h2>
-          <div className="space-y-3">
-            {(isAdmin ? mockMissions : userMissions).slice(0, 4).map((mission) => (
-              <div key={mission.id} className="flex items-center justify-between p-3 bg-avengers-gray/30 rounded-lg">
-                <div className="flex-1">
-                  <h3 className="font-medium text-white">{mission.title}</h3>
-                  <p className="text-sm text-avengers-silver">{mission.location}</p>
-                </div>
-                <div className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(mission.status)}`}>
-                  {getStatusIcon(mission.status)}
-                  <span className="ml-1 capitalize">{mission.status}</span>
-                </div>
-              </div>
-            ))}
-          </div>
+<div className="space-y-3">
+  {(isAdmin ? missions : userMissions).slice(0, 4).map((mission) => (
+    <div key={mission._id} className="flex items-center justify-between p-3 bg-avengers-gray/30 rounded-lg">
+      <div className="flex-1">
+        <h3 className="font-medium text-white">{mission.title}</h3>
+        <p className="text-sm text-avengers-silver">{mission.location}</p>
+      </div>
+      <div className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${getStatusColor(mission.status)}`}>
+        {getStatusIcon(mission.status)}
+        <span className="capitalize">{mission.status}</span>
+      </div>
+    </div>
+  ))}
+</div>
+
           <div className="mt-4">
             <a href="/missions" className="text-avengers-light-blue hover:text-avengers-blue font-medium">
               View all missions →

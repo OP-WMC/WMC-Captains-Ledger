@@ -22,7 +22,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // // ROUTES
 app.use("/api/auth", require("./routes/authRoutes"));
-app.use('/api/users', require("./routes/authRoutes")); 
+app.use('/api/users', require("./routes/authRoutes"));
+app.use("/api/missions", require("./routes/mission")); 
 
 const transactionsRoute = require('./routes/transactionRoutes');
 app.use('/api/transactions', transactionsRoute);

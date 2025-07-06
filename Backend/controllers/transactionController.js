@@ -34,7 +34,7 @@ exports.createStripeCheckout = async (req, res) => {
 
       
       metadata: {
-        senderEmail: req.user?.email,         //  MUST be defined
+        senderEmail: req.user?.email,         
         receiverEmail: receiverEmail,
       },
 
