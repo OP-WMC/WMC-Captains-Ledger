@@ -12,7 +12,7 @@ module.exports = async function (req, res, next) {
     const user = await User.findById(decoded._id);
     if (!user) return res.status(401).json({ msg: "User not found" });
 
-    req.user = user;  // ✅ This line is critical
+    req.user = user;  
     next();
   } catch (err) {
     res.status(401).json({ msg: "Token is not valid" });

@@ -66,3 +66,31 @@
     @apply border-l-4 border-avengers-red bg-red-500/10;
   }
 }
+
+.react-calendar {
+  background-color: #1f2937; /* Tailwind gray-800 */
+  color: white;
+  border-radius: 0.75rem;
+  border: none;
+  font-family: 'Orbitron', sans-serif;
+}
+.react-calendar__tile--now {
+  background: #4b5563 !important; /* Tailwind gray-700 */
+  color: white !important;
+}
+.react-calendar__tile--active {
+  background: #facc15 !important; /* Tailwind yellow-400 */
+  color: black !important;
+}
+.react-calendar__navigation {
+  background-color: transparent;
+}
+.present-day {
+  background-color: #4ade80 !important;   /* Tailwind's green-400 */
+  color: black !important;
+  border-radius: 50%;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

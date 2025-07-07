@@ -52,18 +52,17 @@ exports.getAttendanceStats = async (req, res) => {
 
 exports.hasMarkedToday = async (req, res) => {
   try {
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
+    const today = new Date();
+    const localDateOnly = today.toISOString().split("T")[0]; // YYYY-MM-DD
 
-    const todayEnd = new Date();
-    todayEnd.setHours(23, 59, 59, 999);
+    const records = await AttendanceRecord.find({ user: req.user._id });
 
-    const record = await AttendanceRecord.findOne({
-      user: req.user._id,
-      markedAt: { $gte: todayStart, $lte: todayEnd }
+    const markedToday = records.some(record => {
+      const markedDate = new Date(record.markedAt).toISOString().split("T")[0];
+      return markedDate === localDateOnly;
     });
 
-    res.json({ marked: !!record });
+    res.json({ marked: markedToday });
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: "Server error" });
