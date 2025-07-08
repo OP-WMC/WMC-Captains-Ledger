@@ -14,6 +14,7 @@ import Landing from "./components/Landing";
 import Stats from './pages/Stats';
 import Feedback from './pages/Feedback';
 import Announcements from './pages/Announcements';
+import FeedbackForm from './pages/FeedbackForm';
 
 
 // Placeholder components for other pages
@@ -113,6 +114,7 @@ function App() {
                 </Layout>
               </ProtectedRoute>
             } />
+            <Route path="/feedback/:transactionId" element={<FeedbackForm />} />
             
             <Route path="/transaction-success" element={<TransactionSuccess />} />
 

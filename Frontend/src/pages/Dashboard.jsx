@@ -17,7 +17,7 @@ import {  mockStats, mockAnnouncements } from '../services/mockData';
 const Dashboard = () => {
   const [user, setUser] = useState(null); // ← only user state needed now
 const [missions, setMissions] = useState([]);
-
+const [feedbacks, setFeedbacks] = useState([]); // ✅ Add this
   useEffect(() => {
     const token = localStorage.getItem("token");
     //fetch user profile
@@ -34,6 +34,21 @@ const [missions, setMissions] = useState([]);
       .then(res => setMissions(res.data))
       .catch(err => console.error("❌ Error fetching missions:", err));
   }, []);
+//New thing 
+useEffect(() => {
+  const token = localStorage.getItem("token"); // ✅ Move token here
+  const fetchFeedbacks = async () => {
+    try {
+      const res = await axios.get("/feedback", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setFeedbacks(res.data);
+    } catch (err) {
+      console.error("❌ Error fetching feedbacks:", err);
+    }
+  };
+  fetchFeedbacks();
+}, []);
 
   const isAdmin = user?.role === 'admin';
   const userMissions = missions.filter(
@@ -211,6 +226,30 @@ const [missions, setMissions] = useState([]);
           </div>
         </div>
       </div>
+      {/* New feedback... */}
+      {/* Feedback Section */}
+{isAdmin && (
+  <div className="glass-card mt-6">
+    <h2 className="text-xl font-orbitron font-semibold text-white mb-4">Recent Feedback</h2>
+    <ul className="space-y-3">
+      {feedbacks.slice(0, 3).map((fb) => (
+        <li key={fb._id || fb.id} className="bg-avengers-gray/30 p-3 rounded-lg">
+          <p className="text-white font-medium">
+            From: {fb.user?.name || fb.user?.codename || "Anonymous"} • ⭐ {fb.rating}
+          </p>
+          <p className="text-avengers-silver text-sm">{fb.comment}</p>
+        </li>
+      ))}
+    </ul>
+    <div className="mt-3">
+      <a href="/feedback" className="text-avengers-light-blue hover:text-avengers-blue font-medium">
+        View all feedback →
+      </a>
+    </div>
+  </div>
+)}
+
+
 
       {/* Quick Actions */}
       <div className="glass-card">
