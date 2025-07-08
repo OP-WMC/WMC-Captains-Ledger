@@ -9,7 +9,7 @@ exports.submitFeedback = async (req, res) => {
     const existing = await Feedback.findOne({ transactionId });
     if (existing) return res.status(400).json({ error: "Feedback already submitted" });
 
-    const feedback = await Feedback.create({ transactionId, rating, comment });
+    const feedback = await Feedback.create({ transactionId, rating, comment, user: req.user._id, });
     res.status(201).json({ success: true, feedback });
   } catch (err) {
     console.error("Feedback submit error:", err);
@@ -29,7 +29,7 @@ exports.getFeedbacks = async (req, res) => {
       filter.transactionId = { $in: ids };
     }
 
-    const feedbacks = await Feedback.find(filter).populate("transactionId");
+    const feedbacks = await Feedback.find(filter).populate("transactionId").populate("user", "name codename");
     res.json(feedbacks);
   } catch (err) {
     console.error("Fetch feedbacks error:", err);

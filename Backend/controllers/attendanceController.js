@@ -52,14 +52,13 @@ exports.getAttendanceStats = async (req, res) => {
 
 exports.hasMarkedToday = async (req, res) => {
   try {
-    const today = new Date();
-    const localDateOnly = today.toISOString().split("T")[0]; // YYYY-MM-DD
+    const today = new Date().toLocaleDateString("en-CA"); // ✅ local "YYYY-MM-DD"
 
     const records = await AttendanceRecord.find({ user: req.user._id });
 
     const markedToday = records.some(record => {
-      const markedDate = new Date(record.markedAt).toISOString().split("T")[0];
-      return markedDate === localDateOnly;
+      const markedDate = new Date(record.markedAt).toLocaleDateString("en-CA");
+      return markedDate === today;
     });
 
     res.json({ marked: markedToday });
@@ -73,7 +72,9 @@ exports.getAttendanceDates = async (req, res) => {
   try {
     const records = await AttendanceRecord.find({ user: req.user._id });
 
-    const dates = records.map(r => new Date(r.markedAt).toISOString().split('T')[0]); // "YYYY-MM-DD"
+    const dates = records.map(r =>
+  new Date(r.markedAt).toLocaleDateString("en-CA") // ✅ "YYYY-MM-DD" in local timezone
+); // "YYYY-MM-DD"
     res.json(dates);
   } catch (err) {
     console.error(err);
