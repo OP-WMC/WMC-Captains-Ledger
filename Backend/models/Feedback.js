@@ -12,7 +12,7 @@ const feedbackSchema = new mongoose.Schema({
     required: true,
   },
   rating: { type: Number, min: 1, max: 5, required: true },
-  comment: { type: String },
+  comment: { type: String, required: true,},
   submittedAt: { type: Date, default: Date.now },
 });
 

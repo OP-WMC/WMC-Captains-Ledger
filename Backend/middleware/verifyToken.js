@@ -21,7 +21,7 @@ const verifyToken = (req, res, next) => {
       role: decoded.role,
     };
 
-    console.log("✅ Decoded token user:", req.user); // Debug log
+    // console.log("✅ Decoded token user:", req.user); 
 
     next();
   } catch (err) {

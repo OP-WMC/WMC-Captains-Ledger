@@ -1,18 +1,75 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // ✅ Import navigate
-import { Eye, EyeOff, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Eye, EyeOff, Shield } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
 
 const Login = () => {
-  const navigate = useNavigate(); // ✅ Initialize navigate
-
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
+
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const particles = [];
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 1;
+        this.speedY = Math.random() * 1 + 0.5;
+        this.alpha = Math.random() * 0.5 + 0.1;
+      }
+
+      update() {
+        this.y += this.speedY;
+        if (this.y > canvas.height) {
+          this.y = 0;
+          this.x = Math.random() * canvas.width;
+        }
+      }
+
+      draw() {
+        ctx.fillStyle = `rgba(0, 224, 255, ${this.alpha})`;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function initParticles() {
+      for (let i = 0; i < 100; i++) {
+        particles.push(new Particle());
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animate);
+    }
+
+    initParticles();
+    animate();
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,16 +77,9 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post('/auth/login', {
-        email: formData.email,
-        password: formData.password,
-      });
-
-      // ✅ Save token and user to localStorage
+      const res = await axios.post('/auth/login', formData);
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data.user));
-
-      // ✅ Navigate to dashboard without full page reload
       navigate('/dashboard');
     } catch (err) {
       setError(err?.response?.data?.error || 'Login failed');
@@ -39,81 +89,59 @@ const Login = () => {
   };
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   return (
-    <div className="min-h-screen bg-avengers-dark flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-gradient-to-br from-avengers-blue/20 via-transparent to-avengers-red/20" />
-      
-      <div className="relative w-full max-w-md">
-        {/* Logo */}
-        <div className="text-center mb-8">
-  {/* Replacing Shield logo with an image */}
-  <img
-    src="https://lh3.googleusercontent.com/aida-public/AB6AXuB386jr-Vc8_1tTYkdtJx0ydP6zbDnj5FA4lq-08bp5ilD7DfBcDhd5CwLgeeIXP_nX3u3Bzz-raB5Ls8aHj1RWnrO9la4xqQfQjAlZzc40zkP4quMnIEWuIc-mSLYES7v6Jown1NjJmkg4yE_DPZUQKuS0UMABwYIiuVwgJU3IEUQKMj9nDr3qADaa70IDTJvl_fVwUg5N0wjfgb7uc7iUy_Ek9NrUB9ZNF35sFIS-OcfsdbZWWm8kCUF67Czr2FWdPzcBgzEfOuz1"
-    alt="Avengers Logo"
-    className="w-20 h-20 rounded-full mx-auto mb-4 object-cover"
-  />
-  <h1 className="text-3xl font-orbitron font-bold text-white mb-2">
-    Captain's Ledger
-  </h1>
-  <p className="text-avengers-silver">
-    Avengers Command Center
-  </p>
-</div>
+    <div className="relative h-screen w-screen bg-black overflow-hidden text-[#00e0ff] font-serif">
+      <canvas id="particles" className="fixed top-0 left-0 w-full h-full pointer-events-none z-0"></canvas>
 
-        {/* Login Form */}
-        <div className="glass-card">
-          <h2 className="text-2xl font-orbitron font-semibold text-white mb-6 text-center">
-            Avenger's Authentication
-          </h2>
+      <div className="fixed bottom-5 left-5 w-12 opacity-10 z-10 animate-spin-slow">
+        <Shield className="w-full h-full" />
+      </div>
+
+      <div className="relative z-20 flex justify-center items-center h-full">
+        <div className="w-[90%] max-w-md bg-black/80 backdrop-blur-lg border-2 border-cyan-400 p-6 rounded-xl shadow-lg animate-glow-border">
+          <h2 className="text-2xl md:text-3xl text-center mb-6 font-normal">Avenger's Authentication</h2>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg text-red-400 text-sm">
+            <div className="mb-4 text-sm p-3 bg-red-500/20 border border-red-400 text-red-300 rounded-md">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-avengers-silver mb-2">
-                Email Address
-              </label>
+              <label className="text-sm">Email</label>
               <input
                 type="email"
                 name="email"
+                placeholder="tonystark@outlook.com"
                 value={formData.email}
                 onChange={handleChange}
-                className="input-field w-full"
-                placeholder="avengers@gmail.com"
                 required
+                className="w-full mt-1 bg-black border border-cyan-400/50 text-cyan-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-400"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-avengers-silver mb-2">
-                Password
-              </label>
+              <label className="text-sm">Password</label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
+                  placeholder="••••••••"
                   value={formData.password}
                   onChange={handleChange}
-                  className="input-field w-full pr-12"
-                  placeholder="Enter your password"
                   required
+                  className="w-full mt-1 pr-10 bg-black border border-cyan-400/50 text-cyan-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-400"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-avengers-silver hover:text-white"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-cyan-300"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </div>
@@ -121,47 +149,15 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="avengers-button w-full flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-cyan-400 text-black font-bold py-2 rounded-md hover:bg-cyan-300 transition duration-300 disabled:opacity-50"
             >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <>
-                  <span>Access Command Center</span>
-                  <ArrowRight className="w-5 h-5" />
-                </>
-              )}
+              {loading ? 'Verifying...' : 'Access Command Center'}
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-avengers-silver text-sm">
-              New avenger?{' '}
-              <a href="/register" className="text-avengers-light-blue hover:text-avengers-blue font-medium">
-                Register here
-              </a>
-            </p>
-          </div>
-        </div>
-
-        {/* Demo Credentials */}
-        <div className="mt-6 glass-card">
-          <h3 className="text-lg font-orbitron font-semibold text-white mb-3">
-            Demo Credentials
-          </h3>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-avengers-silver">Admin:</span>
-              <span className="text-white">captain@avengers.com</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-avengers-silver">Agent:</span>
-              <span className="text-white">bucky@avengers.com</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-avengers-silver">Password:</span>
-              <span className="text-white">password123</span>
-            </div>
+          <div className="mt-4 text-center text-sm text-cyan-300">
+            New Avenger?{' '}
+            <a href="/register" className="hover:underline text-cyan-200">Register here</a>
           </div>
         </div>
       </div>
@@ -169,4 +165,4 @@ const Login = () => {
   );
 };
 
-export default Login; 
+export default Login;
