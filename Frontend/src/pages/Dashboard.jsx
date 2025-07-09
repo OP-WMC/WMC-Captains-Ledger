@@ -232,14 +232,20 @@ useEffect(() => {
   <div className="glass-card mt-6">
     <h2 className="text-xl font-orbitron font-semibold text-white mb-4">Recent Feedback</h2>
     <ul className="space-y-3">
-      {feedbacks.slice(0, 3).map((fb) => (
-        <li key={fb._id || fb.id} className="bg-avengers-gray/30 p-3 rounded-lg">
-          <p className="text-white font-medium">
-            From: {fb.user?.name || fb.user?.codename || "Anonymous"} • ⭐ {fb.rating}
-          </p>
-          <p className="text-avengers-silver text-sm">{fb.comment}</p>
-        </li>
-      ))}
+      {feedbacks.slice(0, 3).map((fb) => {
+        const stars = Array.from({ length: fb.rating }, (_, i) => (
+          <span key={i}>⭐</span>
+        ));
+
+        return (
+          <li key={fb._id || fb.id} className="bg-avengers-gray/30 p-3 rounded-lg">
+            <p className="text-white font-medium">
+              From: {fb.user?.name || fb.user?.codename || "Anonymous"} • {stars}
+            </p>
+            <p className="text-avengers-silver text-sm">{fb.comment}</p>
+          </li>
+        );
+      })}
     </ul>
     <div className="mt-3">
       <a href="/feedback" className="text-avengers-light-blue hover:text-avengers-blue font-medium">
@@ -248,6 +254,7 @@ useEffect(() => {
     </div>
   </div>
 )}
+
 
 
 
