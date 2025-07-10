@@ -1,10 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const { submitFeedback, getFeedbacks } = require("../controllers/feedbackController");
-// const verifyToken = require("../middleware/verifyToken");
-const auth = require("../middleware/authMiddleware");
+const verifyToken = require("../middleware/verifyToken");
 
-router.post("/submit", auth,submitFeedback); 
-router.get("/", auth, getFeedbacks); // For dashboard
+router.post("/submit", verifyToken, submitFeedback); 
+router.get("/", verifyToken, getFeedbacks); // For dashboard
 
 module.exports = router;

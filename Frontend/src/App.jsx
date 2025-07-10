@@ -15,29 +15,7 @@ import Stats from './pages/Stats';
 import Feedback from './pages/Feedback';
 import Announcements from './pages/Announcements';
 import FeedbackForm from './pages/FeedbackForm';
-
-
-// Placeholder components for other pages
-// const Stats = () => (
-//   <div className="glass-card">
-//     <h1 className="text-2xl font-orbitron font-bold text-white mb-4">Statistics</h1>
-//     <p className="text-avengers-silver">Statistics and charts page coming soon...</p>
-//   </div>
-// );
-
-// const Announcements = () => (
-//   <div className="glass-card">
-//     <h1 className="text-2xl font-orbitron font-bold text-white mb-4">Announcements</h1>
-//     <p className="text-avengers-silver">Announcements page coming soon...</p>
-//   </div>
-// );
-
-// const Feedback = () => (
-//   <div className="glass-card">
-//     <h1 className="text-2xl font-orbitron font-bold text-white mb-4">Feedback</h1>
-//     <p className="text-avengers-silver">Feedback form page coming soon...</p>
-//   </div>
-// );
+import Footer from './components/Footer';
 
 function App() {
   return (
@@ -64,6 +42,7 @@ function App() {
                 <Layout>
                   <Dashboard />
                 </Layout>
+                <Footer />
               </ProtectedRoute>
             } />
             
@@ -71,7 +50,9 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <Missions />
+                  
                 </Layout>
+                <Footer />
               </ProtectedRoute>
             } />
             
@@ -79,7 +60,9 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <SendMoney />
+                  
                 </Layout>
+                <Footer />
               </ProtectedRoute>
             } />
             
@@ -87,7 +70,9 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <Attendance />
+                  
                 </Layout>
+                <Footer />
               </ProtectedRoute>
             } />
             
@@ -95,7 +80,9 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <Stats />
+                  
                 </Layout>
+                <Footer />
               </ProtectedRoute>
             } />
             
@@ -103,7 +90,9 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <Announcements />
+                  
                 </Layout>
+                <Footer />
               </ProtectedRoute>
             } />
             
@@ -111,14 +100,16 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <Feedback />
+                  
                 </Layout>
+                <Footer />
               </ProtectedRoute>
             } />
             <Route path="/feedback/:transactionId" element={<FeedbackForm />} />
             
             <Route path="/transaction-success" element={<TransactionSuccess />} />
 
-<Route path="/transaction-cancel" element={<TransactionCancel />} />
+            <Route path="/transaction-cancel" element={<TransactionCancel />} />
 
 
             {/* Redirect to dashboard for any unknown routes */}

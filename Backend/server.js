@@ -3,29 +3,36 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 dotenv.config();
 
-app.use(cors());
+// Middleware setup
+app.use(cookieParser());
+app.use(cors({
+  origin: "http://localhost:5173", // frontend URL
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
+}));
 
 // ✅ Stripe webhook must come BEFORE express.json()
 app.use("/webhook", express.raw({ type: "application/json" }));
 const stripeWebhookRoute = require("./routes/stripeWebhook");
 app.use("/webhook", stripeWebhookRoute);
 
-
-
 // ✅ Use JSON parser for all other API routes
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// // ROUTES
+// ROUTES
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use('/api/users', require("./routes/authRoutes"));
 app.use("/api/missions", require("./routes/mission")); 
 app.use("/api/attendance", require("./routes/attendanceRoutes"));
 app.use("/api/feedback", require("./routes/feedbackRoute"));
+app.use("/api/payment", require("./routes/paymentRoutes"));
 
 const transactionsRoute = require('./routes/transactionRoutes');
 app.use('/api/transactions', transactionsRoute);

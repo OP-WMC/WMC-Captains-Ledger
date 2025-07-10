@@ -5,7 +5,8 @@ const { getAllUsers } = require("../controllers/authController");
 const verifyToken = require("../middleware/verifyToken");
 const { register, login } = require("../controllers/authController");
 const { getMyProfile } = require("../controllers/authController");
-
+const { logout } = require("../controllers/authController");
+router.post("/logout", logout);
 router.post("/register", register);
 router.post("/login", login);
 router.get("/users", verifyToken, getAllUsers);

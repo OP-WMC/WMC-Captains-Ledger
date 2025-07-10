@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { 
   Shield, 
@@ -107,14 +108,15 @@ const Layout = ({ children }) => {
             {filteredNavItems.map((item) => {
               const Icon = item.icon;
               return (
-                <a
+                <Link
                   key={item.name}
-                  href={item.path}
+                  to={item.path}
                   className="sidebar-item group"
+                  onClick={() => setSidebarOpen(false)}
                 >
                   <Icon className="w-5 h-5" />
                   <span className="font-medium">{item.name}</span>
-                </a>
+                </Link>
               );
             })}
           </nav>

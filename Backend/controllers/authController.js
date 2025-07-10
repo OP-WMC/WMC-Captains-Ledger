@@ -22,6 +22,7 @@ exports.register = async (req, res) => {
       password: hashed,
       role,
       balance: startingBalance, // 💰 Set balance
+      codename: name, // Set codename to name for consistency
     });
 
     // ✅ Create token with plain user data
@@ -59,16 +60,26 @@ exports.login = async (req, res) => {
       { expiresIn: "1d" }
     );
 
-    res.status(200).json({
-      message: "Login successful",
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-      token,
-    });
+    res
+  .cookie("token", token, {
+    httpOnly: true,
+    secure: false,
+    sameSite: 'lax',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  })
+  .status(200)
+  .json({
+    message: "Login successful",
+    user: {
+      _id: user._id,
+      name: user.name,
+      codename: user.name, // Add codename for frontend compatibility
+      email: user.email,
+      role: user.role,
+      balance: user.balance,
+    },
+  });
+
   } catch (err) {
     console.error("❌ Login error:", err.message);
     res.status(500).json({ error: "Server error during login" });
@@ -87,4 +98,7 @@ exports.getAllUsers = async (req, res) => {
 exports.getMyProfile = async (req, res) => {
   const user = await User.findById(req.user._id).select("-password");
   res.json(user);
+};
+exports.logout = (req, res) => {
+  res.clearCookie("token").status(200).json({ message: "Logged out successfully" });
 };

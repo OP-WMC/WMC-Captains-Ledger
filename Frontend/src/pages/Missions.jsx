@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '../api/axios';
+import { useAuth } from '../context/AuthContext';
 import {
   Plus, Edit, Trash2, CheckCircle, Clock, XCircle, Flag, AlertTriangle
 } from 'lucide-react';
 
 const Missions = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  const isAdmin = user?.role === "admin";
+  const { user, isAdmin } = useAuth();
 
   const [missions, setMissions] = useState([]);
   const [users, setUsers] = useState([]);
@@ -31,11 +31,11 @@ const Missions = () => {
   useEffect(() => {
     fetchMissions();
     if (isAdmin) fetchUsers();
-  }, []);
+  }, [isAdmin]);
 
   const fetchMissions = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/missions');
+      const res = await axios.get('/missions');
       setMissions(res.data);
     } catch (error) {
       console.error("Failed to fetch missions:", error);
@@ -44,26 +44,19 @@ const Missions = () => {
 
 const fetchUsers = async () => {
   try {
-    const token = localStorage.getItem("token");
-
-    const res = await axios.get("http://localhost:5000/api/auth/users", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    const currentUser = JSON.parse(localStorage.getItem("user"));
-    const filtered = res.data.filter((u) => u.email !== currentUser.email);
+    const res = await axios.get("/auth/users");
+    const filtered = res.data.filter((u) => u.email !== user.email);
     setUsers(filtered);
   } catch (err) {
     console.error("Error fetching users", err);
   }
 };
 
-
   const handleSubmit = async () => {
     try {
       const url = showEditModal
-        ? `http://localhost:5000/api/missions/${selectedMission._id}`
-        : 'http://localhost:5000/api/missions';
+        ? `/missions/${selectedMission._id}`
+        : '/missions';
       const method = showEditModal ? 'put' : 'post';
 
       await axios[method](url, formData);
@@ -79,7 +72,7 @@ const fetchUsers = async () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/missions/${id}`);
+      await axios.delete(`/missions/${id}`);
       fetchMissions();
     } catch (error) {
       console.error("Failed to delete mission:", error);

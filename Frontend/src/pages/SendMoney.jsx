@@ -7,7 +7,6 @@ const SendMoney = () => {
   const { user } = useAuth();
   const [formData, setFormData] = useState({ recipient: "", amount: "" });
   const [users, setUsers] = useState([]);
-  const [userTransactions, setUserTransactions] = useState([]);
   const [transactions, setTransactions] = useState([]); // ✅ New state for transactions
   const [loading, setLoading] = useState(false);
 
@@ -15,29 +14,20 @@ const SendMoney = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get("/auth/users", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const currentUser = JSON.parse(localStorage.getItem("user"));
-        const filtered = res.data.filter((u) => u.email !== currentUser.email);
+        const res = await axios.get("/auth/users"); // Cookies sent automatically
+        const filtered = res.data.filter((u) => u.email !== user.email);
         setUsers(filtered);
       } catch (err) {
         console.error("Error fetching users", err);
       }
     };
-    fetchUsers();
-  }, []);
+    if (user) fetchUsers();
+  }, [user]);
 
   // ✅ Fetch user transactions
   useEffect(() => {
-    const token = localStorage.getItem("token");
     axios
-      .get("http://localhost:5000/api/transactions/my-transactions", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      .get("/transactions/my-transactions")
       .then((res) => setTransactions(res.data))
       .catch((err) => console.error("Error fetching transactions:", err));
   }, []);
@@ -50,15 +40,11 @@ const SendMoney = () => {
 
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
       const res = await axios.post(
         "/transactions/stripe-checkout",
         {
           amount: parseInt(formData.amount),
           receiverEmail: recipient.email,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
         }
       );
       // 🔁 Redirect to Stripe Checkout

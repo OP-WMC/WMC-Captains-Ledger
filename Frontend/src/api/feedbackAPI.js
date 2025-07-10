@@ -1,9 +1,6 @@
-import axios from "./axios";
+import axios from "./axios"; // your axios instance with withCredentials: true
 
 export const fetchFeedback = async () => {
-  const token = localStorage.getItem("token");
-  const res = await axios.get("/feedback", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const res = await axios.get("/feedback"); // No headers needed
   return res.data;
 };

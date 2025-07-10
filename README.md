@@ -29,6 +29,8 @@ A full-stack web application prototype for managing an Avengers command center l
 - **Code Generation** - Admin generates 6-digit attendance codes (valid for 1 minute)
 - **Attendance Marking** - Agents enter codes to mark attendance
 - **Attendance History** - Track attendance patterns and statistics
+- **Date-wise Attendance View** - Admin can click on any calendar date to see all users present/absent on that day
+- **Attendance Toggle** - Switch between present and absent user lists with dropdown buttons
 
 ### Communication
 - **Announcements** - Post important updates and notifications

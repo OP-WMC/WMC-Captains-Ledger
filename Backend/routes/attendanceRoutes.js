@@ -1,25 +1,29 @@
 const express = require("express");
 const router = express.Router();
-const auth = require("../middleware/authMiddleware");
+const verifyToken = require("../middleware/verifyToken");
 const {
   startAttendance,
   markAttendance,
   getAttendanceStats,
   hasMarkedToday,
-  getAttendanceDates
+  getAttendanceDates,
+  getCurrentCode,
+  getAttendanceByDate
 } = require("../controllers/attendanceController");
 
 // ADMIN ONLY
-router.post("/start", auth, startAttendance);
+router.post("/start", verifyToken, startAttendance);
 
 // USER
-router.post("/mark", auth, markAttendance);
+router.post("/mark", verifyToken, markAttendance);
+router.get("/current-code", verifyToken, getCurrentCode);
 
 // Optional stats
-router.get("/stats", auth, getAttendanceStats);
-router.get("/marked-today", auth, hasMarkedToday);
-router.get("/dates", auth, getAttendanceDates);
+router.get("/stats", verifyToken, getAttendanceStats);
+router.get("/marked-today", verifyToken, hasMarkedToday);
+router.get("/dates", verifyToken, getAttendanceDates);
 
-
+// ADMIN ONLY - Get attendance by date
+router.get("/date/:date", verifyToken, getAttendanceByDate);
 
 module.exports = router;

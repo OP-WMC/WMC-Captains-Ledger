@@ -19,28 +19,26 @@ const Dashboard = () => {
 const [missions, setMissions] = useState([]);
 const [feedbacks, setFeedbacks] = useState([]); // ✅ Add this
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    // const token = localStorage.getItem("token");
     //fetch user profile
-    axios.get("/users/me", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+    axios.get("/auth/me", {
+      withCredentials: true,
     })
       .then(res => setUser(res.data))
       .catch(err => console.error("❌ Error fetching user:", err));
 
       // Fetch missions
-    axios.get("http://localhost:5000/api/missions")
+    axios.get("/missions")
       .then(res => setMissions(res.data))
       .catch(err => console.error("❌ Error fetching missions:", err));
   }, []);
 //New thing 
 useEffect(() => {
-  const token = localStorage.getItem("token"); // ✅ Move token here
+  // const token = localStorage.getItem("token"); // ✅ Move token here
   const fetchFeedbacks = async () => {
     try {
       const res = await axios.get("/feedback", {
-        headers: { Authorization: `Bearer ${token}` }
+        withCredentials: true,
       });
       setFeedbacks(res.data);
     } catch (err) {

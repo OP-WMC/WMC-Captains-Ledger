@@ -1,10 +1,12 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "../api/axios";
+import { useAuth } from "../context/AuthContext";
 
 const FeedbackForm = () => {
   const { transactionId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
@@ -13,29 +15,34 @@ const FeedbackForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem("token");
-
-      await axios.post("/feedback/submit", {
-        transactionId,
-        rating,
-        comment
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
+      await axios.post(
+        "/feedback/submit",
+        {
+          transactionId,
+          rating,
+          comment
+        }
+      );
       setMessage("✅ Feedback submitted successfully!");
       setTimeout(() => navigate("/dashboard"), 2000);
     } catch (err) {
       console.error("Feedback error:", err);
-      setMessage("❌ Feedback already submitted or error occurred.");
+      if (err?.response?.status === 403) {
+        setMessage("❌ You can only submit feedback for transactions you are involved in.");
+      } else if (err?.response?.status === 400) {
+        setMessage("❌ Feedback already submitted for this transaction.");
+      } else {
+        setMessage("❌ Error occurred while submitting feedback.");
+      }
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white">
       <h2 className="text-2xl mb-4 font-orbitron">📝 Transaction Feedback</h2>
+      <p className="text-sm text-avengers-silver mb-4">
+        Both sender and receiver can submit feedback for this transaction.
+      </p>
       <form onSubmit={handleSubmit} className="space-y-4 w-80">
         <div>
           <label>Rating (1 to 5):</label>

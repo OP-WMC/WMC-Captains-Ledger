@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -13,6 +14,7 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   useEffect(() => {
     const canvas = document.getElementById('particles');
@@ -78,11 +80,10 @@ const Login = () => {
 
     try {
       const res = await axios.post('/auth/login', formData);
-      localStorage.setItem('token', res.data.token);
-      localStorage.setItem('user', JSON.stringify(res.data.user));
+      login(res.data.user);
       navigate('/dashboard');
     } catch (err) {
-      setError(err?.response?.data?.error || 'Login failed');
+      setError(err?.response?.data?.message || err?.response?.data?.error || 'Login failed');
     } finally {
       setLoading(false);
     }
