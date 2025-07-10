@@ -59,12 +59,12 @@ exports.login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
-
+const isProduction = process.env.NODE_ENV === "production";
     res
   .cookie("token", token, {
     httpOnly: true,
-    secure: false,
-    sameSite: 'lax',
+    secure: isProduction, // ✅ false on localhost
+    sameSite: isProduction ? "None" : "Lax",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   })
   .status(200)

@@ -125,7 +125,11 @@ exports.getAttendanceByDate = async (req, res) => {
     }).populate("user", "name email codename");
     
     // Create a map of users who marked attendance
-    const presentUserIds = new Set(attendanceRecords.map(record => record.user._id.toString()));
+    const presentUserIds = new Set(
+  attendanceRecords
+    .filter(record => record.user) // Skip if user is null
+    .map(record => record.user._id.toString())
+);
     
     // Separate users into present and absent
     const presentUsers = allUsers.filter(user => presentUserIds.has(user._id.toString()));

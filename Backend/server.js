@@ -13,8 +13,8 @@ app.use(cookieParser());
 app.use(cors({
   origin: "http://localhost:5173", // frontend URL
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
+  // methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  // allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
 }));
 
 // ✅ Stripe webhook must come BEFORE express.json()

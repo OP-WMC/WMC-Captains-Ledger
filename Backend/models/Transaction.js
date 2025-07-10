@@ -26,7 +26,7 @@ const transactionSchema = new mongoose.Schema({
   },
   stripeSessionId: {
     type: String,
-    required: false,
+    required: true,
   },
 });
 

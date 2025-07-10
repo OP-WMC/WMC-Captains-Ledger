@@ -15,7 +15,7 @@ const SendMoney = () => {
     const fetchUsers = async () => {
       try {
         const res = await axios.get("/auth/users"); // Cookies sent automatically
-        const filtered = res.data.filter((u) => u.email !== user.email);
+        const filtered = res.data.filter((u) => user._id !== u._id);
         setUsers(filtered);
       } catch (err) {
         console.error("Error fetching users", err);

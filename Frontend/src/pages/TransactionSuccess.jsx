@@ -7,42 +7,54 @@ const TransactionSuccess = () => {
   const [sending, setSending] = useState(false);
   const [message, setMessage] = useState('');
   const [latestTransactionId, setLatestTransactionId] = useState(null);
+  const [user, setUser] = useState(null);
 
-  const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user"));
+  // ✅ Fetch user data from cookie-auth session
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get('/users/me', {
+          withCredentials: true,
+        });
+        setUser(res.data);
+      } catch (err) {
+        console.error('❌ Failed to fetch user info:', err);
+      }
+    };
+    fetchUser();
+  }, []);
 
-  // ✅ Fetch user's most recent transaction on mount
+  // ✅ Fetch user's most recent transaction
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const res = await axios.get("/transactions/my-transactions", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const res = await axios.get('/transactions/my-transactions', {
+          withCredentials: true,
         });
 
         if (res.data.length > 0) {
-          // Assuming sorted newest first
           const latest = res.data[0];
           setLatestTransactionId(latest._id);
         }
       } catch (err) {
-        console.error("❌ Failed to fetch transactions:", err);
+        console.error('❌ Failed to fetch transactions:', err);
       }
     };
 
     fetchTransactions();
-  }, [token]);
+  }, []);
 
   const handleSendFeedbackMail = async () => {
+    if (!user || !latestTransactionId) return;
+
     try {
       setSending(true);
-      setMessage("");
+      setMessage('');
 
       const feedbackLink = `http://localhost:5173/feedback/${latestTransactionId}`;
 
       await axios.post(
-        "/transactions/send-feedback-mail",
+        '/transactions/send-feedback-mail',
         {
           to: user.email,
           subject: "Captain's Ledger: Your Feedback is Requested",
@@ -67,16 +79,14 @@ const TransactionSuccess = () => {
           `,
         },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          withCredentials: true,
         }
       );
 
-      setMessage("📩 Feedback mail sent successfully!");
+      setMessage('📩 Feedback mail sent successfully!');
     } catch (err) {
-      console.error("Mail error:", err);
-      setMessage("❌ Failed to send mail.");
+      console.error('❌ Mail error:', err);
+      setMessage('❌ Failed to send mail.');
     } finally {
       setSending(false);
     }

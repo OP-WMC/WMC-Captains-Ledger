@@ -23,11 +23,18 @@ exports.handleStripeWebhook = async (req, res) => {
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
     console.log("✅ Checkout complete session:", session);
-    console.log("📦 Metadata inside webhook:", session.metadata);
+    // console.log("📦 Metadata inside webhook:", session.metadata);
 
     const metadata = session.metadata;
 
     try {
+       // ✅ CHECK if already handled
+    const existingTransaction = await Transaction.findOne({ stripeSessionId: session.id });
+    if (existingTransaction) {
+      console.log("⚠️ Transaction already processed.");
+      return res.status(200).json({ message: "Transaction already processed." });
+    }
+
       const sender = await User.findOne({ email: metadata.senderEmail });
       const receiver = await User.findOne({ email: metadata.receiverEmail });
 
@@ -53,6 +60,7 @@ exports.handleStripeWebhook = async (req, res) => {
         receiver: receiver._id,
         amount: amount,
         status: "completed",
+        stripeSessionId: session.id,
       });
 
       console.log("✅ Transaction saved to DB");
