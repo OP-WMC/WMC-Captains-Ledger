@@ -67,8 +67,55 @@ exports.markAttendance = async (req, res) => {
 
 // Optional: Admin sees stats
 exports.getAttendanceStats = async (req, res) => {
-  const records = await AttendanceRecord.find({}).populate("user", "name email");
-  res.json(records);
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ msg: "Access denied" });
+    }
+
+    const User = require("../models/User");
+    const allUsers = await User.find({ role: "user" }).select("name email codename");
+    
+    // Get all attendance sessions
+    const allSessions = await AttendanceSession.find({}).sort({ createdAt: 1 });
+    
+    // Get all attendance records
+    const allRecords = await AttendanceRecord.find({}).populate("user", "name email codename");
+    
+    // Calculate attendance percentage for each user
+    const userStats = allUsers.map(user => {
+      const userRecords = allRecords.filter(record => 
+        record.user && record.user._id.toString() === user._id.toString()
+      );
+      
+      const totalSessions = allSessions.length;
+      const attendedSessions = userRecords.length;
+      const attendancePercentage = totalSessions > 0 ? Math.round((attendedSessions / totalSessions) * 100) : 0;
+      
+      return {
+        userId: user._id,
+        name: user.name || user.codename || user.email,
+        email: user.email,
+        codename: user.codename,
+        totalSessions,
+        attendedSessions,
+        attendancePercentage,
+        lastAttendance: userRecords.length > 0 ? 
+          new Date(Math.max(...userRecords.map(r => new Date(r.markedAt)))) : null
+      };
+    });
+    
+    // Sort by attendance percentage (highest first)
+    userStats.sort((a, b) => b.attendancePercentage - a.attendancePercentage);
+    
+    res.json({
+      totalSessions: allSessions.length,
+      totalUsers: allUsers.length,
+      userStats
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Server error" });
+  }
 };
 
 exports.hasMarkedToday = async (req, res) => {
@@ -143,6 +190,60 @@ exports.getAttendanceByDate = async (req, res) => {
       presentCount: presentUsers.length,
       absentCount: absentUsers.length
     });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
+// Get attendance trends over time (admin only)
+exports.getAttendanceTrends = async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ msg: "Access denied" });
+    }
+
+    const { days = 30 } = req.query;
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - parseInt(days));
+    
+    // Get sessions within date range
+    const sessions = await AttendanceSession.find({
+      createdAt: { $gte: startDate, $lte: endDate }
+    }).sort({ createdAt: 1 });
+    
+    // Get records within date range
+    const records = await AttendanceRecord.find({
+      markedAt: { $gte: startDate, $lte: endDate }
+    }).populate("user", "name email codename");
+    
+    // Group by date
+    const dailyStats = {};
+    
+    sessions.forEach(session => {
+      const date = new Date(session.createdAt).toLocaleDateString("en-CA");
+      if (!dailyStats[date]) {
+        dailyStats[date] = { date, totalSessions: 0, attendedSessions: 0 };
+      }
+      dailyStats[date].totalSessions++;
+    });
+    
+    records.forEach(record => {
+      const date = new Date(record.markedAt).toLocaleDateString("en-CA");
+      if (dailyStats[date]) {
+        dailyStats[date].attendedSessions++;
+      }
+    });
+    
+    // Convert to array and calculate percentages
+    const trends = Object.values(dailyStats).map(stat => ({
+      ...stat,
+      attendancePercentage: stat.totalSessions > 0 ? 
+        Math.round((stat.attendedSessions / stat.totalSessions) * 100) : 0
+    }));
+    
+    res.json(trends);
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: "Server error" });

@@ -13,7 +13,8 @@ import {
   Menu,
   X,
   User,
-  Bell
+  Bell,
+  CheckCircle
 } from 'lucide-react';
 
 const Layout = ({ children }) => {
@@ -62,6 +63,12 @@ const Layout = ({ children }) => {
       icon: MessageSquare,
       path: '/feedback',
       adminOnly: false
+    },
+    {
+      name: 'Pending Approvals',
+      icon: CheckCircle,
+      path: '/pending-approvals',
+      adminOnly: true
     }
   ];
 

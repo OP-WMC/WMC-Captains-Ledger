@@ -8,7 +8,8 @@ const {
   hasMarkedToday,
   getAttendanceDates,
   getCurrentCode,
-  getAttendanceByDate
+  getAttendanceByDate,
+  getAttendanceTrends
 } = require("../controllers/attendanceController");
 
 // ADMIN ONLY
@@ -25,5 +26,11 @@ router.get("/dates", verifyToken, getAttendanceDates);
 
 // ADMIN ONLY - Get attendance by date
 router.get("/date/:date", verifyToken, getAttendanceByDate);
+
+// Get attendance statistics (admin only)
+router.get("/stats", verifyToken, getAttendanceStats);
+
+// Get attendance trends (admin only)
+router.get("/trends", verifyToken, getAttendanceTrends);
 
 module.exports = router;

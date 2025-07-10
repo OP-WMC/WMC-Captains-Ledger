@@ -15,6 +15,7 @@ import Stats from './pages/Stats';
 import Feedback from './pages/Feedback';
 import Announcements from './pages/Announcements';
 import FeedbackForm from './pages/FeedbackForm';
+import PendingApprovals from './pages/PendingApprovals';
 import Footer from './components/Footer';
 
 function App() {
@@ -106,6 +107,15 @@ function App() {
               </ProtectedRoute>
             } />
             <Route path="/feedback/:transactionId" element={<FeedbackForm />} />
+            
+            <Route path="/pending-approvals" element={
+              <ProtectedRoute>
+                <Layout>
+                  <PendingApprovals />
+                </Layout>
+                <Footer />
+              </ProtectedRoute>
+            } />
             
             <Route path="/transaction-success" element={<TransactionSuccess />} />
 

@@ -33,6 +33,7 @@ app.use("/api/missions", require("./routes/mission"));
 app.use("/api/attendance", require("./routes/attendanceRoutes"));
 app.use("/api/feedback", require("./routes/feedbackRoute"));
 app.use("/api/payment", require("./routes/paymentRoutes"));
+app.use("/api/announcements", require("./routes/announcementRoutes"));
 
 const transactionsRoute = require('./routes/transactionRoutes');
 app.use('/api/transactions', transactionsRoute);
