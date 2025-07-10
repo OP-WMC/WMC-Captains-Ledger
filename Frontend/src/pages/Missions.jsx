@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import axios from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import {
-  Plus, Edit, Trash2, CheckCircle, Clock, XCircle, Flag, AlertTriangle
+  Plus, Edit, Trash2, CheckCircle, Clock, XCircle, Flag, AlertTriangle, ChevronDown, ChevronUp
 } from 'lucide-react';
 
 const Missions = () => {
@@ -14,6 +14,8 @@ const Missions = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedMission, setSelectedMission] = useState(null);
   const [filter, setFilter] = useState('all');
+  const [showMemberDropdown, setShowMemberDropdown] = useState(false);
+  const dropdownRef = useRef(null);
 
   const defaultForm = {
     title: '',
@@ -32,6 +34,23 @@ const Missions = () => {
     fetchMissions();
     if (isAdmin) fetchUsers();
   }, [isAdmin]);
+
+  // Handle clicking outside dropdown to close it
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowMemberDropdown(false);
+      }
+    };
+
+    if (showMemberDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showMemberDropdown]);
 
   const fetchMissions = async () => {
     try {
@@ -64,6 +83,7 @@ const fetchUsers = async () => {
       setFormData(defaultForm);
       setShowCreateModal(false);
       setShowEditModal(false);
+      setShowMemberDropdown(false);
       fetchMissions();
     } catch (error) {
       console.error("Mission submit failed:", error);
@@ -76,6 +96,24 @@ const fetchUsers = async () => {
       fetchMissions();
     } catch (error) {
       console.error("Failed to delete mission:", error);
+    }
+  };
+
+  // Handle member selection with checkboxes
+  const handleMemberToggle = (memberName) => {
+    const updatedMembers = formData.assignedMembers.includes(memberName)
+      ? formData.assignedMembers.filter(name => name !== memberName)
+      : [...formData.assignedMembers, memberName];
+    
+    setFormData({ ...formData, assignedMembers: updatedMembers });
+  };
+
+  // Handle select all members
+  const handleSelectAll = () => {
+    if (formData.assignedMembers.length === users.length) {
+      setFormData({ ...formData, assignedMembers: [] });
+    } else {
+      setFormData({ ...formData, assignedMembers: users.map(u => u.name) });
     }
   };
 
@@ -248,30 +286,67 @@ const fetchUsers = async () => {
               <option>low</option>
             </select>
 
-            <label className="text-avengers-silver text-sm">👥 Assign Members:</label>
-            <select
-              multiple
-              className="input bg-avengers-gray text-white w-full"
-              value={formData.assignedMembers}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  assignedMembers: Array.from(e.target.selectedOptions).map(opt => opt.value),
-                })
-              }
-            >
-              {users.map((u) => (
-                <option key={u._id} value={u.name}>
-                  {u.name}
-                </option>
-              ))}
-            </select>
+            {/* Custom Member Assignment Dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <label className="text-avengers-silver text-sm block mb-2">👥 Assign Members:</label>
+              <button
+                type="button"
+                onClick={() => setShowMemberDropdown(!showMemberDropdown)}
+                className="input bg-avengers-gray text-white w-full flex items-center justify-between"
+              >
+                <span>
+                  {formData.assignedMembers.length === 0
+                    ? 'Select members...'
+                    : `${formData.assignedMembers.length} member(s) selected`
+                  }
+                </span>
+                {showMemberDropdown ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+              </button>
+
+              {showMemberDropdown && (
+                <div className="absolute z-10 w-full mt-1 bg-avengers-gray border border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                  {/* Select All Option */}
+                  <div className="p-2 border-b border-gray-600">
+                    <label className="flex items-center space-x-2 text-white hover:bg-avengers-blue/20 p-2 rounded cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.assignedMembers.length === users.length && users.length > 0}
+                        onChange={handleSelectAll}
+                        className="w-4 h-4 text-avengers-blue bg-gray-700 border-gray-600 rounded focus:ring-avengers-blue focus:ring-2"
+                      />
+                      <span className="font-medium">Select All</span>
+                    </label>
+                  </div>
+
+                  {/* Individual Members */}
+                  {users.map((user) => (
+                    <div key={user._id} className="p-2">
+                      <label className="flex items-center space-x-2 text-white hover:bg-avengers-blue/20 p-2 rounded cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={formData.assignedMembers.includes(user.name)}
+                          onChange={() => handleMemberToggle(user.name)}
+                          className="w-4 h-4 text-avengers-blue bg-gray-700 border-gray-600 rounded focus:ring-avengers-blue focus:ring-2"
+                        />
+                        <span>{user.name}</span>
+                        <span className="text-avengers-silver text-sm">({user.email})</span>
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
             <div className="flex justify-end gap-2 pt-4">
               <button
                 onClick={() => {
                   setShowCreateModal(false);
                   setShowEditModal(false);
+                  setShowMemberDropdown(false);
                 }}
                 className="avengers-button-secondary"
               >

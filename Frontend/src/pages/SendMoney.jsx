@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import axios from "../api/axios";
-import { DollarSign, Send, ArrowRight } from "lucide-react";
+import { DollarSign, Send, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 
 const SendMoney = () => {
   const { user } = useAuth();
@@ -9,6 +9,10 @@ const SendMoney = () => {
   const [users, setUsers] = useState([]);
   const [transactions, setTransactions] = useState([]); // ✅ New state for transactions
   const [loading, setLoading] = useState(false);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const transactionsPerPage = 10;
 
   // ✅ Fetch users from DB (excluding current user)
   useEffect(() => {
@@ -54,6 +58,25 @@ const SendMoney = () => {
       alert("Payment failed: " + (err.response?.data?.error || "Unknown error"));
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Pagination calculations
+  const indexOfLastTransaction = currentPage * transactionsPerPage;
+  const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
+  const currentTransactions = transactions.slice(indexOfFirstTransaction, indexOfLastTransaction);
+  const totalPages = Math.ceil(transactions.length / transactionsPerPage);
+
+  // Pagination handlers
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const goToPreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
     }
   };
 
@@ -131,46 +154,78 @@ const SendMoney = () => {
           </form>
         </div>
 
-
         <div className="glass-card">
-  <h2 className="text-xl font-orbitron font-semibold text-white mb-4">
-    Transaction History
-  </h2>
+          <h2 className="text-xl font-orbitron font-semibold text-white mb-4">
+            Transaction History
+          </h2>
 
-  <table className="w-full text-sm text-left text-avengers-silver">
-    <thead className="border-b border-gray-600 text-white">
-      <tr>
-        <th className="py-2">From</th>
-        <th className="py-2">To</th>
-        <th className="py-2">Amount</th>
-        <th className="py-2">Date</th>
-      </tr>
-    </thead>
-    <tbody>
-      {transactions.length === 0 ? (
-        <tr>
-          <td colSpan="4" className="py-4 text-center text-avengers-silver">
-            No transactions yet.
-          </td>
-        </tr>
-      ) : (
-        transactions.map((txn) => (
-          <tr key={txn._id} className="border-b border-gray-700">
-            <td className="py-2">{txn.sender?.name}</td>
-            <td className="py-2">{txn.receiver?.name}</td>
-            <td className={`py-2 font-semibold ${txn.sender?._id === user?._id ? "text-red-500" : "text-green-400"}`}>
-              ₹{txn.amount}
-            </td>
-            <td className="py-2">{new Date(txn.timestamp || txn.createdAt).toLocaleString()}</td>
-          </tr>
-        ))
-      )}
-    </tbody>
-  </table>
-</div>
+          <table className="w-full text-sm text-left text-avengers-silver">
+            <thead className="border-b border-gray-600 text-white">
+              <tr>
+                <th className="py-2">From</th>
+                <th className="py-2">To</th>
+                <th className="py-2">Amount</th>
+                <th className="py-2">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {transactions.length === 0 ? (
+                <tr>
+                  <td colSpan="4" className="py-4 text-center text-avengers-silver">
+                    No transactions yet.
+                  </td>
+                </tr>
+              ) : (
+                currentTransactions.map((txn) => (
+                  <tr key={txn._id} className="border-b border-gray-700">
+                    <td className="py-2">{txn.sender?.name}</td>
+                    <td className="py-2">{txn.receiver?.name}</td>
+                    <td className={`py-2 font-semibold ${txn.sender?._id === user?._id ? "text-red-500" : "text-green-400"}`}>
+                      ₹{txn.amount}
+                    </td>
+                    <td className="py-2">{new Date(txn.timestamp || txn.createdAt).toLocaleString()}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
 
-
-
+          {/* Pagination Controls */}
+          {transactions.length > transactionsPerPage && (
+            <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-600">
+              <div className="text-sm text-avengers-silver">
+                Showing {indexOfFirstTransaction + 1} to {Math.min(indexOfLastTransaction, transactions.length)} of {transactions.length} transactions
+              </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={goToPreviousPage}
+                  disabled={currentPage === 1}
+                  className={`p-2 rounded-lg transition-colors ${
+                    currentPage === 1
+                      ? "text-gray-500 cursor-not-allowed"
+                      : "text-avengers-silver hover:text-white hover:bg-avengers-blue/20"
+                  }`}
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <span className="text-sm text-avengers-silver px-3">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <button
+                  onClick={goToNextPage}
+                  disabled={currentPage === totalPages}
+                  className={`p-2 rounded-lg transition-colors ${
+                    currentPage === totalPages
+                      ? "text-gray-500 cursor-not-allowed"
+                      : "text-avengers-silver hover:text-white hover:bg-avengers-blue/20"
+                  }`}
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

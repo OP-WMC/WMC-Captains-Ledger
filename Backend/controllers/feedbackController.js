@@ -40,10 +40,17 @@ exports.getFeedbacks = async (req, res) => {
         { user: user._id }
       ]};
     }
-    // Populate both transaction and user fields
+    // Populate transaction with sender details and user fields
     const feedbacks = await Feedback.find(filter)
-      .populate("transactionId")
-      .populate("user", "name codename email");
+      .populate({
+        path: "transactionId",
+        populate: {
+          path: "sender",
+          select: "name codename email"
+        }
+      })
+      .populate("user", "name codename email")
+      .sort({ submittedAt: -1 }); // Sort by newest first
     res.json(feedbacks);
   } catch (err) {
     console.error("Fetch feedbacks error:", err);
