@@ -12,6 +12,9 @@ const Announcements = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
+  const [filter, setFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const announcementsPerPage = 4;
 
   useEffect(() => {
     const loadAnnouncements = async () => {
@@ -48,6 +51,31 @@ const Announcements = () => {
       setSubmitting(false);
     }
   };
+
+  // Filtered announcements based on dropdown
+  const filteredAnnouncements = announcements.filter(ann => {
+    if (filter === "all") return true;
+    if (filter === "important") return ann.important;
+    if (filter === "normal") return !ann.important;
+    return true;
+  });
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredAnnouncements.length / announcementsPerPage);
+  const paginatedAnnouncements = filteredAnnouncements.slice(
+    (currentPage - 1) * announcementsPerPage,
+    currentPage * announcementsPerPage
+  );
+
+  // Handle filter change
+  const handleFilterChange = (e) => {
+    setFilter(e.target.value);
+    setCurrentPage(1); // Reset to first page on filter change
+  };
+
+  // Handle page navigation
+  const handlePrevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+  const handleNextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
@@ -152,6 +180,19 @@ const Announcements = () => {
           </div>
         )}
 
+        {/* Filter Dropdown */}
+        <div className="mb-8 flex justify-end">
+          <select
+            value={filter}
+            onChange={handleFilterChange}
+            className="p-3 rounded-lg bg-gray-700 text-white border border-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 shadow-lg"
+          >
+            <option value="all">All Announcements</option>
+            <option value="important">🚨 Important</option>
+            <option value="normal">📢 Normal</option>
+          </select>
+        </div>
+
         {/* List of announcements */}
         <div className="space-y-6">
           {loading ? (
@@ -159,26 +200,48 @@ const Announcements = () => {
               <Loader2 className="w-8 h-8 text-yellow-400 animate-spin mx-auto mb-4" />
               <p className="text-gray-400">Loading announcements...</p>
             </div>
-          ) : announcements.length === 0 ? (
+          ) : filteredAnnouncements.length === 0 ? (
             <div className="text-center py-12">
               <Megaphone className="w-16 h-16 text-gray-600 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-400 mb-2">No Announcements Yet</h3>
               <p className="text-gray-500">Be the first to post an announcement!</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {announcements.map((ann, index) => (
-                <div key={ann._id || ann.id} className="animate-fadeInUp" style={{ animationDelay: `${index * 0.1}s` }}>
-                  <AnnouncementCard 
-                    title={ann.title} 
-                    body={ann.body} 
-                    important={ann.important}
-                    author={ann.author}
-                    date={ann.date}
-                  />
-                </div>
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {paginatedAnnouncements.map((ann, index) => (
+                  <div key={ann._id || ann.id} className="animate-fadeInUp" style={{ animationDelay: `${index * 0.1}s` }}>
+                    <AnnouncementCard 
+                      title={ann.title} 
+                      body={ann.body} 
+                      important={ann.important}
+                      author={ann.author}
+                      date={ann.date}
+                    />
+                  </div>
+                ))}
+              </div>
+              {/* Pagination Controls */}
+              <div className="flex justify-center items-center mt-8 space-x-4">
+                <button
+                  onClick={handlePrevPage}
+                  disabled={currentPage === 1}
+                  className={`px-5 py-2 rounded-lg font-semibold transition-all duration-200 shadow-lg border border-gray-600 bg-gray-700 text-yellow-400 hover:bg-yellow-500 hover:text-white disabled:bg-gray-600 disabled:text-gray-400`}
+                >
+                  &#8592; Prev
+                </button>
+                <span className="text-white font-semibold">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <button
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages || totalPages === 0}
+                  className={`px-5 py-2 rounded-lg font-semibold transition-all duration-200 shadow-lg border border-gray-600 bg-gray-700 text-yellow-400 hover:bg-yellow-500 hover:text-white disabled:bg-gray-600 disabled:text-gray-400`}
+                >
+                  Next &#8594;
+                </button>
+              </div>
+            </>
           )}
         </div>
       </div>

@@ -125,88 +125,156 @@ exports.handleStripeWebhook = async (req, res) => {
         });
 
         // Send email to receiver
-        await sendEmail({
-          to: receiver.email,
-          subject: "Payment Received - Captain's Ledger",
-          html: `
-            <!DOCTYPE html>
-            <html>
-            <head>
-              <meta charset="utf-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>Payment Received</title>
-              <style>
-                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background: #1e3a8a; color: white; padding: 20px; text-align: center; }
-                .content { padding: 20px; background: #f9fafb; }
-                .button { display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin: 10px 0; }
-                .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 14px; }
-                .feedback { background: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 15px; margin: 15px 0; border-radius: 4px; }
-                .advanced { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 15px 0; border-radius: 4px; }
-              </style>
-            </head>
-            <body>
-              <div class="container">
-                <div class="header">
-                  <h1>💰 Payment Received</h1>
-                  <p>Captain's Ledger Transaction Notification</p>
-                </div>
-                <div class="content">
-                  <h2>Hello ${receiver.name},</h2>
-                  <p>You have received a payment in your Captain's Ledger account.</p>
-                  
-                  <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #10b981;">
-                    <h3>Transaction Details:</h3>
-                    <p><strong>From:</strong> ${sender.name}</p>
-                    <p><strong>Total Amount:</strong> ₹${recipientAmount}</p>
-                    <p><strong>Amount Received:</strong> ₹${transferAmount}</p>
-                    ${isAdvancedMode && remainingAmountField > 0 ? `<p><strong>Pending Amount:</strong> ₹${remainingAmountField} (awaiting approval)</p>` : ''}
-                    ${splitType === "manual" ? `<p><strong>Split Type:</strong> Manual Split</p>` : ''}
-                    <p><strong>Transaction ID:</strong> ${transaction._id}</p>
-                    <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
+        if (metadata.missionId) {
+          // Mission salary email
+          await sendEmail({
+            to: receiver.email,
+            subject: `💸 Salary Credited for Mission: ${metadata.missionTitle || 'Unknown'}`,
+            html: `
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Salary Credited</title>
+                <style>
+                  body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f172a; color: #1e293b; margin: 0; }
+                  .container { max-width: 600px; margin: 40px auto; background: #f1f5f9; border-radius: 18px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.18); }
+                  .header { background: linear-gradient(90deg, #1e3a8a 0%, #f59e42 100%); color: white; padding: 32px 24px 16px 24px; text-align: center; }
+                  .header h1 { font-size: 2.2rem; margin: 0 0 8px 0; letter-spacing: 1px; }
+                  .header .mission-title { font-size: 1.2rem; font-weight: 600; color: #fde68a; margin-bottom: 0; }
+                  .content { padding: 32px 24px; }
+                  .mission-details { background: #fffbe6; border-left: 6px solid #f59e42; border-radius: 10px; padding: 18px 20px; margin-bottom: 24px; }
+                  .mission-details h3 { margin: 0 0 8px 0; color: #b45309; font-size: 1.1rem; }
+                  .mission-details p { margin: 4px 0; color: #92400e; }
+                  .salary { background: #fef9c3; border-radius: 8px; padding: 16px; text-align: center; margin-bottom: 24px; border: 1.5px solid #fde68a; }
+                  .salary-amount { font-size: 2.2rem; color: #ca8a04; font-weight: bold; margin: 0; }
+                  .congrats { font-size: 1.1rem; color: #059669; margin: 18px 0 0 0; font-weight: 600; }
+                  .footer { background: #1e293b; color: #cbd5e1; text-align: center; padding: 18px 24px; font-size: 0.95rem; border-radius: 0 0 18px 18px; }
+                  .avenger-icon { font-size: 2.5rem; margin-bottom: 8px; }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <div class="header">
+                    <div class="avenger-icon">🦸‍♂️</div>
+                    <h1>Salary Credited!</h1>
+                    <div class="mission-title">Mission: <span>${metadata.missionTitle || 'Unknown'}</span></div>
                   </div>
-                  
-                  ${isAdvancedMode && remainingAmountField > 0 ? `
-                    <div class="advanced">
-                      <h4>⚠️ Advanced Payment Mode</h4>
-                      <p>You have received ₹${transferAmount} immediately. The remaining ₹${remainingAmountField} will be transferred after mission completion and admin approval.</p>
+                  <div class="content">
+                    <div class="congrats">Congratulations, ${receiver.name}!<br>Your heroic efforts have been rewarded.</div>
+                    <div class="salary">
+                      <div>Amount Credited</div>
+                      <div class="salary-amount">₹${recipientAmount}</div>
                     </div>
-                  ` : ''}
-                  
-                  ${metadata.feedback ? `
-                    <div class="feedback">
-                      <h4>Message from ${sender.name}:</h4>
-                      <p><em>"${metadata.feedback}"</em></p>
+                    <div class="mission-details">
+                      <h3>Mission Details</h3>
+                      <p><strong>Title:</strong> ${metadata.missionTitle || 'Unknown'}</p>
+                      <p><strong>Description:</strong> ${metadata.missionDescription || 'N/A'}</p>
+                      <p><strong>Location:</strong> ${metadata.missionLocation || 'N/A'}</p>
+                      <p><strong>Dates:</strong> ${metadata.missionStartDate || ''} to ${metadata.missionEndDate || ''}</p>
                     </div>
-                  ` : ''}
-                  
-                  <p>Your new balance has been updated in your account.</p>
-                  
-                  <div style="text-align: center; margin: 30px 0;">
-                    <a href="http://localhost:5173/feedback/${transaction._id}" class="button">
-                      📝 Submit Feedback
-                    </a>
+                    <div style="margin-top: 18px; color: #334155; font-size: 1rem;">
+                      <strong>Transaction ID:</strong> ${transaction._id}<br>
+                      <strong>Date:</strong> ${new Date().toLocaleString()}
+                    </div>
                   </div>
-                  
-                  <p style="font-size: 14px; color: #6b7280;">
-                    <strong>Note:</strong> Please submit feedback for this transaction.
-                    This helps us improve our timely payment service.
-                  </p>
-                  
-                  <p style="font-size: 14px; color: #6b7280;">
-                    This is an automated notification from Captain's Ledger. 
-                    Please do not reply to this email.
-                  </p>
+                  <div class="footer">
+                    This is an automated notification from Captain's Ledger.<br>
+                    <span style="color:#f59e42;">Avengers, assemble!</span><br>
+                    Please do not reply to this email.<br>
+                    <div style="margin-top: 8px;">© 2024 Captain's Ledger. All rights reserved.</div>
+                  </div>
                 </div>
-                <div class="footer">
-                  <p>© 2024 Captain's Ledger. All rights reserved.</p>
+              </body>
+              </html>
+            `
+          });
+        } else {
+          // Default payment email
+          await sendEmail({
+            to: receiver.email,
+            subject: "Payment Received - Captain's Ledger",
+            html: `
+              <!DOCTYPE html>
+              <html>
+              <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Payment Received</title>
+                <style>
+                  body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                  .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                  .header { background: #1e3a8a; color: white; padding: 20px; text-align: center; }
+                  .content { padding: 20px; background: #f9fafb; }
+                  .button { display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin: 10px 0; }
+                  .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 14px; }
+                  .feedback { background: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 15px; margin: 15px 0; border-radius: 4px; }
+                  .advanced { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 15px 0; border-radius: 4px; }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <div class="header">
+                    <h1>💰 Payment Received</h1>
+                    <p>Captain's Ledger Transaction Notification</p>
+                  </div>
+                  <div class="content">
+                    <h2>Hello ${receiver.name},</h2>
+                    <p>You have received a payment in your Captain's Ledger account.</p>
+                    
+                    <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #10b981;">
+                      <h3>Transaction Details:</h3>
+                      <p><strong>From:</strong> ${sender.name}</p>
+                      <p><strong>Total Amount:</strong> ₹${recipientAmount}</p>
+                      <p><strong>Amount Received:</strong> ₹${transferAmount}</p>
+                      ${isAdvancedMode && remainingAmountField > 0 ? `<p><strong>Pending Amount:</strong> ₹${remainingAmountField} (awaiting approval)</p>` : ''}
+                      ${splitType === "manual" ? `<p><strong>Split Type:</strong> Manual Split</p>` : ''}
+                      <p><strong>Transaction ID:</strong> ${transaction._id}</p>
+                      <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
+                    </div>
+                    
+                    ${isAdvancedMode && remainingAmountField > 0 ? `
+                      <div class="advanced">
+                        <h4>⚠️ Advanced Payment Mode</h4>
+                        <p>You have received ₹${transferAmount} immediately. The remaining ₹${remainingAmountField} will be transferred after mission completion and admin approval.</p>
+                      </div>
+                    ` : ''}
+                    
+                    ${metadata.feedback ? `
+                      <div class="feedback">
+                        <h4>Message from ${sender.name}:</h4>
+                        <p><em>"${metadata.feedback}"</em></p>
+                      </div>
+                    ` : ''}
+                    
+                    <p>Your new balance has been updated in your account.</p>
+                    
+                    <div style="text-align: center; margin: 30px 0;">
+                      <a href="http://localhost:5173/feedback/${transaction._id}" class="button">
+                        📝 Submit Feedback
+                      </a>
+                    </div>
+                    
+                    <p style="font-size: 14px; color: #6b7280;">
+                      <strong>Note:</strong> Please submit feedback for this transaction.
+                      This helps us improve our timely payment service.
+                    </p>
+                    
+                    <p style="font-size: 14px; color: #6b7280;">
+                      This is an automated notification from Captain's Ledger. 
+                      Please do not reply to this email.
+                    </p>
+                  </div>
+                  <div class="footer">
+                    <p>© 2024 Captain's Ledger. All rights reserved.</p>
+                  </div>
                 </div>
-              </div>
-            </body>
-            </html>
-          `
-        });
+              </body>
+              </html>
+            `
+          });
+        }
         // Send email to sender
         await sendEmail({
           to: sender.email,

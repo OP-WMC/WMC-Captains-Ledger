@@ -54,7 +54,10 @@ useEffect(() => {
       Array.isArray(m.assignedMembers) &&
       user?.name &&
       m.assignedMembers.some(
-        (name) => name.trim().toLowerCase() === user.name.trim().toLowerCase()
+        (member) => {
+          const memberName = typeof member === 'string' ? member : (member?.name || '');
+          return memberName && memberName.trim().toLowerCase() === user.name.trim().toLowerCase();
+        }
       )
   );
   

@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import {
   Plus, Edit, Trash2, CheckCircle, Clock, XCircle, Flag, AlertTriangle, ChevronDown, ChevronUp
 } from 'lucide-react';
+import Modal from 'react-modal';
 
 const Missions = () => {
   const { user, isAdmin } = useAuth();
@@ -16,6 +17,10 @@ const Missions = () => {
   const [filter, setFilter] = useState('all');
   const [showMemberDropdown, setShowMemberDropdown] = useState(false);
   const dropdownRef = useRef(null);
+  const [finalizeMission, setFinalizeMission] = useState(null);
+  const [finalizeStatus, setFinalizeStatus] = useState('completed');
+  const [selectedMartyrs, setSelectedMartyrs] = useState([]);
+  const [showFinalizeModal, setShowFinalizeModal] = useState(false);
 
   const defaultForm = {
     title: '',
@@ -25,10 +30,12 @@ const Missions = () => {
     location: '',
     startDate: '',
     endDate: '',
-    assignedMembers: [],
+    assignedMembers: [], // [{ name, salary }]
   };
 
   const [formData, setFormData] = useState(defaultForm);
+
+  const nowISOString = new Date().toISOString().slice(0, 16); // for min attribute
 
   useEffect(() => {
     fetchMissions();
@@ -52,6 +59,23 @@ const Missions = () => {
     };
   }, [showMemberDropdown]);
 
+  // Check for missions to finalize (admin only)
+  useEffect(() => {
+    if (isAdmin) {
+      const now = new Date();
+      const toFinalize = missions.find(m =>
+        m.status === 'ongoing' &&
+        m.endDate && new Date(m.endDate) < now
+      );
+      if (toFinalize) {
+        setFinalizeMission(toFinalize);
+        setShowFinalizeModal(true);
+      } else {
+        setShowFinalizeModal(false);
+      }
+    }
+  }, [missions, isAdmin]);
+
   const fetchMissions = async () => {
     try {
       const res = await axios.get('/missions');
@@ -72,6 +96,18 @@ const fetchUsers = async () => {
 };
 
   const handleSubmit = async () => {
+    // Validate startDate and endDate are not in the past
+    const start = new Date(formData.startDate);
+    const end = new Date(formData.endDate);
+    const now = new Date();
+    if (start < now) {
+      alert('Start date and time cannot be in the past.');
+      return;
+    }
+    if (end < start) {
+      alert('End date/time must be after start date/time.');
+      return;
+    }
     try {
       const url = showEditModal
         ? `/missions/${selectedMission._id}`
@@ -101,10 +137,21 @@ const fetchUsers = async () => {
 
   // Handle member selection with checkboxes
   const handleMemberToggle = (memberName) => {
-    const updatedMembers = formData.assignedMembers.includes(memberName)
-      ? formData.assignedMembers.filter(name => name !== memberName)
-      : [...formData.assignedMembers, memberName];
-    
+    const exists = formData.assignedMembers.find(m => m.name === memberName);
+    let updatedMembers;
+    if (exists) {
+      updatedMembers = formData.assignedMembers.filter(m => m.name !== memberName);
+    } else {
+      updatedMembers = [...formData.assignedMembers, { name: memberName, salary: 0 }];
+    }
+    setFormData({ ...formData, assignedMembers: updatedMembers });
+  };
+
+  // Handle salary change for a member
+  const handleSalaryChange = (memberName, salary) => {
+    const updatedMembers = formData.assignedMembers.map(m =>
+      m.name === memberName ? { ...m, salary: Number(salary) } : m
+    );
     setFormData({ ...formData, assignedMembers: updatedMembers });
   };
 
@@ -113,7 +160,13 @@ const fetchUsers = async () => {
     if (formData.assignedMembers.length === users.length) {
       setFormData({ ...formData, assignedMembers: [] });
     } else {
-      setFormData({ ...formData, assignedMembers: users.map(u => u.name) });
+      setFormData({
+        ...formData,
+        assignedMembers: users.map(u => {
+          const existing = formData.assignedMembers.find(m => m.name === u.name);
+          return { name: u.name, salary: existing ? existing.salary : 0 };
+        })
+      });
     }
   };
 
@@ -121,7 +174,10 @@ const fetchUsers = async () => {
     Array.isArray(m.assignedMembers) &&
     user?.name &&
     m.assignedMembers.some(
-      (name) => name.trim().toLowerCase() === user.name.trim().toLowerCase()
+      (member) => {
+        const memberName = typeof member === 'string' ? member : (member?.name || '');
+        return memberName && memberName.trim().toLowerCase() === user.name.trim().toLowerCase();
+      }
     )
   );
 
@@ -137,6 +193,23 @@ const fetchUsers = async () => {
       case 'failed': return <XCircle className="w-5 h-5 text-red-400" />;
       case 'martyred': return <Flag className="w-5 h-5 text-purple-400" />;
       default: return <AlertTriangle className="w-5 h-5 text-gray-400" />;
+    }
+  };
+
+  const handleFinalize = async () => {
+    try {
+      await axios.post(`/missions/finalize/${finalizeMission._id}`, {
+        status: finalizeStatus,
+        martyrs: finalizeStatus === 'martyred' ? selectedMartyrs : [],
+        updatedBy: user?.name || 'admin',
+      });
+      setShowFinalizeModal(false);
+      setFinalizeMission(null);
+      setSelectedMartyrs([]);
+      setFinalizeStatus('completed');
+      fetchMissions();
+    } catch (err) {
+      alert('Failed to finalize mission.');
     }
   };
 
@@ -209,7 +282,7 @@ const fetchUsers = async () => {
               <div className="flex items-center space-x-1">
                 {getStatusIcon(mission.status)} <span>{mission.status}</span>
               </div>
-              <div>👥 {mission.assignedMembers.join(', ')}</div>
+              <div>👥 {mission.assignedMembers.map(m => typeof m === 'string' ? m : `${m.name} (₹${m.salary || 0})`).join(', ')}</div>
             </div>
           </div>
         ))}
@@ -224,123 +297,164 @@ const fetchUsers = async () => {
 
       {/* Create/Edit Modal */}
       {(showCreateModal || showEditModal) && isAdmin && (
-        <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50">
-          <div className="glass-card w-full max-w-xl p-6 space-y-4">
-            <h2 className="text-2xl text-white font-orbitron">
-              {showEditModal ? '✏️ Edit Mission' : '🚀 Create New Mission'}
-            </h2>
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+          <div className="bg-gray-900 p-8 rounded-2xl shadow-2xl w-full max-w-lg relative">
+            <button onClick={() => { setShowCreateModal(false); setShowEditModal(false); }} className="absolute top-4 right-4 text-gray-400 hover:text-white">&times;</button>
+            <h2 className="text-2xl font-bold text-white mb-6 text-center">{showEditModal ? 'Edit Mission' : 'Create Mission'}</h2>
+            <div className="space-y-4">
+              {/* Mission Details Section */}
+              <div className="bg-gray-800 rounded-xl p-4 mb-2 shadow-inner">
+                <h3 className="text-lg font-bold text-avengers-blue mb-3 flex items-center gap-2">📝 Mission Details</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input
+                    className="input bg-avengers-gray text-white w-full"
+                    placeholder="🕵️‍♂️ Title"
+                    value={formData.title}
+                    onChange={e => setFormData({ ...formData, title: e.target.value })}
+                  />
+                  <input
+                    className="input bg-avengers-gray text-white w-full"
+                    placeholder="📍 Location"
+                    value={formData.location}
+                    onChange={e => setFormData({ ...formData, location: e.target.value })}
+                  />
+                  <input
+                    type="datetime-local"
+                    value={formData.startDate}
+                    min={nowISOString}
+                    onChange={e => setFormData({ ...formData, startDate: e.target.value })}
+                    className="input bg-avengers-gray text-white w-full"
+                    required
+                  />
+                  <input
+                    type="datetime-local"
+                    value={formData.endDate}
+                    min={formData.startDate || nowISOString}
+                    onChange={e => setFormData({ ...formData, endDate: e.target.value })}
+                    className="input bg-avengers-gray text-white w-full"
+                    required
+                  />
+                  <select
+                    className="input bg-avengers-gray text-white w-full"
+                    value={formData.status}
+                    onChange={e => setFormData({ ...formData, status: e.target.value })}
+                  >
+                    <option>ongoing</option>
+                    <option>completed</option>
+                    <option>failed</option>
+                    <option>martyred</option>
+                  </select>
+                  <select
+                    className="input bg-avengers-gray text-white w-full"
+                    value={formData.priority}
+                    onChange={e => setFormData({ ...formData, priority: e.target.value })}
+                  >
+                    <option>critical</option>
+                    <option>high</option>
+                    <option>medium</option>
+                    <option>low</option>
+                  </select>
+                </div>
+                <textarea
+                  className="input bg-avengers-gray text-white w-full mt-4"
+                  placeholder="📝 Description"
+                  value={formData.description}
+                  onChange={e => setFormData({ ...formData, description: e.target.value })}
+                />
+              </div>
 
-            <input
-              className="input bg-avengers-gray text-white w-full"
-              placeholder="🕵️‍♂️ Title"
-              value={formData.title}
-              onChange={e => setFormData({ ...formData, title: e.target.value })}
-            />
-            <textarea
-              className="input bg-avengers-gray text-white w-full"
-              placeholder="📝 Description"
-              value={formData.description}
-              onChange={e => setFormData({ ...formData, description: e.target.value })}
-            />
-            <input
-              className="input bg-avengers-gray text-white w-full"
-              placeholder="📍 Location"
-              value={formData.location}
-              onChange={e => setFormData({ ...formData, location: e.target.value })}
-            />
-
-            <div className="flex gap-3">
-              <input
-                type="date"
-                className="input bg-avengers-gray text-white w-full"
-                value={formData.startDate}
-                onChange={e => setFormData({ ...formData, startDate: e.target.value })}
-              />
-              <input
-                type="date"
-                className="input bg-avengers-gray text-white w-full"
-                value={formData.endDate}
-                onChange={e => setFormData({ ...formData, endDate: e.target.value })}
-              />
-            </div>
-
-            <select
-              className="input bg-avengers-gray text-white w-full"
-              value={formData.status}
-              onChange={e => setFormData({ ...formData, status: e.target.value })}
-            >
-              <option>ongoing</option>
-              <option>completed</option>
-              <option>failed</option>
-              <option>martyred</option>
-            </select>
-
-            <select
-              className="input bg-avengers-gray text-white w-full"
-              value={formData.priority}
-              onChange={e => setFormData({ ...formData, priority: e.target.value })}
-            >
-              <option>critical</option>
-              <option>high</option>
-              <option>medium</option>
-              <option>low</option>
-            </select>
-
-            {/* Custom Member Assignment Dropdown */}
-            <div className="relative" ref={dropdownRef}>
-              <label className="text-avengers-silver text-sm block mb-2">👥 Assign Members:</label>
-              <button
-                type="button"
-                onClick={() => setShowMemberDropdown(!showMemberDropdown)}
-                className="input bg-avengers-gray text-white w-full flex items-center justify-between"
-              >
-                <span>
-                  {formData.assignedMembers.length === 0
-                    ? 'Select members...'
-                    : `${formData.assignedMembers.length} member(s) selected`
-                  }
-                </span>
-                {showMemberDropdown ? (
-                  <ChevronUp className="w-4 h-4" />
-                ) : (
-                  <ChevronDown className="w-4 h-4" />
-                )}
-              </button>
-
-              {showMemberDropdown && (
-                <div className="absolute z-10 w-full mt-1 bg-avengers-gray border border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                  {/* Select All Option */}
-                  <div className="p-2 border-b border-gray-600">
-                    <label className="flex items-center space-x-2 text-white hover:bg-avengers-blue/20 p-2 rounded cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={formData.assignedMembers.length === users.length && users.length > 0}
-                        onChange={handleSelectAll}
-                        className="w-4 h-4 text-avengers-blue bg-gray-700 border-gray-600 rounded focus:ring-avengers-blue focus:ring-2"
-                      />
-                      <span className="font-medium">Select All</span>
-                    </label>
-                  </div>
-
-                  {/* Individual Members */}
-                  {users.map((user) => (
-                    <div key={user._id} className="p-2">
-                      <label className="flex items-center space-x-2 text-white hover:bg-avengers-blue/20 p-2 rounded cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={formData.assignedMembers.includes(user.name)}
-                          onChange={() => handleMemberToggle(user.name)}
-                          className="w-4 h-4 text-avengers-blue bg-gray-700 border-gray-600 rounded focus:ring-avengers-blue focus:ring-2"
-                        />
-                        <span>{user.name}</span>
-                        <span className="text-avengers-silver text-sm">({user.email})</span>
-                      </label>
+              {/* Assign Members Section */}
+              <div className="bg-gray-800 rounded-xl p-4 mb-2 shadow-inner">
+                <h3 className="text-lg font-bold text-green-400 mb-3 flex items-center gap-2">👥 Assign Members</h3>
+                <div className="relative mb-2" ref={dropdownRef}>
+                  <button
+                    type="button"
+                    onClick={() => setShowMemberDropdown(!showMemberDropdown)}
+                    className="input bg-avengers-gray text-white w-full flex items-center justify-between"
+                  >
+                    <span>
+                      {formData.assignedMembers.length === 0
+                        ? 'Select members...'
+                        : `${formData.assignedMembers.length} member(s) selected`
+                      }
+                    </span>
+                    {showMemberDropdown ? (
+                      <ChevronUp className="w-4 h-4" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4" />
+                    )}
+                  </button>
+                  {showMemberDropdown && (
+                    <div className="absolute z-10 w-full mt-1 bg-avengers-gray border border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                      <div className="p-2 border-b border-gray-600">
+                        <label className="flex items-center space-x-2 text-white hover:bg-avengers-blue/20 p-2 rounded cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={formData.assignedMembers.length === users.length && users.length > 0}
+                            onChange={handleSelectAll}
+                            className="w-4 h-4 text-avengers-blue bg-gray-700 border-gray-600 rounded focus:ring-avengers-blue focus:ring-2"
+                          />
+                          <span className="font-medium">Select All</span>
+                        </label>
+                      </div>
+                      {users.map((user) => {
+                        const memberObj = formData.assignedMembers.find(m => m.name === user.name);
+                        return (
+                          <div key={user._id} className="p-2 flex items-center gap-2">
+                            <label className="flex items-center space-x-2 text-white hover:bg-avengers-blue/20 p-2 rounded cursor-pointer flex-1">
+                              <input
+                                type="checkbox"
+                                checked={!!memberObj}
+                                onChange={() => handleMemberToggle(user.name)}
+                                className="w-4 h-4 text-avengers-blue bg-gray-700 border-gray-600 rounded focus:ring-avengers-blue focus:ring-2"
+                              />
+                              <span>{user.name}</span>
+                              <span className="text-avengers-silver text-sm">({user.email})</span>
+                            </label>
+                          </div>
+                        );
+                      })}
                     </div>
-                  ))}
+                  )}
+                </div>
+              </div>
+
+              {/* Assign Salary Section */}
+              {formData.assignedMembers.length > 0 && (
+                <div className="bg-yellow-50 rounded-xl p-4 mb-2 shadow-inner border border-yellow-300">
+                  <h3 className="text-lg font-bold text-yellow-600 mb-3 flex items-center gap-2">💸 Assign Salary</h3>
+                  <div className="space-y-2">
+                    {formData.assignedMembers.map((member) => {
+                      const user = users.find(u => u.name === member.name);
+                      return (
+                        <div key={member.name} className="flex items-center gap-4 bg-yellow-100 rounded p-2">
+                          <div className="w-10 h-10 rounded-full bg-yellow-300 flex items-center justify-center text-yellow-900 font-bold text-lg">
+                            {member.name.charAt(0).toUpperCase()}
+                          </div>
+                          <div className="flex-1">
+                            <div className="font-semibold text-yellow-800">{member.name}</div>
+                            <div className="text-xs text-yellow-700">{user?.email}</div>
+                          </div>
+                          <input
+                            type="number"
+                            min="0"
+                            placeholder="Salary"
+                            value={member.salary}
+                            onChange={e => handleSalaryChange(member.name, e.target.value)}
+                            className="input bg-yellow-200 text-yellow-900 w-28 border border-yellow-400"
+                          />
+                          <span className="text-xs text-yellow-700 ml-2">₹</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="mt-3 text-right text-yellow-800 font-semibold">
+                    Total Salary: ₹{formData.assignedMembers.reduce((sum, m) => sum + (m.salary || 0), 0)}
+                  </div>
+                  <div className="text-xs text-yellow-700 mt-1">Please ensure all salaries are filled before submitting.</div>
                 </div>
               )}
             </div>
-
             <div className="flex justify-end gap-2 pt-4">
               <button
                 onClick={() => {
@@ -359,8 +473,101 @@ const fetchUsers = async () => {
           </div>
         </div>
       )}
+
+      {/* Finalize Mission Modal (Admin) */}
+      {showFinalizeModal && finalizeMission && (
+        <Modal
+          isOpen={showFinalizeModal}
+          onRequestClose={() => setShowFinalizeModal(false)}
+          className="bg-gray-900 p-8 rounded-2xl shadow-2xl w-full max-w-lg mx-auto mt-24 relative"
+          overlayClassName="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center"
+          ariaHideApp={false}
+        >
+          <h2 className="text-2xl font-bold text-white mb-6 text-center">Finalize Mission: {finalizeMission.title}</h2>
+          <div className="mb-4">
+            <label className="block text-sm font-semibold mb-2 text-gray-300">Mission Outcome</label>
+            <select
+              value={finalizeStatus}
+              onChange={e => setFinalizeStatus(e.target.value)}
+              className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200"
+            >
+              <option value="completed">Completed</option>
+              <option value="failed">Failed</option>
+              <option value="martyred">Martyred</option>
+            </select>
+          </div>
+          {finalizeStatus === 'martyred' && (
+            <div className="mb-4">
+              <label className="block text-sm font-semibold mb-2 text-gray-300">Select Martyrs</label>
+              <select
+                multiple
+                value={selectedMartyrs}
+                onChange={e => setSelectedMartyrs(Array.from(e.target.selectedOptions, option => option.value))}
+                className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200"
+              >
+                {finalizeMission.assignedMembers.map(member => (
+                  <option key={typeof member === 'string' ? member : member.name} value={typeof member === 'string' ? member : member.name}>
+                    {typeof member === 'string' ? member : `${member.name} (₹${member.salary || 0})`}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+          <div className="flex justify-end gap-2 pt-4">
+            <button
+              onClick={() => setShowFinalizeModal(false)}
+              className="avengers-button-secondary"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleFinalize}
+              className="avengers-button"
+            >
+              Finalize
+            </button>
+            {/* Send Salary Button */}
+            {(finalizeStatus === 'completed' || finalizeStatus === 'failed' || finalizeStatus === 'martyred') && (
+              <SendSalaryButton missionId={finalizeMission._id} />
+            )}
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };
+
+function SendSalaryButton({ missionId }) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleSendSalary = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await axios.post(`/missions/${missionId}/send-salary`);
+      if (res.data.url) {
+        window.location.href = res.data.url;
+      } else {
+        setError('Stripe session could not be created.');
+      }
+    } catch (err) {
+      setError(err.response?.data?.msg || 'Error creating Stripe session.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleSendSalary}
+      className="avengers-button bg-gradient-to-r from-green-500 to-green-700 text-white"
+      disabled={loading}
+      style={{ minWidth: 120 }}
+    >
+      {loading ? 'Redirecting...' : 'Send Salary'}
+    </button>
+  );
+}
 
 export default Missions;

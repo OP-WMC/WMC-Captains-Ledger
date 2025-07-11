@@ -19,7 +19,6 @@ const ChartContainer = ({
     { key: 'bar', label: 'Bar Chart', icon: BarChart3 },
     { key: 'line', label: 'Line Chart', icon: TrendingUp },
     { key: 'pie', label: 'Pie Chart', icon: PieChartIcon },
-    { key: 'scatter', label: 'Scatter Plot', icon: ScatterIcon },
   ];
 
   const renderChart = () => {
@@ -96,25 +95,6 @@ const ChartContainer = ({
             />
             <Legend />
           </PieChart>
-        );
-      
-      case 'scatter':
-        return (
-          <ScatterChart>
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-            <XAxis dataKey={xAxisKey} stroke="#9ca3af" />
-            <YAxis stroke="#9ca3af" />
-            <Tooltip 
-              contentStyle={{ 
-                backgroundColor: '#1f2937', 
-                border: '1px solid #374151',
-                borderRadius: '8px',
-                color: '#f9fafb'
-              }}
-            />
-            <Legend />
-            <Scatter dataKey={dataKey} fill="#00ffcc" />
-          </ScatterChart>
         );
       
       default:

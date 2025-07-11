@@ -81,21 +81,29 @@ exports.getAttendanceStats = async (req, res) => {
     // Get all attendance records
     const allRecords = await AttendanceRecord.find({}).populate("user", "name email codename");
     
-    // Calculate attendance percentage for each user
+    // Map user attendance by sessions and unique days
     const userStats = allUsers.map(user => {
       const userRecords = allRecords.filter(record => 
         record.user && record.user._id.toString() === user._id.toString()
       );
-      
+      // Unique days attended
+      const uniqueDays = new Set(userRecords.map(r => new Date(r.markedAt).toLocaleDateString("en-CA")));
+      // All unique days with any session
+      const allSessionDays = new Set(allSessions.map(s => new Date(s.createdAt).toLocaleDateString("en-CA")));
+      const totalDays = allSessionDays.size;
+      const attendedDays = uniqueDays.size;
+      // --- Session-based fields ---
       const totalSessions = allSessions.length;
       const attendedSessions = userRecords.length;
       const attendancePercentage = totalSessions > 0 ? Math.round((attendedSessions / totalSessions) * 100) : 0;
-      
+      // --- End session-based fields ---
       return {
         userId: user._id,
         name: user.name || user.codename || user.email,
         email: user.email,
         codename: user.codename,
+        totalDays,
+        attendedDays,
         totalSessions,
         attendedSessions,
         attendancePercentage,
@@ -103,11 +111,10 @@ exports.getAttendanceStats = async (req, res) => {
           new Date(Math.max(...userRecords.map(r => new Date(r.markedAt)))) : null
       };
     });
-    
     // Sort by attendance percentage (highest first)
     userStats.sort((a, b) => b.attendancePercentage - a.attendancePercentage);
-    
     res.json({
+      totalDays: Array.from(new Set(allSessions.map(s => new Date(s.createdAt).toLocaleDateString("en-CA")))).length,
       totalSessions: allSessions.length,
       totalUsers: allUsers.length,
       userStats
@@ -218,31 +225,24 @@ exports.getAttendanceTrends = async (req, res) => {
       markedAt: { $gte: startDate, $lte: endDate }
     }).populate("user", "name email codename");
     
-    // Group by date
+    // Group by date (unique days)
     const dailyStats = {};
-    
-    sessions.forEach(session => {
-      const date = new Date(session.createdAt).toLocaleDateString("en-CA");
-      if (!dailyStats[date]) {
-        dailyStats[date] = { date, totalSessions: 0, attendedSessions: 0 };
-      }
-      dailyStats[date].totalSessions++;
+    // Find all unique days with sessions
+    const allSessionDays = Array.from(new Set(sessions.map(s => new Date(s.createdAt).toLocaleDateString("en-CA"))));
+    allSessionDays.forEach(date => {
+      dailyStats[date] = { date, attendedUsers: new Set() };
     });
-    
     records.forEach(record => {
       const date = new Date(record.markedAt).toLocaleDateString("en-CA");
       if (dailyStats[date]) {
-        dailyStats[date].attendedSessions++;
+        dailyStats[date].attendedUsers.add(record.user._id.toString());
       }
     });
-    
-    // Convert to array and calculate percentages
+    // Convert to array and count unique users per day
     const trends = Object.values(dailyStats).map(stat => ({
-      ...stat,
-      attendancePercentage: stat.totalSessions > 0 ? 
-        Math.round((stat.attendedSessions / stat.totalSessions) * 100) : 0
+      date: stat.date,
+      attendedCount: stat.attendedUsers.size
     }));
-    
     res.json(trends);
   } catch (err) {
     console.error(err);
