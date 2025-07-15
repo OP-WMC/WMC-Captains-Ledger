@@ -12,7 +12,7 @@ import {
   XCircle,
 } from 'lucide-react';
 
-import {  mockStats, mockAnnouncements } from '../services/mockData';
+import {   mockAnnouncements } from '../services/mockData';
 
 const Dashboard = () => {
   const [user, setUser] = useState(null); // ← only user state needed now
@@ -63,23 +63,14 @@ useEffect(() => {
   
   const recentAnnouncements = mockAnnouncements.slice(0, 3);
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'completed': return <CheckCircle className="w-5 h-5 text-green-400" />;
-      case 'ongoing': return <Clock className="w-5 h-5 text-yellow-400" />;
-      case 'failed': return <XCircle className="w-5 h-5 text-red-400" />;
-      default: return <AlertTriangle className="w-5 h-5 text-gray-400" />;
-    }
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'completed': return 'status-completed';
-      case 'ongoing': return 'status-ongoing';
-      case 'failed': return 'status-failed';
-      default: return 'bg-gray-500/20 text-gray-400 border border-gray-500/30';
-    }
-  };
+  // const getStatusIcon = (status) => {
+  //   switch (status) {
+  //     case 'completed': return <CheckCircle className="w-5 h-5 text-green-400" />;
+  //     case 'ongoing': return <Clock className="w-5 h-5 text-yellow-400" />;
+  //     case 'failed': return <XCircle className="w-5 h-5 text-red-400" />;
+  //     default: return <AlertTriangle className="w-5 h-5 text-gray-400" />;
+  //   }
+  // };
 
   return (
     <div className="space-y-6">
@@ -87,18 +78,18 @@ useEffect(() => {
       <div className="glass-card">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-orbitron font-bold text-white mb-2">
+            <h1 className="text-3xl font-orbitron font-bold text-shadow-glow mb-2">
               Welcome back, {user?.codename}
             </h1>
-            <p className="text-avengers-silver">
+            <p className="text-cyan-100">
               {isAdmin ? 'Command Center Dashboard' : 'Agent Dashboard'}
             </p>
           </div>
           <div className="text-right">
-            <p className="text-avengers-silver text-sm flex items-center justify-end gap-1">
+            <p className="text-cyan-300 text-sm flex items-center justify-end gap-1">
               💰 Wallet Balance:
             </p>
-            <p className="text-2xl font-bold font-orbitron text-avengers-gold">
+            <p className="text-3xl font-orbitron font-bold text-yellow-400 text-shadow-glow">
               ₹{user?.balance?.toLocaleString()}
             </p>
           </div>
@@ -107,88 +98,49 @@ useEffect(() => {
 
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="glass-card">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-avengers-silver text-sm">Total Missions</p>
-              <p className="text-2xl font-orbitron font-bold text-white">
-                {mockStats.missions.total}
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-gradient-to-br from-avengers-blue to-avengers-light-blue rounded-lg flex items-center justify-center">
-              <Shield className="w-6 h-6 text-white" />
-            </div>
-          </div>
-        </div>
-
-        <div className="glass-card">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-avengers-silver text-sm">Active Agents</p>
-              <p className="text-2xl font-orbitron font-bold text-white">
-                {mockStats.attendance ? Object.keys(mockStats.attendance).length : 4}
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
-              <Users className="w-6 h-6 text-white" />
-            </div>
-          </div>
-        </div>
-
-        <div className="glass-card">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-avengers-silver text-sm">Total Payments</p>
-              <p className="text-2xl font-orbitron font-bold text-white">
-                ₹{mockStats.payments.total.toLocaleString()}
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-gradient-to-br from-avengers-gold to-yellow-500 rounded-lg flex items-center justify-center">
-              <DollarSign className="w-6 h-6 text-white" />
-            </div>
-          </div>
-        </div>
-
-        <div className="glass-card">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-avengers-silver text-sm">Attendance Rate</p>
-              <p className="text-2xl font-orbitron font-bold text-white">
-                {mockStats.attendance ? Math.round(Object.values(mockStats.attendance).reduce((a, b) => a + b, 0) / Object.values(mockStats.attendance).length) : 90}%
-              </p>
-            </div>
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
-              <TrendingUp className="w-6 h-6 text-white" />
-            </div>
-          </div>
-        </div>
+    <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="glass-card text-center">
+        <p className="text-cyan-300 mb-1">🗺️ Total Missions</p>
+        <h3 className="text-3xl font-bold">24</h3>
       </div>
+      <div className="glass-card text-center">
+        <p className="text-cyan-300 mb-1">🛡️ Active Agents</p>
+        <h3 className="text-3xl font-bold">9</h3>
+      </div>
+      <div className="glass-card text-center">
+        <p className="text-cyan-300 mb-1">💳 Total Payments</p>
+        <h3 className="text-3xl font-bold">₹1,75,000</h3>
+      </div>
+      <div className="glass-card text-center">
+        <p className="text-cyan-300 mb-1">📊 Attendance Rate</p>
+        <h3 className="text-3xl font-bold">88%</h3>
+      </div>
+    </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* Missions Section */}
         <div className="glass-card">
           <h2 className="text-xl font-orbitron font-semibold text-white mb-4">
-            {isAdmin ? 'All Missions' : 'Your Missions'}
+            {isAdmin ? '🗺️ All Missions' : '🗺️ Your Missions'}
           </h2>
 <div className="space-y-3">
   {(isAdmin ? missions : userMissions).slice(0, 4).map((mission) => (
-    <div key={mission._id} className="flex items-center justify-between p-3 bg-avengers-gray/30 rounded-lg">
-      <div className="flex-1">
-        <h3 className="font-medium text-white">{mission.title}</h3>
-        <p className="text-sm text-avengers-silver">{mission.location}</p>
+    <div key={mission._id} className="flex items-center justify-between p-4 bg-avengers-gray/30 rounded-lg">
+      <div className="flex-1 p-4 bg-cyan-950/40 rounded-lg transition-transform hover:scale-105">
+        <h3 className="text-white font-semibold text-lg">{mission.title}</h3>
+        <p className="text-sm text-cyan-300">{mission.location}</p>
       </div>
-      <div className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${getStatusColor(mission.status)}`}>
-        {getStatusIcon(mission.status)}
-        <span className="capitalize">{mission.status}</span>
+      <div className="px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+        {/* {getStatusIcon(mission.status)} */}
+        {/* <span className="capitalize">{mission.status}</span> */}
       </div>
     </div>
   ))}
 </div>
 
           <div className="mt-4">
-            <a href="/missions" className="text-avengers-light-blue hover:text-avengers-blue font-medium">
+            <a href="/missions" className="text-white text-shadow-glow font-medium">
               View all missions →
             </a>
           </div>
@@ -203,25 +155,22 @@ useEffect(() => {
             {recentAnnouncements.map((announcement) => (
               <div 
                 key={announcement.id} 
-                className={`p-3 rounded-lg ${announcement.important ? 'important-announcement' : 'bg-avengers-gray/30'}`}
-              >
+                className="flex items-center justify-between p-4 bg-avengers-gray/30 rounded-lg">
+              
                 <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="font-medium text-white">{announcement.title}</h3>
-                    <p className="text-sm text-avengers-silver mt-1">{announcement.content}</p>
-                    <p className="text-xs text-avengers-silver/70 mt-2">
+                  <div className="flex-1  p-4 bg-cyan-950/40 rounded-lg transition-transform hover:scale-105">
+                    <h3 className="text-white font-semibold text-lg">{announcement.title}</h3>
+                    <p className="text-sm text-cyan-300 mt-2">{announcement.content}</p>
+                    <p className="text-xs text-cyan-300 mt-3">
                       By {announcement.author} • {announcement.date}
                     </p>
                   </div>
-                  {announcement.important && (
-                    <AlertTriangle className="w-5 h-5 text-avengers-red flex-shrink-0" />
-                  )}
                 </div>
               </div>
             ))}
           </div>
           <div className="mt-4">
-            <a href="/announcements" className="text-avengers-light-blue hover:text-avengers-blue font-medium">
+            <a href="/announcements" className="text-white text-shadow-glow font-medium">
               View all announcements →
             </a>
           </div>
@@ -239,17 +188,17 @@ useEffect(() => {
         ));
 
         return (
-          <li key={fb._id || fb.id} className="bg-avengers-gray/30 p-3 rounded-lg">
-            <p className="text-white font-medium">
+          <li key={fb._id || fb.id} className="flex-1 p-4 bg-cyan-950/40 rounded-lg transition-transform hover:scale-105">
+            <p className="text-white font-semibold text-lg">
               From: {fb.user?.name || fb.user?.codename || "Anonymous"} • {stars}
             </p>
-            <p className="text-avengers-silver text-sm">{fb.comment}</p>
+            <p className="text-sm text-cyan-300">{fb.comment}</p>
           </li>
         );
       })}
     </ul>
     <div className="mt-3">
-      <a href="/feedback" className="text-avengers-light-blue hover:text-avengers-blue font-medium">
+      <a href="/feedback" className="text-white text-shadow-glow font-medium">
         View all feedback →
       </a>
     </div>
