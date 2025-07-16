@@ -64,17 +64,17 @@ const PendingApprovals = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-orbitron font-bold text-white mb-2">
+        <h1 className="text-3xl font-orbitron font-bold text-blue-700 dark:text-white mb-2">
           Pending Approvals
         </h1>
-        <p className="text-avengers-silver">
+        <p className="text-blue-400 dark:text-avengers-silver">
           Review and approve remaining amounts for advanced money mode transactions
         </p>
       </div>
 
       <div className="glass-card">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-orbitron font-semibold text-white flex items-center gap-2">
+          <h2 className="text-xl font-orbitron font-semibold dark:text-white flex items-center gap-2">
             <Clock className="w-5 h-5" />
             Pending Advanced Transactions
           </h2>
@@ -90,35 +90,35 @@ const PendingApprovals = () => {
         {loading ? (
           <div className="text-center py-8">
             <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-avengers-silver">Loading pending transactions...</p>
+            <p className="dark:text-avengers-silver">Loading pending transactions...</p>
           </div>
         ) : pendingTransactions.length === 0 ? (
           <div className="text-center py-8">
             <CheckCircle className="w-12 h-12 text-green-400 mx-auto mb-4" />
-            <p className="text-avengers-silver text-lg">No pending transactions</p>
-            <p className="text-avengers-silver text-sm">All advanced money mode transactions have been processed.</p>
+            <p className=" dark:text-avengers-silver text-lg">No pending transactions</p>
+            <p className="dark:text-avengers-silver text-sm">All advanced money mode transactions have been processed.</p>
           </div>
         ) : (
           <div className="space-y-4">
             {pendingTransactions.map((transaction) => (
               <div
                 key={transaction._id}
-                className="bg-blue-900/20 border border-blue-700/30 rounded-lg p-4"
+                className="bg-gray-400 dark:bg-blue-900/20 border border-blue-700/30 rounded-lg p-4"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-4 mb-3">
                       <div className="flex items-center gap-2">
                         <User className="w-4 h-4 text-blue-400" />
-                        <span className="text-white font-medium">
+                        <span className="text-white font-semibold">
                           {transaction.sender?.name}
                         </span>
-                        <span className="text-avengers-silver">→</span>
-                        <span className="text-white font-medium">
+                        <span className="dark:text-avengers-silver">→</span>
+                        <span className="text-white font-semibold">
                           {transaction.receiver?.name}
                         </span>
                       </div>
-                      <span className="px-2 py-1 bg-yellow-900/30 text-yellow-400 text-xs rounded">
+                      <span className="px-2 py-1 bg-yellow-900/70 text-yellow-400 text-xs rounded">
                         Advanced Mode
                       </span>
                     </div>
@@ -126,22 +126,22 @@ const PendingApprovals = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
                       <div className="flex items-center gap-2">
                         <DollarSign className="w-4 h-4 text-green-400" />
-                        <span className="text-avengers-silver">Total Amount:</span>
-                        <span className="text-white font-medium">₹{transaction.amount}</span>
+                        <span className="dark:text-avengers-silver font-semibold">Total Amount:</span>
+                        <span className="text-white font-semibold">₹{transaction.amount}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <DollarSign className="w-4 h-4 text-blue-400" />
-                        <span className="text-avengers-silver">Advanced (Sent):</span>
-                        <span className="text-green-400 font-medium">₹{transaction.advancedAmount}</span>
+                        <span className="dark:text-avengers-silver font-semibold">Advanced (Sent):</span>
+                        <span className="text-green-400 font-semibold">₹{transaction.advancedAmount}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <DollarSign className="w-4 h-4 text-orange-400" />
-                        <span className="text-avengers-silver">Remaining (Pending):</span>
-                        <span className="text-orange-400 font-medium">₹{transaction.remainingAmount}</span>
+                        <span className="dark:text-avengers-silver font-semibold">Remaining (Pending):</span>
+                        <span className="text-orange-400 font-semibold">₹{transaction.remainingAmount}</span>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-4 text-sm text-avengers-silver">
+                    <div className="flex items-center gap-4 text-m dark:text-avengers-silver">
                       <div className="flex items-center gap-1">
                         <Mail className="w-3 h-3" />
                         <span>{transaction.sender?.email}</span>

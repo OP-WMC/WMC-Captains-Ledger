@@ -85,8 +85,12 @@
 .animate-fadeInUp {
   animation: fadeInUp 0.6s ease-out;
 }
-
-.react-calendar {
+.react-calendar{
+  border-radius: 0.75rem;
+  border: none;
+  font-family: 'Orbitron', sans-serif;
+}
+.dark .react-calendar {
   background-color: #1f2937; /* Tailwind gray-800 */
   color: white;
   border-radius: 0.75rem;

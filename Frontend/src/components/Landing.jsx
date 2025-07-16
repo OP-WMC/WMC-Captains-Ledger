@@ -10,7 +10,7 @@ const LandingPage = () => {
       hero.classList.add('animate-shake');
       setTimeout(() => {
         hero.classList.remove('animate-shake');
-      }, 3000);
+      }, 10000);
     }
   }, []);
 

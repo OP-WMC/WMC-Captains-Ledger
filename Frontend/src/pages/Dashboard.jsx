@@ -129,7 +129,7 @@ const Dashboard = () => {
 
             {/* Wallet */}
             <div className="text-right">
-              <p className="text-gray-700 dark:text-cyan-300 text-sm flex items-center justify-end gap-1  font-semibold">
+              <p className="text-gray-700 dark:text-cyan-300 text-m flex items-center justify-end gap-1  font-semibold">
                 💰 Wallet Balance:
               </p>
               <p className="text-3xl font-orbitron font-bold text-blue-700 dark:text-yellow-400 dark:text-shadow-glow">

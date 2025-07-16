@@ -101,11 +101,11 @@ const Stats = () => {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+      <div className="min-h-screen bg-blue-300 dark:bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
         <div className="max-w-4xl mx-auto text-center py-20">
           <AlertCircle className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-white mb-2">Access Restricted</h1>
-          <p className="text-gray-400">Only administrators can view detailed statistics.</p>
+          <p className="dark:text-gray-400">Only administrators can view detailed statistics.</p>
         </div>
       </div>
     );
@@ -113,11 +113,11 @@ const Stats = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+      <div className="min-h-screen dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6">
         <div className="max-w-6xl mx-auto">
           <div className="text-center py-20">
-            <Loader2 className="w-12 h-12 text-yellow-400 animate-spin mx-auto mb-4" />
-            <p className="text-gray-400">Loading statistics...</p>
+            <Loader2 className="w-12 h-12 text-blue-600 dark:text-yellow-400 animate-spin mx-auto mb-4" />
+            <p className="text-black dark:text-gray-400">Loading statistics...</p>
           </div>
         </div>
       </div>
@@ -125,28 +125,28 @@ const Stats = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+    <div className="min-h-screen bg-blue-300 dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold font-orbitron bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent mb-4">
+          <h1 className="text-5xl font-bold font-orbitron bg-blue-700  dark:bg-gradient-to-r dark:from-yellow-400 dark:via-orange-500 dark:to-red-500 bg-clip-text text-transparent mb-4">
             Analytics Dashboard
           </h1>
-          <p className="text-gray-400 text-lg">
+          <p className="text-white dark:text-gray-400 text-lg">
             Comprehensive insights into team performance and financial metrics
           </p>
         </div>
 
         {/* View Toggle */}
         <div className="flex justify-center mb-8">
-          <div className="bg-gray-800/50 p-2 rounded-2xl border border-gray-600/30 backdrop-blur-sm">
+          <div className="bg-gray-500 dark:bg-gray-800/50 p-2 rounded-2xl border border-gray-600/30 backdrop-blur-sm">
             <div className="flex space-x-2">
               <button
                 onClick={() => setView('attendance')}
                 className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center space-x-2 ${
                   view === 'attendance'
-                    ? 'bg-yellow-500 text-white shadow-lg'
-                    : 'text-gray-300 hover:text-white hover:bg-gray-700'
+                    ? 'bg-blue-500 dark:bg-yellow-500 text-white shadow-lg'
+                    : 'text-white dark:text-gray-300 hover:text-white hover:bg-blue-400 dark:hover:bg-gray-700'
                 }`}
               >
                 <Calendar className="w-5 h-5" />
@@ -156,8 +156,8 @@ const Stats = () => {
                 onClick={() => setView('payment')}
                 className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center space-x-2 ${
                   view === 'payment'
-                    ? 'bg-yellow-500 text-white shadow-lg'
-                    : 'text-gray-300 hover:text-white hover:bg-gray-700'
+                    ? 'bg-blue-500 dark:bg-yellow-500 text-white shadow-lg'
+                    : 'text-white dark:text-gray-300 hover:text-white hover:bg-blue-400 dark:hover:bg-gray-700'
                 }`}
               >
                 <DollarSign className="w-5 h-5" />
@@ -177,9 +177,9 @@ const Stats = () => {
 
         {view === 'attendance' ? (
           /* Attendance View */
-          <div className="space-y-8">
+          <div className="space-y-8 ">
             {/* Attendance Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6  glass-card ">
               <StatsCard
                 title="Total Sessions"
                 value={attendanceStats?.totalSessions || 0}
@@ -205,7 +205,7 @@ const Stats = () => {
             </div>
 
             {/* Attendance Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 glass-card">
               <ChartContainer
                 title="Individual Attendance Rates"
                 data={attendanceChartData}
@@ -223,7 +223,7 @@ const Stats = () => {
             </div>
 
             {/* Top Performers */}
-            <div className="bg-gradient-to-br from-gray-800/50 to-gray-700/50 p-6 rounded-2xl shadow-xl border border-gray-600/30 backdrop-blur-sm">
+            <div className="bg-gray-500 dark:bg-gradient-to-br from-gray-800/50 to-gray-700/50 p-6 rounded-2xl shadow-xl border border-gray-600/30 backdrop-blur-sm">
               <h2 className="text-xl font-semibold text-white mb-6 flex items-center">
                 <Award className="w-6 h-6 mr-3 text-yellow-400" />
                 Top Attendance Performers
@@ -235,7 +235,7 @@ const Stats = () => {
                       <span className="text-white font-semibold">{user.name}</span>
                       <span className="text-yellow-400 font-bold">{user.attendancePercentage}%</span>
                     </div>
-                    <div className="text-sm text-gray-400">
+                    <div className="text-sm text-white dark:text-gray-400">
                       {user.attendedSessions} of {user.totalSessions} sessions
                     </div>
                   </div>
@@ -247,7 +247,7 @@ const Stats = () => {
           /* Payment View */
           <div className="space-y-8">
             {/* Payment Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 glass-card">
               <StatsCard
                 title="Total Transactions"
                 value={paymentStats?.totalTransactions || 0}
@@ -272,7 +272,7 @@ const Stats = () => {
             </div>
 
             {/* Payment Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 glass-card">
               <ChartContainer
                 title="Individual Payment Activity"
                 data={paymentChartData}
@@ -290,7 +290,7 @@ const Stats = () => {
             </div>
 
             {/* Payment Summary */}
-            <div className="bg-gradient-to-br from-gray-800/50 to-gray-700/50 p-6 rounded-2xl shadow-xl border border-gray-600/30 backdrop-blur-sm">
+            <div className="bg-gray-500 dark:bg-gradient-to-br from-gray-800/50 to-gray-700/50 p-6 rounded-2xl shadow-xl border border-gray-600/30 backdrop-blur-sm">
               <h2 className="text-xl font-semibold text-white mb-6 flex items-center">
                 <BarChart3 className="w-6 h-6 mr-3 text-yellow-400" />
                 Payment Summary by User
@@ -301,15 +301,15 @@ const Stats = () => {
                     <div className="text-white font-semibold mb-2">{user.name}</div>
                     <div className="space-y-1 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Sent:</span>
+                        <span className="text-white dark:text-gray-400">Sent:</span>
                         <span className="text-red-400">₹{user.totalSent.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-400">Received:</span>
+                        <span className="text-white dark:text-gray-400">Received:</span>
                         <span className="text-green-400">₹{user.totalReceived.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between border-t border-gray-600 pt-1">
-                        <span className="text-gray-300 font-semibold">Net:</span>
+                        <span className="text-white dark:text-gray-300 font-semibold">Net:</span>
                         <span className={`font-semibold ${user.netAmount >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                           ₹{user.netAmount.toLocaleString()}
                         </span>

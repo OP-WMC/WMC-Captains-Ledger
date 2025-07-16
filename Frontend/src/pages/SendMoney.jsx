@@ -348,7 +348,7 @@ const SendMoney = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, amount: e.target.value })
                 }
-                className="input-field  w-full  bg-blue-300 text-black placeholder-gray-700"
+                className="input-field  w-full   text-black placeholder-white"
                 placeholder="Enter total amount (max ₹10,000)"
                 min="1"
                 max="10000"

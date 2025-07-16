@@ -83,8 +83,8 @@ const Feedback = () => {
   };
 
   return (
-    <div className="p-8 bg-gray-900 min-h-screen text-white">
-      <h1 className="text-4xl font-bold mb-8 font-orbitron text-center">Feedback</h1>
+    <div className="p-8 bg-blue-300 dark:bg-gray-900 min-h-screen text-white">
+      <h1 className="text-4xl font-bold mb-8 font-orbitron text-center text-blue-700 dark:text-white">Feedback</h1>
 
       {/* Search and Filter Section */}
       <div className="mb-8 space-y-4">
@@ -96,7 +96,7 @@ const Feedback = () => {
               placeholder="Search feedback by comment, name, or codename..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors"
+              className="w-full px-4 py-3 bg-gray-400 hover:bg-blue-500 dark:bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-white font-semibold dark:placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors"
             />
           </div>
 
@@ -105,7 +105,7 @@ const Feedback = () => {
             <select
               value={ratingFilter}
               onChange={(e) => setRatingFilter(e.target.value)}
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500 transition-colors"
+              className="w-full px-4 py-3 bg-gray-400 hover:bg-blue-500 dark:bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500 transition-colors"
             >
               <option value="all">All Ratings</option>
               <option value="5">⭐⭐⭐⭐⭐ 5 Stars</option>
@@ -118,7 +118,7 @@ const Feedback = () => {
         </div>
 
         {/* Results Count */}
-        <div className="text-sm text-gray-400">
+        <div className="text-sm text-white dark:text-gray-400">
           Showing {filteredFeedbacks.length} of {feedbacks.length} feedbacks
         </div>
       </div>
@@ -128,7 +128,7 @@ const Feedback = () => {
         {loading && (
           <div className="col-span-full text-center py-8">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-            <p className="mt-4 text-gray-400">Loading feedbacks...</p>
+            <p className="mt-4 text-white dark:text-gray-400">Loading feedbacks...</p>
           </div>
         )}
         
@@ -140,7 +140,7 @@ const Feedback = () => {
         
         {!loading && paginatedFeedbacks.length === 0 && (
           <div className="col-span-full text-center py-8">
-            <p className="text-gray-500 text-lg">
+            <p className="text-white dark:text-gray-500 text-lg">
               {searchTerm || ratingFilter !== "all" 
                 ? "No feedback matches your search criteria." 
                 : "No feedback found."}
@@ -168,18 +168,18 @@ const Feedback = () => {
           <button
             onClick={handlePrevPage}
             disabled={currentPage === 1}
-            className={`px-4 py-2 rounded-full bg-gray-800 border border-gray-700 text-white text-lg font-bold transition-colors duration-200 hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed`}
+            className={`px-4 py-2 rounded-full bg-gray-500 hover:bg-blue-500  dark:bg-gray-800 border border-gray-700 text-white text-lg font-bold transition-colors duration-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed`}
             aria-label="Previous page"
           >
             &#8592;
           </button>
-          <span className="text-gray-300 text-lg">
+          <span className="text-white dark:text-gray-300 text-lg">
             Page {currentPage} of {totalPages}
           </span>
           <button
             onClick={handleNextPage}
             disabled={currentPage === totalPages}
-            className={`px-4 py-2 rounded-full bg-gray-800 border border-gray-700 text-white text-lg font-bold transition-colors duration-200 hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed`}
+            className={`px-4 py-2 rounded-full bg-gray-500 hover:bg-blue-500 dark:bg-gray-800 border border-gray-700 text-white text-lg font-bold transition-colors duration-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed`}
             aria-label="Next page"
           >
             &#8594;

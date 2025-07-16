@@ -18,7 +18,7 @@ const AnnouncementCard = ({ title, body, important, author, date }) => {
     <div className={`group relative overflow-hidden rounded-2xl shadow-xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl ${
       important 
         ? 'bg-gradient-to-br from-red-900/20 to-red-800/30 border border-red-500/30' 
-        : 'bg-gradient-to-br from-gray-800/50 to-gray-700/50 border border-gray-600/30'
+        : 'bg-gray-400 dark:bg-gradient-to-br from-gray-800/50 to-gray-700/50 border border-gray-600/30'
     } backdrop-blur-sm`}>
       
       {/* Important Badge */}
@@ -51,13 +51,13 @@ const AnnouncementCard = ({ title, body, important, author, date }) => {
 
         {/* Body */}
         <div className="mb-6">
-          <p className="text-gray-300 leading-relaxed text-base">
+          <p className="text-white dark:text-gray-300 leading-relaxed text-base">
             {body}
           </p>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between text-sm text-gray-400 border-t border-gray-600/30 pt-4">
+        <div className="flex items-center justify-between text-sm text-white dark:text-gray-400 border-t border-gray-600/30 pt-4">
           <div className="flex items-center">
             <User className="w-4 h-4 mr-2" />
             <span>{author || 'Unknown'}</span>

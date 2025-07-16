@@ -38,9 +38,9 @@ const FeedbackForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-blue-300 dark:bg-black text-blue-700 dark:text-white font-bold">
       <h2 className="text-2xl mb-4 font-orbitron">📝 Transaction Feedback</h2>
-      <p className="text-sm text-avengers-silver mb-4">
+      <p className="text-sm text-white dark:text-avengers-silver mb-4">
         Both sender and receiver can submit feedback for this transaction.
       </p>
       <form onSubmit={handleSubmit} className="space-y-4 w-80">
@@ -54,7 +54,7 @@ const FeedbackForm = () => {
         </div>
         <button type="submit" className="avengers-button w-full">Submit Feedback</button>
       </form>
-      {message && <p className="mt-4 text-sm text-avengers-silver">{message}</p>}
+      {message && <p className="mt-4 text-sm text-white dark:text-avengers-silver">{message}</p>}
     </div>
   );
 };
