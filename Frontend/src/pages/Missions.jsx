@@ -217,8 +217,8 @@ const fetchUsers = async () => {
     <div className="space-y-6 px-4 md:px-10 pt-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-orbitron font-bold text-white mb-2">🛰️ Mission Control</h1>
-          <p className="text-avengers-silver">
+          <h1 className="text-3xl font-orbitron font-bold text-blue-700 dark:text-white mb-2">🛰️ Mission Control</h1>
+          <p className="text-slate-600 dark:text-cyan-100">
             {isAdmin ? 'Manage and assign missions' : 'Your assigned missions'}
           </p>
         </div>
@@ -232,15 +232,15 @@ const fetchUsers = async () => {
       {/* Filter */}
       <div className="glass-card">
         <div className="flex items-center flex-wrap gap-3">
-          <span className="text-avengers-silver">Filter:</span>
+          <span className="text-slate-600 dark:text-cyan-100">Filter:</span>
           {['all', 'ongoing', 'completed', 'failed', 'martyred'].map(status => (
             <button
               key={status}
               onClick={() => setFilter(status)}
               className={`px-4 py-2 rounded-lg transition ${
                 filter === status
-                  ? 'bg-avengers-blue text-white'
-                  : 'bg-avengers-gray/50 text-avengers-silver hover:bg-avengers-gray'
+                  ? 'bg-blue-400 text-white'
+                  : 'bg-avengers-gray/50 text-white hover:bg-blue-400'
               }`}
             >
               {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -255,8 +255,8 @@ const fetchUsers = async () => {
           <div key={mission._id} className="glass-card p-4">
             <div className="flex justify-between items-start">
               <div>
-                <h3 className="text-xl text-white font-orbitron mb-1">🕵️‍♂️ {mission.title}</h3>
-                <p className="text-avengers-silver">{mission.description}</p>
+                <h3 className="text-xl text-blue-700 dark:text-white font-semibold font-orbitron mb-1">🕵️‍♂️ {mission.title}</h3>
+                <p className="text-gray-700 dark:text-avengers-silver">{mission.description}</p>
               </div>
               {isAdmin && (
                 <div className="space-x-2">
@@ -267,7 +267,7 @@ const fetchUsers = async () => {
                       setShowEditModal(true);
                     }}
                   >
-                    <Edit className="w-5 h-5 text-blue-400" />
+                    <Edit className="w-5 h-5 text-blue-400 " />
                   </button>
                   <button onClick={() => handleDelete(mission._id)}>
                     <Trash2 className="w-5 h-5 text-red-400" />
@@ -275,7 +275,7 @@ const fetchUsers = async () => {
                 </div>
               )}
             </div>
-            <div className="text-sm mt-3 space-y-1 text-avengers-silver">
+            <div className="text-sm mt-3 space-y-1 text-gray-700 dark:text-avengers-silver">
               <div>📍 {mission.location}</div>
               <div>📆 {mission.startDate} - {mission.endDate || 'Ongoing'}</div>
               <div>⚠️ Priority: {mission.priority}</div>
@@ -290,7 +290,7 @@ const fetchUsers = async () => {
 
       {/* Empty State */}
       {filteredMissions.length === 0 && (
-        <div className="text-center text-avengers-silver mt-10">
+        <div className="text-center text-gray-700 dark:text-avengers-silver mt-10">
           🚫 No missions found for your selection.
         </div>
       )}
@@ -298,32 +298,35 @@ const fetchUsers = async () => {
       {/* Create/Edit Modal */}
       {(showCreateModal || showEditModal) && isAdmin && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-          <div className="bg-gray-900 p-8 rounded-2xl shadow-2xl w-full max-w-lg relative">
-            <button onClick={() => { setShowCreateModal(false); setShowEditModal(false); }} className="absolute top-4 right-4 text-gray-400 hover:text-white">&times;</button>
-            <h2 className="text-2xl font-bold text-white mb-6 text-center">{showEditModal ? 'Edit Mission' : 'Create Mission'}</h2>
+          <div className="bg-blue-100 dark:bg-gray-900 p-8 rounded-2xl shadow-2xl w-full max-w-lg relative">
+            <button onClick={() => { setShowCreateModal(false); setShowEditModal(false); }} className="absolute top-4 right-4 text-[#f8fafc] hover:text-blue-700 dark:hover:text-white font-bold"
+              style={{ fontSize: "40px" }}
+              >&times;</button>
+            <h2 className="text-2xl font-bold text-blue-700 dark:text-white mb-6 text-center">{showEditModal ? 'Edit Mission' : 'Create Mission'}</h2>
             <div className="space-y-4">
               {/* Mission Details Section */}
-              <div className="bg-gray-800 rounded-xl p-4 mb-2 shadow-inner">
-                <h3 className="text-lg font-bold text-avengers-blue mb-3 flex items-center gap-2">📝 Mission Details</h3>
+              <div className="bg-[#f8fafc] dark:bg-gray-800 rounded-xl p-4 mb-2 shadow-inner">
+                <h3 className="text-lg font-bold text-blue-700 dark:text-avengers-blue mb-3 flex items-center gap-2">📝 Mission Details</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <input
-                    className="input bg-avengers-gray text-white w-full"
+                    className="input bg-blue-100  dark:bg-avengers-gray text-gray-700 font-semibold dark:text-white w-full"
                     placeholder="🕵️‍♂️ Title"
                     value={formData.title}
                     onChange={e => setFormData({ ...formData, title: e.target.value })}
                   />
                   <input
-                    className="input bg-avengers-gray text-white w-full"
+                    className="input bg-blue-100  dark:bg-avengers-gray dark:text-white w-full text-gray-700 font-semibold "
                     placeholder="📍 Location"
                     value={formData.location}
                     onChange={e => setFormData({ ...formData, location: e.target.value })}
                   />
                   <input
+                  
                     type="datetime-local"
                     value={formData.startDate}
                     min={nowISOString}
                     onChange={e => setFormData({ ...formData, startDate: e.target.value })}
-                    className="input bg-avengers-gray text-white w-full"
+                    className="input bg-blue-100  dark:bg-avengers-gray dark:text-white w-full text-gray-700 font-semibold "
                     required
                   />
                   <input
@@ -331,11 +334,11 @@ const fetchUsers = async () => {
                     value={formData.endDate}
                     min={formData.startDate || nowISOString}
                     onChange={e => setFormData({ ...formData, endDate: e.target.value })}
-                    className="input bg-avengers-gray text-white w-full"
+                    className="input bg-blue-100  dark:bg-avengers-gray dark:text-white w-full text-gray-700 font-semibold "
                     required
                   />
                   <select
-                    className="input bg-avengers-gray text-white w-full"
+                    className="input bg-blue-100  dark:bg-avengers-gray dark:text-white w-full text-gray-700 font-semibold "
                     value={formData.status}
                     onChange={e => setFormData({ ...formData, status: e.target.value })}
                   >
@@ -345,7 +348,7 @@ const fetchUsers = async () => {
                     <option>martyred</option>
                   </select>
                   <select
-                    className="input bg-avengers-gray text-white w-full"
+                    className="input bg-blue-100  dark:bg-avengers-gray dark:text-white w-full text-gray-700 font-semibold "
                     value={formData.priority}
                     onChange={e => setFormData({ ...formData, priority: e.target.value })}
                   >
@@ -356,7 +359,7 @@ const fetchUsers = async () => {
                   </select>
                 </div>
                 <textarea
-                  className="input bg-avengers-gray text-white w-full mt-4"
+                  className="input bg-blue-100  dark:bg-avengers-gray dark:text-white w-full mt-4 text-gray-700 font-semibold "
                   placeholder="📝 Description"
                   value={formData.description}
                   onChange={e => setFormData({ ...formData, description: e.target.value })}
@@ -364,13 +367,13 @@ const fetchUsers = async () => {
               </div>
 
               {/* Assign Members Section */}
-              <div className="bg-gray-800 rounded-xl p-4 mb-2 shadow-inner">
-                <h3 className="text-lg font-bold text-green-400 mb-3 flex items-center gap-2">👥 Assign Members</h3>
+              <div className="bg-[#f8fafc] dark:bg-gray-800 rounded-xl p-4 mb-2 shadow-inner">
+                <h3 className="text-lg font-bold text-blue-700 dark:text-green-400 mb-3 flex items-center gap-2">👥 Assign Members</h3>
                 <div className="relative mb-2" ref={dropdownRef}>
                   <button
                     type="button"
                     onClick={() => setShowMemberDropdown(!showMemberDropdown)}
-                    className="input bg-avengers-gray text-white w-full flex items-center justify-between"
+                    className="input bg-blue-100 dark:bg-avengers-gray text-gray-700 font-semibold dark:text-white w-full flex items-center justify-between"
                   >
                     <span>
                       {formData.assignedMembers.length === 0
@@ -385,14 +388,14 @@ const fetchUsers = async () => {
                     )}
                   </button>
                   {showMemberDropdown && (
-                    <div className="absolute z-10 w-full mt-1 bg-avengers-gray border border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                    <div className="absolute z-10 w-full mt-1 bg-blue-100 dark:bg-avengers-gray border border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
                       <div className="p-2 border-b border-gray-600">
-                        <label className="flex items-center space-x-2 text-white hover:bg-avengers-blue/20 p-2 rounded cursor-pointer">
+                        <label className="flex items-center space-x-2 text-gray-700 dark:text-white hover:bg-avengers-blue/20 p-2 rounded cursor-pointer">
                           <input
                             type="checkbox"
                             checked={formData.assignedMembers.length === users.length && users.length > 0}
                             onChange={handleSelectAll}
-                            className="w-4 h-4 text-avengers-blue bg-gray-700 border-gray-600 rounded focus:ring-avengers-blue focus:ring-2"
+                            className="w-4 h-4 text-avengers-blue bg-blue-100 dark:bg-gray-700 border-gray-600 rounded focus:ring-avengers-blue focus:ring-2"
                           />
                           <span className="font-medium">Select All</span>
                         </label>
@@ -401,15 +404,16 @@ const fetchUsers = async () => {
                         const memberObj = formData.assignedMembers.find(m => m.name === user.name);
                         return (
                           <div key={user._id} className="p-2 flex items-center gap-2">
-                            <label className="flex items-center space-x-2 text-white hover:bg-avengers-blue/20 p-2 rounded cursor-pointer flex-1">
+                            <label className="flex items-center space-x-2
+                            text-gray-700 font-semibold dark:text-white hover:bg-avengers-blue/20 p-2 rounded cursor-pointer flex-1">
                               <input
                                 type="checkbox"
                                 checked={!!memberObj}
                                 onChange={() => handleMemberToggle(user.name)}
-                                className="w-4 h-4 text-avengers-blue bg-gray-700 border-gray-600 rounded focus:ring-avengers-blue focus:ring-2"
+                                className="w-4 h-4 text-gray-700 font-semibold dark:text-avengers-blue bg-blue-100  dark:bg-gray-700 border-gray-600 rounded focus:ring-avengers-blue focus:ring-2"
                               />
                               <span>{user.name}</span>
-                              <span className="text-avengers-silver text-sm">({user.email})</span>
+                              <span className="text-gray-700 dark:text-avengers-silver text-sm">({user.email})</span>
                             </label>
                           </div>
                         );
@@ -421,19 +425,20 @@ const fetchUsers = async () => {
 
               {/* Assign Salary Section */}
               {formData.assignedMembers.length > 0 && (
-                <div className="bg-yellow-50 rounded-xl p-4 mb-2 shadow-inner border border-yellow-300">
-                  <h3 className="text-lg font-bold text-yellow-600 mb-3 flex items-center gap-2">💸 Assign Salary</h3>
+                <div className="bg-[#f8fafc] dark:bg-yellow-50 rounded-xl p-4 mb-2 shadow-inner border dark:border-yellow-300">
+                  <h3 className="text-lg font-bold text-blue-700 dark:text-yellow-600 mb-3 flex items-center gap-2">💸 Assign Salary</h3>
                   <div className="space-y-2">
                     {formData.assignedMembers.map((member) => {
                       const user = users.find(u => u.name === member.name);
                       return (
-                        <div key={member.name} className="flex items-center gap-4 bg-yellow-100 rounded p-2">
-                          <div className="w-10 h-10 rounded-full bg-yellow-300 flex items-center justify-center text-yellow-900 font-bold text-lg">
+                        <div key={member.name} className="flex items-center gap-4 bg-blue-100 dark:bg-yellow-100 rounded p-2">
+                          <div className="w-10 h-10 rounded-full bg-blue-600 dark:bg-yellow-300 flex items-center justify-center
+                          text-white dark:text-yellow-900 font-bold text-lg">
                             {member.name.charAt(0).toUpperCase()}
                           </div>
                           <div className="flex-1">
-                            <div className="font-semibold text-yellow-800">{member.name}</div>
-                            <div className="text-xs text-yellow-700">{user?.email}</div>
+                            <div className="font-semibold text-gray-700  dark:text-yellow-800">{member.name}</div>
+                            <div className="text-xs text-gray-700  dark:text-yellow-700">{user?.email}</div>
                           </div>
                           <input
                             type="number"
@@ -441,17 +446,18 @@ const fetchUsers = async () => {
                             placeholder="Salary"
                             value={member.salary}
                             onChange={e => handleSalaryChange(member.name, e.target.value)}
-                            className="input bg-yellow-200 text-yellow-900 w-28 border border-yellow-400"
+                            className="input dark:bg-yellow-200
+                            text-gray-700 dark:text-yellow-900 w-28 border border-blue-600 dark:border-yellow-400"
                           />
-                          <span className="text-xs text-yellow-700 ml-2">₹</span>
+                          <span className="text-xs text-gray-700 dark:text-yellow-700 ml-2">₹</span>
                         </div>
                       );
                     })}
                   </div>
-                  <div className="mt-3 text-right text-yellow-800 font-semibold">
+                  <div className="mt-3 text-right text-blue-600 dark:text-yellow-800 font-semibold">
                     Total Salary: ₹{formData.assignedMembers.reduce((sum, m) => sum + (m.salary || 0), 0)}
                   </div>
-                  <div className="text-xs text-yellow-700 mt-1">Please ensure all salaries are filled before submitting.</div>
+                  <div className="text-xs text-gray-700 dark:text-yellow-700 mt-1">Please ensure all salaries are filled before submitting.</div>
                 </div>
               )}
             </div>
@@ -479,17 +485,17 @@ const fetchUsers = async () => {
         <Modal
           isOpen={showFinalizeModal}
           onRequestClose={() => setShowFinalizeModal(false)}
-          className="bg-gray-900 p-8 rounded-2xl shadow-2xl w-full max-w-lg mx-auto mt-24 relative"
+          className="bg-[#f8fafc] dark:bg-gray-900 p-8 rounded-2xl shadow-2xl w-full max-w-lg mx-auto mt-24 relative"
           overlayClassName="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center"
           ariaHideApp={false}
         >
-          <h2 className="text-2xl font-bold text-white mb-6 text-center">Finalize Mission: {finalizeMission.title}</h2>
+          <h2 className="text-2xl font-bold text-blue-700 dark:text-white mb-6 text-center">Finalize Mission: {finalizeMission.title}</h2>
           <div className="mb-4">
-            <label className="block text-sm font-semibold mb-2 text-gray-300">Mission Outcome</label>
+            <label className="block text-sm font-semibold mb-2 dark:text-gray-300">Mission Outcome</label>
             <select
               value={finalizeStatus}
               onChange={e => setFinalizeStatus(e.target.value)}
-              className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200"
+              className="w-full p-3 rounded-lg bg-blue-500 dark:bg-gray-700 text-white border border-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200"
             >
               <option value="completed">Completed</option>
               <option value="failed">Failed</option>

@@ -252,17 +252,17 @@ const SendMoney = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-orbitron font-bold text-white mb-2">
+        <h1 className="text-3xl font-orbitron text-blue-700 font-bold dark:text-white mb-2">
           Send Money
         </h1>
-        <p className="text-avengers-silver">
+        <p className="text-gray-700 dark:text-avengers-silver">
           Transfer funds to multiple Avengers at once (Max: ₹10,000 per transaction)
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="glass-card">
-          <h2 className="text-xl font-orbitron font-semibold text-white mb-4 flex items-center gap-2">
+          <h2 className="text-xl font-orbitron font-semibold text-blue-700 dark:text-white mb-4 flex items-center gap-2">
             <Users className="w-5 h-5" />
             Transfer Funds
           </h2>
@@ -270,7 +270,7 @@ const SendMoney = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Recipient Selection */}
             <div>
-              <label className="block text-sm font-medium text-avengers-silver mb-2">
+              <label className="block text-sm text-gray-700 font-medium dark:text-avengers-silver mb-2">
                 Select Recipients
               </label>
               
@@ -279,7 +279,8 @@ const SendMoney = () => {
                 <select
                   value={selectedRecipient}
                   onChange={(e) => setSelectedRecipient(e.target.value)}
-                  className="input-field flex-1 rounded-md px-3 py-2 text-white bg-blue-700 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="input-field flex-1 text-gray-700 font-semibold rounded-md px-3 py-2 dark:text-white
+                  bg-blue-300 dark:bg-blue-700 hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 >
                   <option value="">Choose an Avenger...</option>
                   {users
@@ -311,14 +312,14 @@ const SendMoney = () => {
                     {formData.recipients.map((recipientName) => {
                       const recipientUser = users.find(u => u.name === recipientName);
                       return (
-                        <div key={recipientName} className="flex items-center justify-between p-3 bg-blue-900/20 rounded-lg border border-blue-700/30">
+                        <div key={recipientName} className="flex items-center justify-between p-3 bg-blue-300 dark:bg-blue-900/20 rounded-lg border border-blue-700/30">
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
                               {recipientName.charAt(0).toUpperCase()}
                             </div>
                             <div>
-                              <p className="text-white font-medium">{recipientName}</p>
-                              <p className="text-xs text-avengers-silver">{recipientUser?.email}</p>
+                              <p className="dark:text-white  font-semibold">{recipientName}</p>
+                              <p className="text-xs dark:text-avengers-silver">{recipientUser?.email}</p>
                             </div>
                           </div>
                           <button
@@ -338,7 +339,7 @@ const SendMoney = () => {
 
             {/* Total Amount */}
             <div>
-              <label className="block text-sm font-medium text-avengers-silver mb-2">
+              <label className="block text-sm text-black font-medium dark:text-avengers-silver mb-2">
                 Total Amount (₹)
               </label>
               <input
@@ -347,7 +348,7 @@ const SendMoney = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, amount: e.target.value })
                 }
-                className="input-field w-full"
+                className="input-field  w-full  bg-blue-300 text-black placeholder-gray-700"
                 placeholder="Enter total amount (max ₹10,000)"
                 min="1"
                 max="10000"
@@ -357,7 +358,7 @@ const SendMoney = () => {
 
             {/* Split Options */}
             <div>
-              <label className="block text-sm font-medium text-avengers-silver mb-2 flex items-center gap-2">
+              <label className="block text-sm font-medium dark:text-avengers-silver mb-2 flex items-center gap-2">
                 <Split className="w-4 h-4" />
                 Split Options
               </label>
@@ -369,12 +370,12 @@ const SendMoney = () => {
                   className={`p-3 rounded-lg border transition-all ${
                     formData.splitType === "equal"
                       ? "bg-blue-600 border-blue-500 text-white"
-                      : "bg-gray-700/50 border-gray-600 text-avengers-silver hover:bg-gray-600/50"
+                      : "bg-gray-600/50 border-gray-200 text-avengers-silver hover:bg-gray-400/50"
                   }`}
                 >
                   <div className="text-center">
-                    <div className="font-semibold mb-1">Split Equally</div>
-                    <div className="text-xs opacity-80">
+                    <div className="font-semibold text-white mb-1">Split Equally</div>
+                    <div className="text-xs text-white opacity-80">
                       {formData.amount && formData.recipients.length > 0 
                         ? `₹${getEqualSplitAmount()} each`
                         : "Equal distribution"
@@ -388,13 +389,13 @@ const SendMoney = () => {
                   onClick={() => handleSplitTypeChange("manual")}
                   className={`p-3 rounded-lg border transition-all ${
                     formData.splitType === "manual"
-                      ? "bg-green-600 border-green-500 text-white"
-                      : "bg-gray-700/50 border-gray-600 text-avengers-silver hover:bg-gray-600/50"
+                      ? "bg-blue-600 border-blue-500 text-white"
+                      : "bg-gray-700/50 border-gray-200 text-avengers-silver hover:bg-gray-600/50"
                   }`}
                 >
                   <div className="text-center">
-                    <div className="font-semibold mb-1">Split Manually</div>
-                    <div className="text-xs opacity-80">
+                    <div className="font-semibold text-white mb-1">Split Manually</div>
+                    <div className="text-xs text-white opacity-80">
                       {formData.splitType === "manual" && formData.amount
                         ? `₹${getTotalManualAmount()}/${formData.amount}`
                         : "Custom amounts"
@@ -407,8 +408,8 @@ const SendMoney = () => {
 
             {/* Manual Amount Inputs */}
             {formData.splitType === "manual" && formData.recipients.length > 0 && (
-              <div className="space-y-3 p-4 bg-green-900/20 rounded-lg border border-green-700/30">
-                <p className="text-sm text-green-300 font-medium">
+              <div className="space-y-3 p-4 bg-blue-300 dark:bg-green-900/20 rounded-lg border dark:border-green-700/30">
+                <p className="text-sm dark:text-green-300 font-medium">
                   💡 Manual Split: Enter individual amounts for each recipient
                 </p>
                 
@@ -420,7 +421,7 @@ const SendMoney = () => {
                     return (
                       <div key={recipientUser._id} className="flex items-center gap-3">
                         <div className="flex-1">
-                          <label className="block text-xs text-avengers-silver mb-1">
+                          <label className="block text-xs dark:text-avengers-silver mb-1">
                             {recipientName}
                           </label>
                           <input
@@ -452,7 +453,7 @@ const SendMoney = () => {
             )}
 
             {/* Advanced Money Mode Toggle */}
-            <div className="flex items-center space-x-3 p-3 bg-blue-900/20 rounded-lg border border-blue-700/30">
+            <div className="flex items-center bg-blue-300 space-x-3 p-3 dark:bg-blue-900/20 rounded-lg border border-blue-700/30">
               <input
                 type="checkbox"
                 id="advancedMode"
@@ -460,21 +461,21 @@ const SendMoney = () => {
                 onChange={handleAdvancedModeToggle}
                 className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
               />
-              <label htmlFor="advancedMode" className="flex items-center gap-2 text-sm font-medium text-avengers-silver cursor-pointer">
+              <label htmlFor="advancedMode" className="flex items-center gap-2 text-sm font-semibold dark:text-avengers-silver cursor-pointer">
                 <Zap className="w-4 h-4 text-yellow-400" />
                 Advanced Money Mode
               </label>
             </div>
 
             {formData.isAdvancedMode && (
-              <div className="space-y-4 p-4 bg-yellow-900/20 rounded-lg border border-yellow-700/30">
-                <p className="text-sm text-yellow-300 font-medium">
+              <div className="space-y-4 p-4 bg-blue-300 dark:bg-yellow-900/20 rounded-lg border dark:border-yellow-700/30">
+                <p className="text-sm dark:text-yellow-300 font-medium">
                   💡 Advanced Mode: Send money in two parts - immediate and after approval
                 </p>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-avengers-silver mb-2">
+                    <label className="block text-sm font-medium dark:text-avengers-silver mb-2">
                       Advanced Amount (₹) - Immediate
                     </label>
                     <input
@@ -488,14 +489,14 @@ const SendMoney = () => {
                       required={formData.isAdvancedMode}
                     />
                     {formData.advancedAmount && formData.recipients.length > 0 && (
-                      <p className="text-xs text-green-400 mt-1">
+                      <p className="text-xs dark:text-green-400 mt-1">
                         Each gets: ₹{Math.round(parseInt(formData.advancedAmount) / formData.recipients.length)} immediately
                       </p>
                     )}
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-avengers-silver mb-2">
+                    <label className="block text-sm font-medium dark:text-avengers-silver mb-2">
                       Remaining Amount (₹) - After Approval
                     </label>
                     <input
@@ -509,7 +510,7 @@ const SendMoney = () => {
                       required={formData.isAdvancedMode}
                     />
                     {formData.remainingAmount && formData.recipients.length > 0 && (
-                      <p className="text-xs text-orange-400 mt-1">
+                      <p className="text-xs dark:text-orange-400 mt-1">
                         Each gets: ₹{Math.round(parseInt(formData.remainingAmount) / formData.recipients.length)} after approval
                       </p>
                     )}
@@ -517,7 +518,7 @@ const SendMoney = () => {
                 </div>
                 
                 {formData.amount && formData.advancedAmount && formData.remainingAmount && (
-                  <div className="text-center p-2 bg-blue-900/30 rounded">
+                  <div className="text-center p-2 dark:bg-blue-900/30 rounded">
                     <p className="text-sm text-blue-300">
                       Total: ₹{parseInt(formData.advancedAmount) + parseInt(formData.remainingAmount)} 
                       {parseInt(formData.advancedAmount) + parseInt(formData.remainingAmount) === parseInt(formData.amount) 
@@ -529,7 +530,7 @@ const SendMoney = () => {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-avengers-silver mb-2 flex items-center gap-2">
+              <label className="block text-sm font-medium dark:text-avengers-silver mb-2 flex items-center gap-2">
                 <MessageSquare className="w-4 h-4" />
                 Feedback Message (Optional)
               </label>
@@ -538,11 +539,11 @@ const SendMoney = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, feedback: e.target.value })
                 }
-                className="input-field w-full min-h-[80px] resize-none"
+                className="input-field w-full min-h-[80px] resize-none text-black placeholder-white"
                 placeholder="Add a message to include in the email notification..."
                 maxLength="500"
               />
-              <p className="text-xs text-avengers-silver mt-1">
+              <p className="text-xs dark:text-avengers-silver mt-1">
                 {formData.feedback.length}/500 characters
               </p>
             </div>
@@ -567,12 +568,12 @@ const SendMoney = () => {
         </div>
 
         <div className="glass-card">
-          <h2 className="text-xl font-orbitron font-semibold text-white mb-4">
+          <h2 className="text-xl font-orbitron text-blue-700 font-semibold dark:text-white mb-4">
             Transaction History
           </h2>
 
-          <table className="w-full text-sm text-left text-avengers-silver">
-            <thead className="border-b border-gray-600 text-white">
+          <table className="w-full text-sm text-gray-700 text-left dark:text-avengers-silver">
+            <thead className="border-b text-gray-700 border-gray-600 dark:text-white">
               <tr>
                 <th className="py-2">From</th>
                 <th className="py-2">To</th>
@@ -603,7 +604,7 @@ const SendMoney = () => {
                     </td>
                     <td className="py-2">
                       <span className={`px-2 py-1 rounded text-xs ${
-                        txn.status === 'completed' ? 'bg-green-900/30 text-green-400' :
+                        txn.status === 'completed' ? 'bg-blue-200 dark:bg-green-900/30 text-green-400 font-semibold' :
                         txn.status === 'partially_completed' ? 'bg-yellow-900/30 text-yellow-400' :
                         'bg-gray-900/30 text-gray-400'
                       }`}>
@@ -620,7 +621,7 @@ const SendMoney = () => {
           {/* Pagination Controls */}
           {transactions.length > transactionsPerPage && (
             <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-600">
-              <div className="text-sm text-avengers-silver">
+              <div className="text-sm text-gray-700 dark:text-avengers-silver">
                 Showing {indexOfFirstTransaction + 1} to {Math.min(indexOfLastTransaction, transactions.length)} of {transactions.length} transactions
               </div>
               <div className="flex items-center space-x-2">
@@ -630,12 +631,12 @@ const SendMoney = () => {
                   className={`p-2 rounded-lg transition-colors ${
                     currentPage === 1
                       ? "text-gray-500 cursor-not-allowed"
-                      : "text-avengers-silver hover:text-white hover:bg-avengers-blue/20"
+                      : "text-gray-700 dark:text-avengers-silver hover:text-white hover:bg-avengers-blue/20"
                   }`}
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
-                <span className="text-sm text-avengers-silver px-3">
+                <span className="text-sm text-gray-700 dark:text-avengers-silver px-3">
                   Page {currentPage} of {totalPages}
                 </span>
                 <button
@@ -643,8 +644,8 @@ const SendMoney = () => {
                   disabled={currentPage === totalPages}
                   className={`p-2 rounded-lg transition-colors ${
                     currentPage === totalPages
-                      ? "text-gray-500 cursor-not-allowed"
-                      : "text-avengers-silver hover:text-white hover:bg-avengers-blue/20"
+                      ? "text-gray-700 cursor-not-allowed"
+                      : "text-gray-700 dark:text-avengers-silver hover:text-white hover:bg-avengers-blue/20"
                   }`}
                 >
                   <ChevronRight className="w-5 h-5" />

@@ -2,6 +2,7 @@
 import textshadow from 'tailwindcss-textshadow';
 
 export default {
+  darkMode: 'class',
   content: [
     './index.html',
     './src/**/*.{js,ts,jsx,tsx}',

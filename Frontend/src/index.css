@@ -6,13 +6,20 @@
 @tailwind utilities;
 
 @layer base {
-  body {
+  .dark body {
     font-family: 'Rajdhani', sans-serif;
     background-color: #0f172a;
     color: white;
     margin: 0;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
+   body{
+      
+      font-family: 'Rajdhani', sans-serif;
+      background-color: #f8fafc#f8fafc;
+  
+  }
+   
 }
 
 @layer components {
@@ -29,12 +36,12 @@
   }
   
 
-  
-  .avengers-button-secondary {
-    @apply bg-gradient-to-r from-avengers-gray to-gray-600 text-avengers-silver font-orbitron font-semibold px-6 py-3 rounded-lg hover:from-gray-600 hover:to-avengers-gray transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-gray-500/50;
+.sidebar-item{
+    @apply flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600  transition-all duration-200 rounded-lg cursor-pointer;
   }
+
   
-  .sidebar-item {
+  .dark .sidebar-item {
     @apply flex items-center space-x-3 px-4 py-3 text-avengers-silver hover:bg-avengers-blue/20 hover:text-white transition-all duration-200 rounded-lg cursor-pointer;
   }
   

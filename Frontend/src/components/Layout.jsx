@@ -87,24 +87,33 @@ const Layout = ({ children }) => {
       )}
 
       {/* Sidebar */}
-      <div className={`fixed lg:relative inset-y-0 left-0 z-50 w-64 bg-black/40 backdrop-blur-md transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-      }`}>
-        <div className="flex flex-col h-full">
+<div
+  className={`fixed lg:relative inset-y-0 left-0 z-50 w-64 
+    bg-[#f8fafc] text-black 
+    dark:bg-black/40 dark:backdrop-blur-md dark:text-white 
+    transform transition-transform duration-300 ease-in-out 
+    ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
+>
+
+
+        <div className="flex flex-col h-full ">
           {/* Logo */}
-          <div className="flex items-center justify-between p-6 border-b border-avengers-silver/20">
+          <div className="flex items-center justify-between p-6 border-b text-blue-700 border-gray-700 dark:border-avengers-silver/20">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br rounded-lg flex items-center justify-center">
-                <Shield className="w-6 h-6 text-white" />
+              <div className="w-10 h-10 dark:bg-gradient-to-br rounded-lg flex items-center justify-center">
+                <Shield className="w-6 h-6 text-blue-700 dark:text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-orbitron font-bold text-cyan-400 text-shadow-glow">Captain's</h1>
-                <p className="text-sm text-cyan-400 text-shadow-glow">Ledger</p>
+                <h1 className="text-2xl font-orbitron font-bold dark:text-cyan-400 dark:text-shadow-glow">Captain's</h1>
+                <p className="text-sm text-gray-500 dark:text-cyan-400 dark:text-shadow-glow">Ledger</p>
               </div>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden p-2 rounded-lg hover:color: #00e0ff hover:bg-avengers-blue/20"
+              className="lg:hidden p-2 rounded-lg text-gray-700 font-semibold
+  hover:bg-blue-50 hover:text-blue-600 
+  dark:hover:bg-avengers-blue/20 dark:hover:text-[#00e0ff]"
+
             >
               <X className="w-5 h-5 text-white" />
             </button>
@@ -129,19 +138,19 @@ const Layout = ({ children }) => {
           </nav>
 
           {/* User info */}
-          <div className="p-4 border-t border-avengers-silver/20">
+          <div className="p-4 border-t border-gray-700 dark:border-avengers-silver/20">
             <div className="flex items-center space-x-3 mb-4">
               <div className="w-10 h-10 bg-gradient-to-br rounded-full flex items-center justify-center text-2xl">
                 {user?.avatar}
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-white">{user?.name}</p>
-                <p className="text-xs text-avengers-silver">{user?.codename}</p>
+                <p className="text-sm font-semibold  dark:text-white">{user?.name}</p>
+                <p className="text-xs dark:text-avengers-silver font-medium text-gray-700">{user?.codename}</p>
               </div>
             </div>
             <button
               onClick={logout}
-              className="w-full flex items-center space-x-3 px-4 py-3 text-white hover:bg-avengers-red/20 hover:text-red-400 transition-all duration-200 rounded-lg"
+              className="w-full flex items-center space-x-3 px-4 py-3 dark:text-white hover:bg-avengers-red/20 hover:text-red-400 transition-all duration-200 rounded-lg font-semibold"
             >
               <LogOut className="w-5 h-5" />
               <span>Logout</span>
