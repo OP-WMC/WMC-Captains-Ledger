@@ -2,12 +2,17 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import axios from "../api/axios";
 import { CheckCircle, Clock, DollarSign, User, Mail, Calendar } from "lucide-react";
+import Modal from "react-modal";
 
 const PendingApprovals = () => {
   const { user } = useAuth();
   const [pendingTransactions, setPendingTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [approving, setApproving] = useState(null);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [selectedTransactionId, setSelectedTransactionId] = useState(null);
 
   useEffect(() => {
     if (user?.role === "admin") {
@@ -27,16 +32,47 @@ const PendingApprovals = () => {
     }
   };
 
-  const handleApprove = async (transactionId) => {
+  const handleApproveClick = (transactionId) => {
+    setSelectedTransactionId(transactionId);
+    setPassword("");
+    setPasswordError("");
+    setShowPasswordModal(true);
+  };
+
+  const handlePasswordConfirm = async () => {
+    setPasswordError("");
+    if (!password) {
+      setPasswordError("Password is required");
+      return;
+    }
+    try {
+      setApproving(selectedTransactionId);
+      const res = await axios.post("/auth/login", {
+        email: user.email,
+        password,
+      });
+      if (res.data && res.data.user && res.data.user.role === "admin") {
+        await handleApprove(selectedTransactionId, true);
+        setShowPasswordModal(false);
+      } else {
+        setPasswordError("Invalid password or not admin");
+      }
+    } catch (err) {
+      setPasswordError("Invalid password");
+    } finally {
+      setApproving(null);
+    }
+  };
+
+  const handleApprove = async (transactionId, skipPasswordModal = false) => {
+    if (!skipPasswordModal) {
+      handleApproveClick(transactionId);
+      return;
+    }
     try {
       setApproving(transactionId);
       await axios.post(`/transactions/approve-remaining/${transactionId}`);
-      
-      // Remove the approved transaction from the list
-      setPendingTransactions(prev => 
-        prev.filter(txn => txn._id !== transactionId)
-      );
-      
+      setPendingTransactions(prev => prev.filter(txn => txn._id !== transactionId));
       alert("Remaining amount approved successfully!");
     } catch (error) {
       console.error("Error approving transaction:", error);
@@ -148,14 +184,18 @@ const PendingApprovals = () => {
                       </div>
                       <div className="flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
-                        <span>{new Date(transaction.createdAt).toLocaleDateString()}</span>
+                        <span>{(() => {
+                          const dateVal = transaction.timestamp || transaction.createdAt;
+                          const dateObj = dateVal ? new Date(dateVal) : null;
+                          return dateObj && !isNaN(dateObj) ? dateObj.toLocaleDateString() : "Invalid date";
+                        })()}</span>
                       </div>
                     </div>
                   </div>
 
                   <div className="ml-4">
                     <button
-                      onClick={() => handleApprove(transaction._id)}
+                      onClick={() => handleApproveClick(transaction._id)}
                       disabled={approving === transaction._id}
                       className="avengers-button px-4 py-2 text-sm flex items-center gap-2"
                     >
@@ -178,6 +218,45 @@ const PendingApprovals = () => {
           </div>
         )}
       </div>
+
+      {/* Password Confirmation Modal */}
+      <Modal
+        isOpen={showPasswordModal}
+        onRequestClose={() => setShowPasswordModal(false)}
+        className="fixed inset-0 flex items-center justify-center z-50"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-40"
+        ariaHideApp={false}
+      >
+        <div className="bg-blue-300 dark:bg-blue-900/90 p-8 rounded-xl shadow-lg border border-blue-400 max-w-sm w-full mx-4">
+          <h2 className="text-xl font-bold text-blue-700 dark:text-white mb-4">Admin Password Required</h2>
+          <p className="mb-4 text-blue-900 dark:text-avengers-silver">Please enter your password to approve this request.</p>
+          <input
+            type="password"
+            className="w-full px-4 py-2 mb-2 border border-blue-400 rounded-lg focus:outline-none focus:border-blue-700"
+            placeholder="Enter password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            autoFocus
+          />
+          {passwordError && <div className="text-red-500 text-sm mb-2">{passwordError}</div>}
+          <div className="flex justify-end gap-2 mt-4">
+            <button
+              className="avengers-button px-4 py-2 text-sm"
+              onClick={() => setShowPasswordModal(false)}
+              disabled={approving}
+            >
+              Cancel
+            </button>
+            <button
+              className="avengers-button px-4 py-2 text-sm"
+              onClick={handlePasswordConfirm}
+              disabled={approving}
+            >
+              {approving ? "Verifying..." : "Confirm & Approve"}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

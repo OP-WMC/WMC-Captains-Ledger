@@ -453,80 +453,81 @@ const SendMoney = () => {
             )}
 
             {/* Advanced Money Mode Toggle */}
-            <div className="flex items-center bg-blue-300 space-x-3 p-3 dark:bg-blue-900/20 rounded-lg border border-blue-700/30">
-              <input
-                type="checkbox"
-                id="advancedMode"
-                checked={formData.isAdvancedMode}
-                onChange={handleAdvancedModeToggle}
-                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <label htmlFor="advancedMode" className="flex items-center gap-2 text-sm font-semibold dark:text-avengers-silver cursor-pointer">
-                <Zap className="w-4 h-4 text-yellow-400" />
-                Advanced Money Mode
-              </label>
-            </div>
-
-            {formData.isAdvancedMode && (
-              <div className="space-y-4 p-4 bg-blue-300 dark:bg-yellow-900/20 rounded-lg border dark:border-yellow-700/30">
-                <p className="text-sm dark:text-yellow-300 font-medium">
-                  💡 Advanced Mode: Send money in two parts - immediate and after approval
-                </p>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-white dark:text-avengers-silver mb-2">
-                      Advanced Amount (₹) - Immediate
-                    </label>
-                    <input
-                      type="number"
-                      value={formData.advancedAmount}
-                      onChange={handleAdvancedAmountChange}
-                      className="input-field w-full bg-white text-blue-500 placeholder:text-blue-500 font-bold"
-                      placeholder="Immediate amount"
-                      min="1"
-                      max={parseInt(formData.amount) || 10000}
-                      required={formData.isAdvancedMode}
-                    />
-                    {formData.advancedAmount && formData.recipients.length > 0 && (
-                      <p className="text-xs text-white dark:text-green-400 mt-1">
-                        Each gets: ₹{Math.round(parseInt(formData.advancedAmount) / formData.recipients.length)} immediately
-                      </p>
-                    )}
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-white dark:text-avengers-silver mb-2">
-                      Remaining Amount (₹) - After Approval
-                    </label>
-                    <input
-                      type="number"
-                      value={formData.remainingAmount}
-                      onChange={handleRemainingAmountChange}
-                      className="input-field w-full bg-white text-blue-500 placeholder:text-blue-500 font-bold"
-                      placeholder="Remaining amount"
-                      min="1"
-                      max={parseInt(formData.amount) || 10000}
-                      required={formData.isAdvancedMode}
-                    />
-                    {formData.remainingAmount && formData.recipients.length > 0 && (
-                      <p className="text-xs text-white dark:text-orange-400 mt-1">
-                        Each gets: ₹{Math.round(parseInt(formData.remainingAmount) / formData.recipients.length)} after approval
-                      </p>
-                    )}
-                  </div>
+            {user?.role === 'admin' && (
+              <>
+                <div className="flex items-center bg-blue-300 space-x-3 p-3 dark:bg-blue-900/20 rounded-lg border border-blue-700/30">
+                  <input
+                    type="checkbox"
+                    id="advancedMode"
+                    checked={formData.isAdvancedMode}
+                    onChange={handleAdvancedModeToggle}
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <label htmlFor="advancedMode" className="flex items-center gap-2 text-sm font-semibold dark:text-avengers-silver cursor-pointer">
+                    <Zap className="w-4 h-4 text-yellow-400" />
+                    Advanced Money Mode
+                  </label>
                 </div>
-                
-                {formData.amount && formData.advancedAmount && formData.remainingAmount && (
-                  <div className="text-left p-2 text-white dark:bg-blue-900/30 rounded">
-                    <p className="text-sm text-white dark:text-blue-300">
-                      Total: ₹{parseInt(formData.advancedAmount) + parseInt(formData.remainingAmount)} 
-                      {parseInt(formData.advancedAmount) + parseInt(formData.remainingAmount) === parseInt(formData.amount) 
-                        ? " ✅" : " ❌ (Must equal total amount)"}
+
+                {formData.isAdvancedMode && (
+                  <div className="space-y-4 p-4 bg-blue-300 dark:bg-yellow-900/20 rounded-lg border dark:border-yellow-700/30">
+                    <p className="text-sm dark:text-yellow-300 font-medium">
+                      💡 Advanced Mode: Send money in two parts - immediate and after approval
                     </p>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-white dark:text-avengers-silver mb-2">
+                          Advanced Amount (₹) - Immediate
+                        </label>
+                        <input
+                          type="number"
+                          value={formData.advancedAmount}
+                          onChange={handleAdvancedAmountChange}
+                          className="input-field w-full bg-white text-blue-500 placeholder:text-blue-500 font-bold"
+                          placeholder="Immediate amount"
+                          min="1"
+                          max={parseInt(formData.amount) || 10000}
+                          required={formData.isAdvancedMode}
+                        />
+                        {formData.advancedAmount && formData.recipients.length > 0 && (
+                          <p className="text-xs text-white dark:text-green-400 mt-1">
+                            Each gets: ₹{Math.round(parseInt(formData.advancedAmount) / formData.recipients.length)} immediately
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-white dark:text-avengers-silver mb-2">
+                          Remaining Amount (₹) - After Approval
+                        </label>
+                        <input
+                          type="number"
+                          value={formData.remainingAmount}
+                          onChange={handleRemainingAmountChange}
+                          className="input-field w-full bg-white text-blue-500 placeholder:text-blue-500 font-bold"
+                          placeholder="Remaining amount"
+                          min="1"
+                          max={parseInt(formData.amount) || 10000}
+                          required={formData.isAdvancedMode}
+                        />
+                        {formData.remainingAmount && formData.recipients.length > 0 && (
+                          <p className="text-xs text-white dark:text-orange-400 mt-1">
+                            Each gets: ₹{Math.round(parseInt(formData.remainingAmount) / formData.recipients.length)} after approval
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    {formData.amount && formData.advancedAmount && formData.remainingAmount && (
+                      <div className="text-left p-2 text-white dark:bg-blue-900/30 rounded">
+                        <p className="text-sm text-white dark:text-blue-300">
+                          Total: ₹{parseInt(formData.advancedAmount) + parseInt(formData.remainingAmount)} 
+                          {parseInt(formData.advancedAmount) + parseInt(formData.remainingAmount) === parseInt(formData.amount) 
+                            ? " ✅" : " ❌ (Must equal total amount)"}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
-              </div>
+              </>
             )}
 
             <div>

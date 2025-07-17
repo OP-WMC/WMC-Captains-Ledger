@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 
 exports.register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, power, abilities, weapons, experience, profilePhoto, pastAchievements } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -23,6 +23,11 @@ exports.register = async (req, res) => {
       role,
       balance: startingBalance, // 💰 Set balance
       codename: name, // Set codename to name for consistency
+      power,
+      abilities,
+      weapons,
+      pastAchievements: pastAchievements || experience,
+      profilePhoto,
     });
 
     // ✅ Create token with plain user data
@@ -88,7 +93,7 @@ const isProduction = process.env.NODE_ENV === "production";
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({}, "name email role"); // Select only needed fields
+    const users = await User.find({}, "-password"); // Return all fields except password
     res.status(200).json(users);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch users" });
@@ -99,6 +104,24 @@ exports.getMyProfile = async (req, res) => {
   const user = await User.findById(req.user._id).select("-password");
   res.json(user);
 };
+
 exports.logout = (req, res) => {
   res.clearCookie("token").status(200).json({ message: "Logged out successfully" });
+};
+
+exports.updateProfile = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const updateFields = {};
+    const allowedFields = ["name", "codename", "power", "abilities", "weapons", "pastAchievements", "profilePhoto"];
+    allowedFields.forEach(field => {
+      if (req.body[field] !== undefined) {
+        updateFields[field] = req.body[field];
+      }
+    });
+    const updatedUser = await User.findByIdAndUpdate(userId, updateFields, { new: true, runValidators: true }).select("-password");
+    res.json({ message: "Profile updated successfully", user: updatedUser });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 };

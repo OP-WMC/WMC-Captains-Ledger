@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "./axios";
 
 const API_BASE = "http://localhost:5000/api";
 
@@ -19,5 +19,20 @@ export const fetchPaymentStats = async () => {
 
 export const fetchPaymentTrends = async (days = 30) => {
   const res = await axios.get(`${API_BASE}/transactions/trends?days=${days}`, { withCredentials: true });
+  return res.data;
+};
+
+export const fetchAttendanceStatsForUser = async () => {
+  const res = await axios.get('/attendance/stats/user', { withCredentials: true });
+  return res.data;
+};
+
+export const fetchPaymentStatsForUser = async () => {
+  const res = await axios.get('/transactions/stats/user', { withCredentials: true });
+  return res.data;
+};
+
+export const fetchUserPaymentStats = async () => {
+  const res = await axios.get('/transactions/stats/user/self', { withCredentials: true });
   return res.data;
 }; 

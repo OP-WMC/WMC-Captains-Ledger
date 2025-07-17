@@ -250,4 +250,45 @@ exports.getAttendanceTrends = async (req, res) => {
   }
 };
 
+// Get attendance stats for the current user (user dashboard)
+exports.getAttendanceStatsForUser = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const User = require("../models/User");
+    const user = await User.findById(userId).select("name email codename");
+    if (!user) return res.status(404).json({ msg: "User not found" });
+
+    // Get all attendance sessions
+    const allSessions = await AttendanceSession.find({}).sort({ createdAt: 1 });
+    // Get all attendance records for this user
+    const userRecords = await AttendanceRecord.find({ user: userId });
+    // Unique days attended
+    const uniqueDays = new Set(userRecords.map(r => new Date(r.markedAt).toLocaleDateString("en-CA")));
+    // All unique days with any session
+    const allSessionDays = new Set(allSessions.map(s => new Date(s.createdAt).toLocaleDateString("en-CA")));
+    const totalDays = allSessionDays.size;
+    const attendedDays = uniqueDays.size;
+    // --- Session-based fields ---
+    const totalSessions = allSessions.length;
+    const attendedSessions = userRecords.length;
+    const attendancePercentage = totalSessions > 0 ? Math.round((attendedSessions / totalSessions) * 100) : 0;
+    // --- End session-based fields ---
+    res.json({
+      userId: user._id,
+      name: user.name || user.codename || user.email,
+      email: user.email,
+      codename: user.codename,
+      totalDays,
+      attendedDays,
+      totalSessions,
+      attendedSessions,
+      attendancePercentage,
+      lastAttendance: userRecords.length > 0 ? new Date(Math.max(...userRecords.map(r => new Date(r.markedAt)))) : null
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
 

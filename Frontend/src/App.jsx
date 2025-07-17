@@ -17,6 +17,8 @@ import Announcements from './pages/Announcements';
 import FeedbackForm from './pages/FeedbackForm';
 import PendingApprovals from './pages/PendingApprovals';
 import Footer from './components/Footer';
+import Profile from './pages/Profile';
+import AdminProfiles from './pages/AdminProfiles';
 
 function App() {
   return (
@@ -121,6 +123,23 @@ function App() {
 
             <Route path="/transaction-cancel" element={<TransactionCancel />} />
 
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Profile />
+                </Layout>
+                <Footer />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/admin-profiles" element={
+              <ProtectedRoute>
+                <Layout>
+                  <AdminProfiles />
+                </Layout>
+                <Footer />
+              </ProtectedRoute>
+            } />
 
             {/* Redirect to dashboard for any unknown routes */}
             <Route path="*" element={<Navigate to="/dashboard" />} />

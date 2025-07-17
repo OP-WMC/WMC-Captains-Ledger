@@ -69,6 +69,12 @@ const Layout = ({ children }) => {
       icon: CheckCircle,
       path: '/pending-approvals',
       adminOnly: true
+    },
+    {
+      name: 'Manage Avengers',
+      icon: Users,
+      path: '/admin-profiles',
+      adminOnly: true
     }
   ];
 
@@ -139,7 +145,7 @@ const Layout = ({ children }) => {
 
           {/* User info */}
           <div className="p-4 border-t border-gray-700 dark:border-avengers-silver/20">
-            <div className="flex items-center space-x-3 mb-4">
+            <Link to="/profile" className="flex items-center space-x-3 mb-4 hover:bg-gray-200 dark:hover:bg-gray-700 p-2 rounded transition cursor-pointer">
               <div className="w-10 h-10 bg-gradient-to-br rounded-full flex items-center justify-center text-2xl">
                 {user?.avatar}
               </div>
@@ -147,7 +153,7 @@ const Layout = ({ children }) => {
                 <p className="text-sm font-semibold  dark:text-white">{user?.name}</p>
                 <p className="text-xs dark:text-avengers-silver font-medium text-gray-700">{user?.codename}</p>
               </div>
-            </div>
+            </Link>
             <button
               onClick={logout}
               className="w-full flex items-center space-x-3 px-4 py-3 dark:text-white hover:bg-avengers-red/20 hover:text-red-400 transition-all duration-200 rounded-lg font-semibold"

@@ -9,7 +9,9 @@ const {
   getPaymentStats,
   getPaymentTrends,
   approveRemainingAmount,
-  getPendingAdvancedTransactions
+  getPendingAdvancedTransactions,
+  getPaymentStatsForUser,
+  getUserPaymentStats
 } = transactionController;
 
 const { getUserTransactions } = require("../controllers/getUserTransactions");
@@ -29,5 +31,11 @@ router.get("/trends", verifyToken, getPaymentTrends);
 // Advanced Money Mode routes (admin only)
 router.get("/pending-advanced", verifyToken, getPendingAdvancedTransactions);
 router.post("/approve-remaining/:transactionId", verifyToken, approveRemainingAmount);
+
+// Add user-specific stats route
+router.get("/stats/user", verifyToken, getPaymentStatsForUser);
+
+// Add user-specific self payment stats route
+router.get("/stats/user/self", verifyToken, getUserPaymentStats);
 
 module.exports = router;

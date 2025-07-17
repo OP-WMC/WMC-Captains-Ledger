@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import axios from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import {
-  Plus, Edit, Trash2, CheckCircle, Clock, XCircle, Flag, AlertTriangle, ChevronDown, ChevronUp
+  Plus, Edit, Trash2, CheckCircle, Clock, XCircle, Flag, AlertTriangle, ChevronDown, ChevronUp, Zap
 } from 'lucide-react';
 import Modal from 'react-modal';
 
@@ -21,6 +21,10 @@ const Missions = () => {
   const [finalizeStatus, setFinalizeStatus] = useState('completed');
   const [selectedMartyrs, setSelectedMartyrs] = useState([]);
   const [showFinalizeModal, setShowFinalizeModal] = useState(false);
+  const [validationError, setValidationError] = useState("");
+  const [salaryMode, setSalaryMode] = useState('full');
+  const [advancedAmount, setAdvancedAmount] = useState('');
+  const [remainingAmount, setRemainingAmount] = useState('');
 
   const defaultForm = {
     title: '',
@@ -96,16 +100,30 @@ const fetchUsers = async () => {
 };
 
   const handleSubmit = async () => {
+    // Validate all fields are filled
+    if (!formData.title.trim() || !formData.description.trim() || !formData.location.trim() || !formData.startDate || !formData.endDate || !formData.status || !formData.priority) {
+      setValidationError('Please fill in all fields.');
+      return;
+    }
+    if (!Array.isArray(formData.assignedMembers) || formData.assignedMembers.length === 0) {
+      setValidationError('Please assign at least one member.');
+      return;
+    }
+    // Ensure all assigned members have a salary
+    if (formData.assignedMembers.some(m => m.salary === undefined || m.salary === null || m.salary === '' || isNaN(m.salary))) {
+      setValidationError('Please enter a salary for all assigned members.');
+      return;
+    }
     // Validate startDate and endDate are not in the past
     const start = new Date(formData.startDate);
     const end = new Date(formData.endDate);
     const now = new Date();
     if (start < now) {
-      alert('Start date and time cannot be in the past.');
+      setValidationError('Start date and time cannot be in the past.');
       return;
     }
     if (end < start) {
-      alert('End date/time must be after start date/time.');
+      setValidationError('End date/time must be after start date/time.');
       return;
     }
     try {
@@ -299,6 +317,21 @@ const fetchUsers = async () => {
       {(showCreateModal || showEditModal) && isAdmin && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
           <div className="bg-blue-100 dark:bg-gray-900 p-8 rounded-2xl shadow-2xl w-full max-w-lg relative">
+            {/* Validation Error Popup */}
+            {validationError && (
+              <div className="fixed inset-0 flex items-center justify-center z-50">
+                <div className="bg-white dark:bg-avengers-gray border-2 border-avengers-red text-avengers-red dark:text-red-400 rounded-xl shadow-2xl p-6 max-w-xs w-full flex flex-col items-center animate-fadeInUp">
+                  <span className="text-3xl mb-2">⚠️</span>
+                  <p className="text-center font-semibold mb-4">{validationError}</p>
+                  <button
+                    className="avengers-button px-4 py-2 text-white bg-avengers-red hover:bg-red-600 rounded-lg"
+                    onClick={() => setValidationError("")}
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            )}
             <button onClick={() => { setShowCreateModal(false); setShowEditModal(false); }} className="absolute top-4 right-4 text-[#f8fafc] hover:text-blue-700 dark:hover:text-white font-bold"
               style={{ fontSize: "40px" }}
               >&times;</button>
@@ -464,11 +497,22 @@ const fetchUsers = async () => {
             <div className="flex justify-end gap-2 pt-4">
               <button
                 onClick={() => {
+                  setFormData(defaultForm);
+                  setValidationError("");
+                }}
+                className="avengers-button-secondary border-2 border-blue-500 text-blue-700 dark:border-blue-500 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 font-semibold"
+                type="button"
+              >
+                Clear Fields
+              </button>
+              <button
+                onClick={() => {
                   setShowCreateModal(false);
                   setShowEditModal(false);
                   setShowMemberDropdown(false);
                 }}
-                className="avengers-button-secondary"
+                className="avengers-button-secondary border-2 border-blue-500 text-gray-700 dark:border-blue-500 dark:text-avengers-silver hover:bg-gray-100 dark:hover:bg-blue-900/10 font-semibold"
+                type="button"
               >
                 Cancel
               </button>
@@ -519,6 +563,93 @@ const fetchUsers = async () => {
               </select>
             </div>
           )}
+          {/* Salary Payment Mode Selection (admin only) */}
+          {isAdmin && (
+            <div className="mb-4">
+              <label className="block text-sm font-semibold mb-2 dark:text-gray-300">Salary Payment Mode</label>
+              <div className="flex gap-4 items-center">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="salaryMode"
+                    value="full"
+                    checked={salaryMode === 'full'}
+                    onChange={() => setSalaryMode('full')}
+                  />
+                  <span>Full Salary</span>
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="salaryMode"
+                    value="advance"
+                    checked={salaryMode === 'advance'}
+                    onChange={() => setSalaryMode('advance')}
+                  />
+                  <span className="flex items-center gap-1"><Zap className="w-4 h-4 text-yellow-400" />Advance Money</span>
+                </label>
+              </div>
+            </div>
+          )}
+          {/* If Advance Money, show input fields */}
+          {isAdmin && salaryMode === 'advance' && (
+            <div className="mb-4 p-4 bg-blue-300 dark:bg-yellow-900/20 rounded-lg border dark:border-yellow-700/30">
+              <p className="text-sm dark:text-yellow-300 font-medium mb-2">
+                💡 Advanced Mode: Pay part of the salary now, and the rest after approval.
+              </p>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-white dark:text-avengers-silver mb-2">
+                    Advanced Amount (₹) - Immediate
+                  </label>
+                  <input
+                    type="number"
+                    value={advancedAmount}
+                    onChange={e => {
+                      setAdvancedAmount(e.target.value);
+                      // Auto-calculate remaining
+                      const total = finalizeMission.assignedMembers.reduce((sum, m) => sum + (m.salary || 0), 0);
+                      setRemainingAmount(Math.max(0, total - (parseInt(e.target.value) || 0)).toString());
+                    }}
+                    className="input-field w-full bg-white text-blue-500 placeholder:text-blue-500 font-bold"
+                    placeholder="Immediate amount"
+                    min="1"
+                    max={finalizeMission.assignedMembers.reduce((sum, m) => sum + (m.salary || 0), 0)}
+                    required={salaryMode === 'advance'}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-white dark:text-avengers-silver mb-2">
+                    Remaining Amount (₹) - After Approval
+                  </label>
+                  <input
+                    type="number"
+                    value={remainingAmount}
+                    onChange={e => {
+                      setRemainingAmount(e.target.value);
+                      // Auto-calculate advanced
+                      const total = finalizeMission.assignedMembers.reduce((sum, m) => sum + (m.salary || 0), 0);
+                      setAdvancedAmount(Math.max(0, total - (parseInt(e.target.value) || 0)).toString());
+                    }}
+                    className="input-field w-full bg-white text-blue-500 placeholder:text-blue-500 font-bold"
+                    placeholder="Remaining amount"
+                    min="1"
+                    max={finalizeMission.assignedMembers.reduce((sum, m) => sum + (m.salary || 0), 0)}
+                    required={salaryMode === 'advance'}
+                  />
+                </div>
+              </div>
+              {advancedAmount && remainingAmount && (
+                <div className="text-left p-2 text-white dark:bg-blue-900/30 rounded mt-2">
+                  <p className="text-sm text-white dark:text-blue-300">
+                    Total: ₹{parseInt(advancedAmount) + parseInt(remainingAmount)}
+                    {parseInt(advancedAmount) + parseInt(remainingAmount) === finalizeMission.assignedMembers.reduce((sum, m) => sum + (m.salary || 0), 0)
+                      ? " ✅" : " ❌ (Must equal total salary)"}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
           <div className="flex justify-end gap-2 pt-4">
             <button
               onClick={() => setShowFinalizeModal(false)}
@@ -534,7 +665,7 @@ const fetchUsers = async () => {
             </button>
             {/* Send Salary Button */}
             {(finalizeStatus === 'completed' || finalizeStatus === 'failed' || finalizeStatus === 'martyred') && (
-              <SendSalaryButton missionId={finalizeMission._id} />
+              <SendSalaryButton missionId={finalizeMission._id} salaryMode={salaryMode} advancedAmount={salaryMode === 'advance' ? advancedAmount : undefined} remainingAmount={salaryMode === 'advance' ? remainingAmount : undefined} totalSalary={finalizeMission.assignedMembers.reduce((sum, m) => sum + (m.salary || 0), 0)} />
             )}
           </div>
         </Modal>
@@ -543,7 +674,7 @@ const fetchUsers = async () => {
   );
 };
 
-function SendSalaryButton({ missionId }) {
+function SendSalaryButton({ missionId, salaryMode, advancedAmount, remainingAmount, totalSalary }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -551,7 +682,12 @@ function SendSalaryButton({ missionId }) {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.post(`/missions/${missionId}/send-salary`);
+      let payload = {};
+      if (salaryMode === 'advance') {
+        payload.advancedAmount = parseInt(advancedAmount);
+        payload.remainingAmount = parseInt(remainingAmount);
+      }
+      const res = await axios.post(`/missions/${missionId}/send-salary`, payload);
       if (res.data.url) {
         window.location.href = res.data.url;
       } else {

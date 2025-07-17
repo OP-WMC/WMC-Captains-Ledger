@@ -9,7 +9,8 @@ const {
   getAttendanceDates,
   getCurrentCode,
   getAttendanceByDate,
-  getAttendanceTrends
+  getAttendanceTrends,
+  getAttendanceStatsForUser
 } = require("../controllers/attendanceController");
 
 // ADMIN ONLY
@@ -32,5 +33,8 @@ router.get("/stats", verifyToken, getAttendanceStats);
 
 // Get attendance trends (admin only)
 router.get("/trends", verifyToken, getAttendanceTrends);
+
+// Add user-specific stats route
+router.get("/stats/user", verifyToken, getAttendanceStatsForUser);
 
 module.exports = router;

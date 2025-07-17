@@ -25,6 +25,11 @@ exports.createStripeCheckout = async (req, res) => {
       return res.status(400).json({ message: "Advanced amount + remaining amount must equal total amount" });
     }
 
+    // Restrict advanced money mode to admin only
+    if (isAdvancedMode && req.user.role !== 'admin') {
+      return res.status(403).json({ message: "Only admins can use Advanced Money Mode." });
+    }
+
     // Validate manual split amounts if in manual mode
     if (splitType === "manual" && manualAmounts) {
       const totalManualAmount = Object.values(manualAmounts).reduce((sum, amount) => {
@@ -403,5 +408,45 @@ exports.getPendingAdvancedTransactions = async (req, res) => {
   } catch (err) {
     console.error("❌ Get Pending Transactions Error:", err.message);
     res.status(500).json({ error: err.message });
+  }
+};
+
+// Get payment stats for dashboard (all users, just total payments)
+exports.getPaymentStatsForUser = async (req, res) => {
+  try {
+    // Get all transactions
+    const allTransactions = await Transaction.find({});
+    const totalTransactions = allTransactions.length;
+    const totalAmount = allTransactions.reduce((sum, t) => sum + t.amount, 0);
+    const averageAmount = totalTransactions > 0 ? Math.round(totalAmount / totalTransactions) : 0;
+    res.json({
+      totalTransactions,
+      totalAmount,
+      averageAmount
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
+// Get payment stats for the logged-in user (user dashboard)
+exports.getUserPaymentStats = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    // Get all transactions where user is sender or receiver
+    const sentTransactions = await Transaction.find({ sender: userId });
+    const receivedTransactions = await Transaction.find({ receiver: userId });
+    const totalSent = sentTransactions.reduce((sum, t) => sum + t.amount, 0);
+    const totalReceived = receivedTransactions.reduce((sum, t) => sum + t.amount, 0);
+    const netAmount = totalReceived - totalSent;
+    res.json({
+      totalSent,
+      totalReceived,
+      netAmount
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Server error" });
   }
 };

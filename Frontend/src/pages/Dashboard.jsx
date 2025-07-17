@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 
 import { mockAnnouncements } from '../services/mockData';
+import { fetchAnnouncements } from '../api/announcementApi';
+import { fetchAttendanceStats, fetchPaymentStats, fetchAttendanceStatsForUser, fetchPaymentStatsForUser, fetchUserPaymentStats } from '../api/statsApi';
 
 const Dashboard = () => {
   // On first load of dashboard, ensure dark mode is ON
@@ -31,7 +33,14 @@ const Dashboard = () => {
   return true;
 });
 
-  // Fetch user and missions
+  const [announcements, setAnnouncements] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [paymentStats, setPaymentStats] = useState(null);
+  const [attendanceStats, setAttendanceStats] = useState(null);
+  const [userPaymentStats, setUserPaymentStats] = useState(null);
+  const [announcementsLoading, setAnnouncementsLoading] = useState(true);
+
+  // Fetch user, missions, users, announcements, stats
   useEffect(() => {
     axios.get("/auth/me", { withCredentials: true })
       .then(res => setUser(res.data))
@@ -40,7 +49,46 @@ const Dashboard = () => {
     axios.get("/missions")
       .then(res => setMissions(res.data))
       .catch(err => console.error("❌ Error fetching missions:", err));
+
+    // Fetch all users for Active Agents
+    axios.get("/auth/users")
+      .then(res => setUsers(res.data))
+      .catch(err => console.error("❌ Error fetching users:", err));
+
+    // Fetch announcements (real)
+    fetchAnnouncements()
+      .then(data => {
+        setAnnouncements(data);
+        setAnnouncementsLoading(false);
+      })
+      .catch(err => {
+        console.error("❌ Error fetching announcements:", err);
+        setAnnouncementsLoading(false);
+      });
   }, []);
+
+  // Fetch stats (admin vs user)
+  useEffect(() => {
+    if (user === null) return;
+    if (user?.role === 'admin') {
+      fetchPaymentStats()
+        .then(res => setPaymentStats(res))
+        .catch(err => console.error("❌ Error fetching payment stats:", err));
+      fetchAttendanceStats()
+        .then(res => setAttendanceStats(res))
+        .catch(err => console.error("❌ Error fetching attendance stats:", err));
+    } else {
+      fetchPaymentStatsForUser()
+        .then(res => setPaymentStats(res))
+        .catch(err => console.error("❌ Error fetching payment stats (user):", err));
+      fetchAttendanceStatsForUser()
+        .then(res => setAttendanceStats(res))
+        .catch(err => console.error("❌ Error fetching attendance stats (user):", err));
+      fetchUserPaymentStats()
+        .then(res => setUserPaymentStats(res))
+        .catch(err => console.error("❌ Error fetching user payment stats:", err));
+    }
+  }, [user]);
 
   // Fetch feedbacks
   useEffect(() => {
@@ -80,15 +128,41 @@ const Dashboard = () => {
       })
   );
 
-  const recentAnnouncements = mockAnnouncements.slice(0, 3);
-    // const getStatusIcon = (status) => {
-  //   switch (status) {
-  //     case 'completed': return <CheckCircle className="w-5 h-5 text-green-400" />;
-  //     case 'ongoing': return <Clock className="w-5 h-5 text-yellow-400" />;
-  //     case 'failed': return <XCircle className="w-5 h-5 text-red-400" />;
-  //     default: return <AlertTriangle className="w-5 h-5 text-gray-400" />;
-  //   }
-  // };
+  // Announcements logic
+  let recentAnnouncements = [];
+  if (!announcementsLoading && announcements && announcements.length > 0) {
+    recentAnnouncements = announcements.slice(0, 3);
+  } else {
+    recentAnnouncements = mockAnnouncements.slice(0, 3);
+  }
+
+  // Stats logic
+  const totalMissions = missions.length;
+  const activeAgents = users.length;
+  let totalPayments = '...';
+  if (user && user.role === 'admin') {
+    totalPayments = paymentStats?.totalAmount !== undefined ? `₹${paymentStats.totalAmount.toLocaleString()}` : '...';
+  } else if (userPaymentStats) {
+    const sent = userPaymentStats.totalSent || 0;
+    const received = userPaymentStats.totalReceived || 0;
+    totalPayments = `₹${(sent + received).toLocaleString()}`;
+  }
+  let attendanceRate = '...';
+  if (attendanceStats && user) {
+    if (user.role === 'admin') {
+      // Show average attendance percentage for admin
+      if (attendanceStats.userStats && attendanceStats.userStats.length > 0) {
+        const avg = Math.round(
+          attendanceStats.userStats.reduce((sum, u) => sum + (u.attendancePercentage || 0), 0) / attendanceStats.userStats.length
+        );
+        attendanceRate = `${avg}% (avg)`;
+      } else {
+        attendanceRate = '0% (avg)';
+      }
+    } else {
+      attendanceRate = attendanceStats.attendancePercentage !== undefined ? `${attendanceStats.attendancePercentage}%` : '0%';
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -146,19 +220,19 @@ const Dashboard = () => {
     <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 ">
       <div className="glass-card text-center ">
         <p className="text-gray-700 font-bold dark:text-cyan-300 mb-1">🗺️ Total Missions</p>
-        <h3 className="text-2xl text-blue-700  dark:text-white font-semibold">24</h3>
+        <h3 className="text-2xl text-blue-700  dark:text-white font-semibold">{totalMissions}</h3>
       </div>
       <div className="glass-card text-center">
         <p className="text-gray-700 font-bold dark:text-cyan-300 mb-1">🛡️ Active Agents</p>
-        <h3 className="text-2xl text-blue-700 dark:text-white font-semibold">9</h3>
+        <h3 className="text-2xl text-blue-700 dark:text-white font-semibold">{activeAgents}</h3>
       </div>
       <div className="glass-card text-center">
         <p className="text-gray-700 font-bold dark:text-cyan-300 mb-1">💳 Total Payments</p>
-        <h3 className="text-2xl text-blue-700 dark:text-white font-semibold">₹1,75,000</h3>
+        <h3 className="text-2xl text-blue-700 dark:text-white font-semibold">{totalPayments}</h3>
       </div>
       <div className="glass-card text-center">
         <p className="text-gray-700 font-bold dark:text-cyan-300 mb-1">📊 Attendance Rate</p>
-        <h3 className="text-2xl text-blue-700 dark:text-white font-semibold">88%</h3>
+        <h3 className="text-2xl text-blue-700 dark:text-white font-semibold">{attendanceRate}</h3>
       </div>
     </section>
 
@@ -199,15 +273,15 @@ const Dashboard = () => {
           <div className="space-y-3">
             {recentAnnouncements.map((announcement) => (
               <div 
-                key={announcement.id} 
+                key={announcement._id || announcement.id} 
                 className="flex items-center justify-between p-4  dark:bg-avengers-gray/30 rounded-lg">
               
                 <div className="flex items-start justify-between w-full">
                   <div className="flex-1  p-4 bg-blue-100 dark:bg-cyan-950/40 rounded-lg transition-transform hover:scale-105">
                     <h3 className="text-gray-700 dark:text-white text-lg font-semibold">{announcement.title}</h3>
-                    <p className="text-sm text-gray-700 dark:text-cyan-300 mt-2">{announcement.content}</p>
+                    <p className="text-sm text-gray-700 dark:text-cyan-300 mt-2">{announcement.body || announcement.content}</p>
                     <p className="text-xs text-gray-700 dark:text-cyan-300 mt-3">
-                      By {announcement.author} • {announcement.date}
+                      By {announcement.author || 'Admin'} • {announcement.date}
                     </p>
                   </div>
                 </div>

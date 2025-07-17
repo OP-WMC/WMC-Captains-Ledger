@@ -7,6 +7,11 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ["admin", "user"], default: "user" },
   balance: { type: Number, default: 0 },
   codename: String,
+  power: { type: String },
+  abilities: [{ type: String }],
+  weapons: [{ type: String }],
+  pastAchievements: { type: String },
+  profilePhoto: { type: String }, // URL or base64
 });
 
 module.exports = mongoose.model("User", userSchema);

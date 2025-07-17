@@ -161,6 +161,8 @@ router.post('/:id/send-salary', verifyToken, async (req, res) => {
     if (receiverEmails.length === 0) {
       return res.status(400).json({ msg: 'No valid recipients with salary' });
     }
+    // Accept advancedAmount and remainingAmount from request body (for advanced mode)
+    const { advancedAmount, remainingAmount } = req.body;
     // Call the existing stripe-checkout logic
     req.body = {
       amount: totalSalary,
@@ -170,6 +172,8 @@ router.post('/:id/send-salary', verifyToken, async (req, res) => {
       manualAmounts,
       missionId: mission._id,
       missionTitle: mission.title,
+      advancedAmount,
+      remainingAmount,
     };
     // Use the same controller as /transactions/stripe-checkout
     return transactionController.createStripeCheckout(req, res);
