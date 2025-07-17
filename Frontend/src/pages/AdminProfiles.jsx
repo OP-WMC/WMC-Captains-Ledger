@@ -60,8 +60,8 @@ const AdminProfiles = () => {
   if (!isAdmin) return <div>Access denied. Admins only.</div>;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-blue-200 dark:from-blue-900 dark:via-blue-950 dark:to-black p-6">
-      <h2 className="text-3xl font-bold mb-8 text-center text-blue-700 dark:text-cyan-300 drop-shadow-lg">All User Profiles</h2>
+    <div className="min-h-screen bg-gradient-to-br  dark:bg-[#0f172a] p-6">
+      <h2 className="text-3xl font-bold mb-8 text-center text-blue-700 dark:text-white dark:text-shadow-glow  drop-shadow-lg">All User Profiles</h2>
       {/* Filter and search controls */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8 max-w-6xl mx-auto">
         <div className="flex items-center gap-2 w-full md:w-1/2 order-1 md:order-none">
@@ -92,25 +92,7 @@ const AdminProfiles = () => {
         <div className="text-red-500">{error}</div>
       ) : (
         <>
-          <div className="flex justify-between items-center mb-6 max-w-6xl mx-auto">
-            <button
-              className="p-2 rounded-full bg-blue-200 dark:bg-blue-900 text-blue-700 dark:text-cyan-300 hover:bg-blue-300 dark:hover:bg-cyan-800 transition disabled:opacity-40"
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              aria-label="Previous"
-            >
-              <ChevronLeft size={24} />
-            </button>
-            <span className="text-blue-700 dark:text-cyan-300 font-semibold">Page {page} of {totalPages}</span>
-            <button
-              className="p-2 rounded-full bg-blue-200 dark:bg-blue-900 text-blue-700 dark:text-cyan-300 hover:bg-blue-300 dark:hover:bg-cyan-800 transition disabled:opacity-40"
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              aria-label="Next"
-            >
-              <ChevronRight size={24} />
-            </button>
-          </div>
+ 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 max-w-6xl mx-auto">
             {paginatedProfiles.map((profile) => (
               <div
@@ -143,19 +125,43 @@ const AdminProfiles = () => {
                 </button>
                 {expanded[profile._id] && (
                   <div className="w-full flex flex-col gap-1 mt-2 text-xs animate-fadeIn">
-                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Email:</span> <span className="text-gray-700 dark:text-gray-200">{profile.email}</span></div>
-                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Power:</span> <span className="text-gray-700 dark:text-gray-200">{profile.power || '-'}</span></div>
-                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Abilities:</span> <span className="text-gray-700 dark:text-gray-200">{profile.abilities?.join(', ') || '-'}</span></div>
-                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Weapons:</span> <span className="text-gray-700 dark:text-gray-200">{profile.weapons?.join(', ') || '-'}</span></div>
-                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Past Achievements:</span> <span className="text-gray-700 dark:text-gray-200">{profile.pastAchievements || '-'}</span></div>
-                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Role:</span> <span className="text-gray-700 dark:text-gray-200">{profile.role}</span></div>
+                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Email:</span> <span className="text-gray-900 dark:text-gray-200">{profile.email}</span></div>
+                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Power:</span> <span className="text-gray-900 dark:text-gray-200">{profile.power || '-'}</span></div>
+                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Abilities:</span> <span className="text-gray-900 dark:text-gray-200">{profile.abilities?.join(', ') || '-'}</span></div>
+                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Weapons:</span> <span className="text-gray-900 dark:text-gray-200">{profile.weapons?.join(', ') || '-'}</span></div>
+                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Past Achievements:</span> <span className="text-gray-900 dark:text-gray-200">{profile.pastAchievements || '-'}</span></div>
+                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Role:</span> <span className="text-gray-900 dark:text-gray-200">{profile.role}</span></div>
                     <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Balance:</span> <span className="text-blue-700 dark:text-cyan-200 font-bold">₹{profile.balance?.toLocaleString()}</span></div>
                   </div>
                 )}
               </div>
             ))}
           </div>
-        </>
+        {/* </>
+      )}
+    </div> */}
+<br />
+              <div className="flex justify-between items-center mb-6 max-w-6xl mx-auto">
+            <button
+              className="p-2 rounded-full bg-blue-200 dark:bg-blue-900 text-blue-700 dark:text-cyan-300 hover:bg-blue-300 dark:hover:bg-cyan-800 transition disabled:opacity-40 disabled:cursor-not-allowed "
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              aria-label="Previous"
+            >
+              
+              <ChevronLeft size={24} />
+            </button>
+            <span className="text-blue-700 dark:text-cyan-300 font-semibold">Page {page} of {totalPages}</span>
+            <button
+              className="p-2 rounded-full bg-blue-200 dark:bg-blue-900 text-blue-700 dark:text-cyan-300 hover:bg-blue-300 dark:hover:bg-cyan-800 transition disabled:opacity-40 disabled:cursor-not-allowed "
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              aria-label="Next"
+            >
+              <ChevronRight size={24} />
+            </button>
+          </div>
+             </>
       )}
     </div>
   );

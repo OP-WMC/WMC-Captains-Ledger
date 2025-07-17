@@ -252,7 +252,7 @@ const SendMoney = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-orbitron text-blue-700 font-bold dark:text-white mb-2">
+        <h1 className="text-3xl font-orbitron text-blue-700 font-bold dark:text-white mb-2 text-shadow-glow">
           Send Money
         </h1>
         <p className="text-gray-700 dark:text-avengers-silver">
@@ -295,7 +295,7 @@ const SendMoney = () => {
                   type="button"
                   onClick={handleAddRecipient}
                   disabled={!selectedRecipient}
-                  className="px-4 py-2 bg-blue-400 hover:bg-blue-500 dark:disabled:bg-gray-600 disabled:cursor-not-allowed text-white  rounded-md flex items-center gap-2 transition-colors"
+                  className="px-4 py-2 bg-blue-400 hover:bg-blue-500 dark:disabled:bg-blue-700  disabled:cursor-not-allowed text-white  rounded-md flex items-center gap-2 transition-colors"
                 >
                   <Plus className="w-4 h-4 " />
                   Add
@@ -348,7 +348,7 @@ const SendMoney = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, amount: e.target.value })
                 }
-                className="input-field  w-full  bg-blue-300 border-blue-500 text-white placeholder-white"
+                className="input-field  w-full dark:bg-blue-700 bg-blue-300 border-blue-500 text-white placeholder-white"
                 placeholder="Enter total amount (max ₹10,000)"
                 min="1"
                 max="10000"
@@ -370,7 +370,7 @@ const SendMoney = () => {
                   className={`p-3 rounded-lg border transition-all ${
                     formData.splitType === "equal"
                       ? "bg-blue-600 border-blue-700 text-white"
-                      : "bg-blue-300 border-gray-200 text-avengers-silver hover:bg-blue-600"
+                      : "bg-gray-400 border-gray-200 text-avengers-silver hover:bg-blue-600"
                   }`}
                 >
                   <div className="text-center">
@@ -390,7 +390,7 @@ const SendMoney = () => {
                   className={`p-3 rounded-lg border transition-all ${
                     formData.splitType === "manual"
                       ? "bg-blue-600 border-blue-700 text-white"
-                      : "bg-blue-300 border-gray-200 text-avengers-silver hover:bg-blue-600"
+                      : "bg-gray-400 border-gray-200 text-avengers-silver hover:bg-blue-600"
                   }`}
                 >
                   <div className="text-center">
@@ -408,8 +408,8 @@ const SendMoney = () => {
 
             {/* Manual Amount Inputs */}
             {formData.splitType === "manual" && formData.recipients.length > 0 && (
-              <div className="space-y-3 p-4 bg-blue-300 dark:bg-green-900/20 rounded-lg border dark:border-green-700/30">
-                <p className="text-sm dark:text-green-300 font-medium">
+              <div className="space-y-3 p-4 bg-blue-300 dark:bg-blue-900/20 rounded-lg border dark:border-blue-700/30">
+                <p className="text-sm dark:text-white font-medium">
                   💡 Manual Split: Enter individual amounts for each recipient
                 </p>
                 
@@ -421,7 +421,7 @@ const SendMoney = () => {
                     return (
                       <div key={recipientUser._id} className="flex items-center gap-3">
                         <div className="flex-1">
-                          <label className="block text-xs dark:text-avengers-silver mb-1">
+                          <label className="block text-xs dark:text-whiter mb-1">
                             {recipientName}
                           </label>
                           <input
@@ -442,7 +442,7 @@ const SendMoney = () => {
                 
                 {formData.amount && (
                   <div className="text-center p-2 bg-blue-900/30 rounded">
-                    <p className="text-sm text-blue-300">
+                    <p className="text-sm text-blue-300 dark:text-white">
                       Total: ₹{getTotalManualAmount()}/{formData.amount} 
                       {getTotalManualAmount() === parseInt(formData.amount) 
                         ? " ✅" : " ❌ (Must equal total amount)"}
@@ -470,20 +470,20 @@ const SendMoney = () => {
                 </div>
 
                 {formData.isAdvancedMode && (
-                  <div className="space-y-4 p-4 bg-blue-300 dark:bg-yellow-900/20 rounded-lg border dark:border-yellow-700/30">
-                    <p className="text-sm dark:text-yellow-300 font-medium">
+                  <div className="space-y-4 p-4 bg-blue-300 dark:bg-blue-900/20 rounded-lg border dark:border-blue-700/30">
+                    <p className="text-sm dark:text-white font-medium">
                       💡 Advanced Mode: Send money in two parts - immediate and after approval
                     </p>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-white dark:text-avengers-silver mb-2">
+                        <label className="block text-sm font-medium text-white dark:text-white mb-2">
                           Advanced Amount (₹) - Immediate
                         </label>
                         <input
                           type="number"
                           value={formData.advancedAmount}
                           onChange={handleAdvancedAmountChange}
-                          className="input-field w-full bg-white text-blue-500 placeholder:text-blue-500 font-bold"
+                          className="input-field w-full bg-white dark:bg-avengers-silver text-blue-500 placeholder:text-blue-500 font-bold"
                           placeholder="Immediate amount"
                           min="1"
                           max={parseInt(formData.amount) || 10000}
@@ -496,14 +496,14 @@ const SendMoney = () => {
                         )}
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-white dark:text-avengers-silver mb-2">
+                        <label className="block text-sm font-medium text-white dark:text-white mb-2">
                           Remaining Amount (₹) - After Approval
                         </label>
                         <input
                           type="number"
                           value={formData.remainingAmount}
                           onChange={handleRemainingAmountChange}
-                          className="input-field w-full bg-white text-blue-500 placeholder:text-blue-500 font-bold"
+                          className="input-field w-full bg-white dark:bg-avengers-silver text-blue-500 placeholder:text-blue-500 font-semibold"
                           placeholder="Remaining amount"
                           min="1"
                           max={parseInt(formData.amount) || 10000}
@@ -531,7 +531,7 @@ const SendMoney = () => {
             )}
 
             <div>
-              <label className="block text-sm font-medium dark:text-avengers-silver mb-2 flex items-center gap-2">
+              <label className="block text-sm font-medium dark:text-white  mb-2 flex items-center gap-2">
                 <MessageSquare className="w-4 h-4" />
                 Feedback Message (Optional)
               </label>
@@ -540,7 +540,7 @@ const SendMoney = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, feedback: e.target.value })
                 }
-                className="input-field w-full min-h-[80px] resize-none bg-blue-300 text-white font-semibold placeholder-white"
+                className="input-field w-full min-h-[80px] resize-none bg-blue-300 dark:bg-blue-900/30 text-white font-semibold dark:font-medium placeholder-white"
                 placeholder="Add a message to include in the email notification..."
                 maxLength="500"
               />
@@ -586,7 +586,7 @@ const SendMoney = () => {
             <tbody>
               {transactions.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="py-4 text-center text-black text-avengers-silver">
+                  <td colSpan="5" className="py-4 text-center text-black dark:text-avengers-silver">
                     No transactions yet.
                   </td>
                 </tr>
@@ -605,8 +605,8 @@ const SendMoney = () => {
                     </td>
                     <td className="py-2">
                       <span className={`px-2 py-1 rounded text-xs ${
-                        txn.status === 'completed' ? 'bg-green-300 dark:bg-green-900/30  font-semibold' :
-                        txn.status === 'partially_completed' ? 'dark:bg-yellow-900/30 bg-yellow-200/80  dark:text-yellow-400 font-semibold ' :
+                        txn.status === 'completed' ? 'bg-green-300 dark:bg-[#059669] dark:text-white font-semibold' :
+                        txn.status === 'partially_completed' ? 'dark:bg-[#f59e0b] dark:text-white bg-yellow-200/80   font-semibold ' :
                         'bg-gray-900/30 text-gray-400'
                       }`}>
                         {txn.status}

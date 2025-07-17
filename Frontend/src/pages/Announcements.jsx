@@ -78,13 +78,13 @@ const Announcements = () => {
   const handleNextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
 
   return (
-    <div className="min-h-screen bg-blue-300 dark:bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+    <div className="min-h-screen bg-blue-300 dark:bg-[#0f172a]  p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <Megaphone className="w-12 h-12 text-blue-500 dark:text-yellow-400 mr-4" />
-            <h1 className="text-5xl font-bold font-orbitron text-blue-700 dark:bg-gradient-to-r dark:from-yellow-400 dark:via-orange-500 dark:to-red-500 dark:bg-clip-text dark:text-transparent">
+            <Megaphone className="w-12 h-12 text-blue-500 dark:text-white mr-4" />
+            <h1 className="text-5xl font-bold font-orbitron text-blue-700  dark:text-white dark:text-shadow-glow dark:bg-clip-text dark:text-transparent">
               Announcements
             </h1>
           </div>
@@ -98,7 +98,7 @@ const Announcements = () => {
           <div className="mb-8 text-center">
             <button
               onClick={() => setShowForm(!showForm)}
-              className=" bg-white hover:bg-blue-400 text-blue-600 hover:text-white font-bold dark:bg-gradient-to-r from-yellow-500 to-orange-500 dark:hover:from-yellow-600 dark:hover:to-orange-600 dark:text-white dark:font-semibold px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-500/25 flex items-center mx-auto"
+              className=" bg-white hover:bg-blue-400 text-blue-600 hover:text-white font-bold dark:bg-blue-500 dark:hover:bg-blue-700 dark:text-white dark:font-semibold px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-500/25 hover:shadow-none flex items-center mx-auto"
             >
               <Plus className="w-5 h-5 mr-2" />
               {showForm ? "Cancel" : "Post New Announcement"}
@@ -122,7 +122,7 @@ const Announcements = () => {
                   value={formData.title}
                   required
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full p-4 rounded-lg text-black placeholder:text-black dark:bg-gray-600 dark:text-white border border-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200"
+                  className="w-full p-4 rounded-lg text-black placeholder:text-black dark:bg-blue-400 dark:text-white border border-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter announcement title..."
                 />
               </div>
@@ -185,7 +185,7 @@ const Announcements = () => {
           <select
             value={filter}
             onChange={handleFilterChange}
-            className="p-3 rounded-lg bg-white dark:bg-gray-700 text-blue-500 font-semibold border dark:border-gray-500 focus:outline-none focus:ring-2 dark:focus:ring-yellow-500 focus:border-transparent transition-all duration-200 shadow-lg"
+            className="p-3 rounded-lg bg-white dark:bg-blue-500 dark:text-white text-blue-500 font-semibold border dark:border-blue-700 focus:outline-none focus:ring-2 dark:focus:ring-yellow-500 focus:border-transparent transition-all duration-200 shadow-lg"
           >
             <option value="all">All Announcements</option>
             <option value="important">🚨 Important</option>
@@ -226,7 +226,7 @@ const Announcements = () => {
                 <button
                   onClick={handlePrevPage}
                   disabled={currentPage === 1}
-                  className={`px-5 py-2 rounded-lg font-bold transition-all duration-200 shadow-lg border bg-white hover:bg-blue-500  dark:border-gray-600 dark:bg-gray-700 text-blue-500 dark:text-yellow-400 dark:hover:bg-yellow-500 hover:text-white disabled:bg-white disabled:text-blue-500 disabled:cursor-not-allowed disabled:opacity-40`}
+                  className={`px-5 py-2 rounded-lg font-bold transition-all duration-200 shadow-lg border bg-white hover:bg-blue-500  dark:border-gray-600 dark:bg-blue-500 text-blue-500 dark:text-white dark:hover:bg-blue-700 hover:text-white disabled:bg-white disabled:text-blue-500 disabled:cursor-not-allowed disabled:opacity-40`}
                 >
                   &#8592; Prev
                 </button>
@@ -237,7 +237,7 @@ const Announcements = () => {
                   onClick={handleNextPage}
                   disabled={currentPage === totalPages || totalPages === 0}
                   className={`px-5 py-2 rounded-lg font-bold transition-all duration-200 shadow-lg border
-                    bg-white hover:bg-blue-500 dark:border-gray-600 dark:bg-gray-700 text-blue-500 dark:text-yellow-400 dark:hover:bg-yellow-500 hover:text-white disabled:bg-white disabled:text-blue-500 disabled:cursor-not-allowed disabled:opacity-40`}
+                    bg-white hover:bg-blue-500 dark:border-gray-600 dark:bg-blue-500 text-blue-500 dark:text-white dark:hover:bg-blue-700 hover:text-white disabled:bg-white disabled:text-blue-500 disabled:cursor-not-allowed disabled:opacity-40`}
                 >
                   Next &#8594;
                 </button>

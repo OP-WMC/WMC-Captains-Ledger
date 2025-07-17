@@ -155,9 +155,9 @@ const Dashboard = () => {
         const avg = Math.round(
           attendanceStats.userStats.reduce((sum, u) => sum + (u.attendancePercentage || 0), 0) / attendanceStats.userStats.length
         );
-        attendanceRate = `${avg}% (avg)`;
+        attendanceRate = `${avg}%`;
       } else {
-        attendanceRate = '0% (avg)';
+        attendanceRate = '0%';
       }
     } else {
       attendanceRate = attendanceStats.attendancePercentage !== undefined ? `${attendanceStats.attendancePercentage}%` : '0%';
@@ -231,7 +231,7 @@ const Dashboard = () => {
         <h3 className="text-2xl text-blue-700 dark:text-white font-semibold">{totalPayments}</h3>
       </div>
       <div className="glass-card text-center">
-        <p className="text-gray-700 font-bold dark:text-cyan-300 mb-1">📊 Attendance Rate</p>
+        <p className="text-gray-700 font-bold dark:text-cyan-300 mb-1">📊 Avg Attendance Rate</p>
         <h3 className="text-2xl text-blue-700 dark:text-white font-semibold">{attendanceRate}</h3>
       </div>
     </section>

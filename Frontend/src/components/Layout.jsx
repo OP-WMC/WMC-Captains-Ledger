@@ -29,6 +29,12 @@ const Layout = ({ children }) => {
       adminOnly: false
     },
     {
+      name: 'Manage Avengers',
+      icon: Users,
+      path: '/admin-profiles',
+      adminOnly: true
+    },
+    {
       name: 'Missions',
       icon: Users,
       path: '/missions',
@@ -68,12 +74,6 @@ const Layout = ({ children }) => {
       name: 'Pending Approvals',
       icon: CheckCircle,
       path: '/pending-approvals',
-      adminOnly: true
-    },
-    {
-      name: 'Manage Avengers',
-      icon: Users,
-      path: '/admin-profiles',
       adminOnly: true
     }
   ];

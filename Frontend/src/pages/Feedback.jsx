@@ -83,8 +83,8 @@ const Feedback = () => {
   };
 
   return (
-    <div className="p-8 bg-blue-300 dark:bg-gray-900 min-h-screen text-white">
-      <h1 className="text-4xl font-bold mb-8 font-orbitron text-center text-blue-700 dark:text-white">Feedback</h1>
+    <div className="p-8 bg-blue-300 dark:bg-[#0f172a] min-h-screen text-white">
+      <h1 className="text-4xl font-bold mb-8 font-orbitron text-center text-blue-700 dark:text-white text-shadow-glow">Feedback</h1>
 
       {/* Search and Filter Section */}
       <div className="mb-8 space-y-4">

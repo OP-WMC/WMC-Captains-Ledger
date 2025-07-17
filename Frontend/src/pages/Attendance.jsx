@@ -178,18 +178,18 @@ useEffect(() => {
   return (
     <div className="p-6 space-y-6">
       {/* HEADER */}
-      <h2 className="text-2xl font-bold text-blue-700 dark:text-avengers-gold flex items-center gap-2">
+      <h2 className="text-2xl font-bold text-blue-700 dark:text-white dark:text-shadow-glow flex items-center gap-2">
         <LucideCalendar /> Attendance System
       </h2>
 
-      {message && <div className="text-sm text-gray-700 dark:text-yellow-400 font-medium">{message}</div>}
+      {message && <div className="text-sm text-gray-700 dark:text-white font-medium">{message}</div>}
 
       {/* ATTENDANCE CODE POPUP */}
       {showCodePopup && currentActiveCode && !isAdmin && (
-        <div className="fixed inset-0 dark:bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-blue-200 dark:bg-avengers-dark p-6 rounded-xl shadow-lg border border-blue-400 dark:border-avengers-gold max-w-md w-full mx-4">
+        <div className="fixed inset-0  bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-blue-200 dark:bg-avengers-dark p-6 rounded-xl shadow-lg border border-blue-400 dark:border-gray-700 max-w-md w-full mx-4">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-gray-700  dark:text-avengers-gold">🎯 Active Attendance Code</h3>
+              <h3 className="text-xl font-bold text-gray-700  dark:text-white">🎯 Active Attendance Code</h3>
               <button 
                 onClick={() => setShowCodePopup(false)}
                 className="text-gray-400 hover:text-white"
@@ -200,7 +200,7 @@ useEffect(() => {
             
             <div className="text-center space-y-4">
               <div className=" bg-gray-700 dark:bg-gray-800 p-4 rounded-lg">
-                <div className="text-2xl font-mono font-bold text-white dark:text-avengers-gold">
+                <div className="text-2xl font-mono font-bold text-white dark:text-white">
                   {currentActiveCode.code}
                 </div>
                 <div className="text-sm text-white dark:text-gray-400 mt-2">
@@ -211,7 +211,7 @@ useEffect(() => {
               <div className="flex gap-3">
                 <button
                   onClick={copyActiveCode}
-                  className="flex-1 bg-blue-400 dark:bg-avengers-gold text-black px-4 py-2 rounded-lg font-semibold hover:bg-blue-500 dark:hover:bg-yellow-400 flex items-center justify-center gap-2"
+                  className="flex-1 bg-blue-400 dark:bg-blue-500 dark:text-white text-black px-4 py-2 rounded-lg font-semibold hover:bg-blue-500 dark:hover:bg-blue-600 flex items-center justify-center gap-2"
                 >
                   <Copy className="w-4 h-4" /> Copy Code
                 </button>
@@ -231,9 +231,9 @@ useEffect(() => {
       {/* DATE ATTENDANCE MODAL */}
       {showDateModal && selectedDate && isAdmin && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-blue-300 dark:bg-avengers-dark p-6 rounded-xl shadow-lg border border-blue-400 dark:border-avengers-gold max-w-4xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+          <div className="bg-blue-300 dark:bg-avengers-dark p-6 rounded-xl shadow-lg border border-blue-400 dark:border-gray-700 max-w-4xl w-full mx-4 max-h-[80vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-white dark:text-avengers-gold flex items-center gap-2">
+              <h3 className="text-xl font-bold text-white dark:text-white flex items-center gap-2">
                 <Eye className="w-5 h-5" /> Attendance for {new Date(selectedDate).toLocaleDateString()}
               </h3>
               <button 
@@ -256,13 +256,13 @@ useEffect(() => {
                     <div className="text-2xl font-bold text-white">{dateAttendanceData.totalUsers}</div>
                     <div className="text-sm text-avengers-silver">Total Users</div>
                   </div>
-                  <div className="bg-green-500 p-4 rounded-lg text-center border border-green-500/30">
-                    <div className="text-2xl font-bold text-white dark:text-green-400">{dateAttendanceData.presentCount}</div>
-                    <div className="text-sm text-avengers-silver dark:text-green-400">Present</div>
+                  <div className="bg-green-400/50 p-4 rounded-lg text-center border border-green-700/30">
+                    <div className="text-2xl font-bold text-white ">{dateAttendanceData.presentCount}</div>
+                    <div className="text-sm text-avengers-silver ">Present</div>
                   </div>
                   <div className="bg-red-500 dark:bg-red-600/20 p-4 rounded-lg text-center border border-red-500/30">
-                    <div className="text-2xl font-bold text-white  dark:text-red-400">{dateAttendanceData.absentCount}</div>
-                    <div className="text-sm text-avengers-silver text-red-400">Absent</div>
+                    <div className="text-2xl font-bold text-white  ">{dateAttendanceData.absentCount}</div>
+                    <div className="text-sm dark:text-avengers-silver ">Absent</div>
                   </div>
                 </div>
 
@@ -272,7 +272,7 @@ useEffect(() => {
                     onClick={() => setAttendanceView('present')}
                     className={`px-4 py-2 rounded-lg font-semibold flex items-center gap-2 ${
                       attendanceView === 'present' 
-                        ? 'bg-green-600 text-white' 
+                        ? 'bg-green-400/50 text-white' 
                         : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                     }`}
                   >
@@ -349,7 +349,7 @@ useEffect(() => {
       )}
 
 {/* MAIN ACTIONS + CALENDAR in tighter single box */}
-<div className="bg-blue-300 dark:bg-avengers-dark p-6 rounded-xl shadow-lg">
+<div className="bg-blue-300  glass-card dark:border-gray-700 p-6 rounded-xl shadow-lg">
   <div className="flex flex-col md:flex-row items-start gap-6">
     
     {/* LEFT: Attendance Control */}
@@ -359,7 +359,7 @@ useEffect(() => {
           <div className="flex items-center gap-4 flex-wrap">
             <button
               onClick={generateCode}
-              className="bg-white hover:bg-blue-500 dark:bg-avengers-gold text-black px-4 py-2 rounded-xl font-semibold dark:hover:bg-yellow-400"
+              className=" bg-blue-400 hover:bg-blue-500 dark:bg-blue-600/90 dark:text-white text-white px-4 py-2 rounded-xl font-semibold dark:hover:bg-blue-700"
             >
               <RefreshCw className="inline w-4 h-4 mr-1" /> Start Attendance
             </button>
@@ -369,14 +369,14 @@ useEffect(() => {
                 <Key className="w-5 h-5 text-green-800 dark:text-green-400" />
                 <span>{attendanceCode}</span>
                 <button onClick={copyCode}>
-                  <Copy className="w-4 h-4 text-white dark:text-gray-400 hover:text-white" />
+                  <Copy className="w-4 h-4 text-white dark:text-white hover:text-white" />
                 </button>
               </div>
             )}
           </div>
 
           {codeExpiry && (
-            <div className="text-m text-white dark:text-gray-400">
+            <div className="text-m text-white dark:text-white">
               Code expires at: {new Date(codeExpiry).toLocaleTimeString()}
             </div>
           )}
@@ -398,12 +398,12 @@ useEffect(() => {
                   value={userCode}
                   onChange={(e) => setUserCode(e.target.value)}
                   maxLength={6}
-                  className="px-3 py-2 rounded-lg  bg-white font-semibold dark:bg-gray-800 text-blue-500 focus:outline-none w-40"
+                  className="px-3 py-2 rounded-lg  bg-white font-semibold dark:bg-gray-800 text-blue-500 dark:text-white focus:outline-none w-40"
                 />
                 <button
                   onClick={markAttendance}
                   disabled={loading}
-                  className=" bg-blue-500 hover:bg-green-400 dark:bg-avengers-gold text-black px-4 py-2 rounded-xl font-semibold dark:hover:bg-yellow-400"
+                  className=" bg-blue-500 hover:bg-green-400 dark:bg-blue-500 dark:text-white text-black px-4 py-2 rounded-xl font-semibold dark:hover:bg-blue-700"
                 >
                   {loading ? 'Marking...' : 'Mark Attendance'}
                 </button>
