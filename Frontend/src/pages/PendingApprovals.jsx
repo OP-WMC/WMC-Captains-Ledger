@@ -103,7 +103,7 @@ const PendingApprovals = () => {
             {pendingTransactions.map((transaction) => (
               <div
                 key={transaction._id}
-                className="bg-gray-400 dark:bg-blue-900/20 border border-blue-700/30 rounded-lg p-4"
+                className="bg-blue-300 dark:bg-blue-900/20 border border-blue-700/30 rounded-lg p-4"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -126,22 +126,22 @@ const PendingApprovals = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
                       <div className="flex items-center gap-2">
                         <DollarSign className="w-4 h-4 text-green-400" />
-                        <span className="dark:text-avengers-silver font-semibold">Total Amount:</span>
+                        <span className="text-white dark:text-avengers-silver font-semibold">Total Amount:</span>
                         <span className="text-white font-semibold">₹{transaction.amount}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <DollarSign className="w-4 h-4 text-blue-400" />
-                        <span className="dark:text-avengers-silver font-semibold">Advanced (Sent):</span>
+                        <span className="text-white dark:text-avengers-silver font-semibold">Advanced (Sent):</span>
                         <span className="text-green-400 font-semibold">₹{transaction.advancedAmount}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <DollarSign className="w-4 h-4 text-orange-400" />
-                        <span className="dark:text-avengers-silver font-semibold">Remaining (Pending):</span>
+                        <span className="text-white dark:text-avengers-silver font-semibold">Remaining (Pending):</span>
                         <span className="text-orange-400 font-semibold">₹{transaction.remainingAmount}</span>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-4 text-m dark:text-avengers-silver">
+                    <div className="flex items-center gap-4 text-m text-white dark:text-avengers-silver">
                       <div className="flex items-center gap-1">
                         <Mail className="w-3 h-3" />
                         <span>{transaction.sender?.email}</span>

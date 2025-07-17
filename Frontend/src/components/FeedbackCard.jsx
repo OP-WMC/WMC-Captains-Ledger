@@ -36,7 +36,7 @@ const FeedbackCard = ({
   };
 
   return (
-    <div className="bg-gray-600 dark:bg-gray-800 p-6 rounded-xl shadow-lg text-white border border-gray-700 hover:border-gray-600 transition-all duration-200 ">
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg text-blue-500 border border-blue-500 dark:hover:border-gray-600 transition-all duration-200 ">
       <div className="flex justify-between items-start mb-3">
         <div className="flex items-center space-x-2">
           <h3 className="font-semibold text-green-400 text-lg">
@@ -46,18 +46,18 @@ const FeedbackCard = ({
             {stars}
           </div>
         </div>
-        <span className="text-xs text-white dark:text-gray-400">
+        <span className="text-xs text-blue-500 font-medium dark:text-gray-400">
           {formatDate(submittedAt)}
         </span>
       </div>
       
       <div className="mb-3">
-        <p className="text-sm text-white dark:text-gray-400 mb-1">
-          <span className="text-blue-400">Paid by:</span> {paidBy || "Unknown"}
+        <p className="text-sm text-blue-500 font-semibold dark:text-gray-400 mb-1">
+          <span className="text-blue-500 font-semibold">Paid by:</span> {paidBy || "Unknown"}
         </p>
       </div>
       
-      <p className="text-white dark:text-gray-300 leading-relaxed">{comment}</p>
+      <p className="text-black font-semibold dark:text-gray-300 leading-relaxed">{comment}</p>
     </div>
   );
 };

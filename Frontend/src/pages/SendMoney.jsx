@@ -279,7 +279,7 @@ const SendMoney = () => {
                 <select
                   value={selectedRecipient}
                   onChange={(e) => setSelectedRecipient(e.target.value)}
-                  className="input-field flex-1 text-gray-700 font-semibold rounded-md px-3 py-2 dark:text-white
+                  className="input-field flex-1 text-white font-semibold rounded-md px-3 py-2 dark:text-white
                   bg-blue-300 dark:bg-blue-700 hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 >
                   <option value="">Choose an Avenger...</option>
@@ -295,9 +295,9 @@ const SendMoney = () => {
                   type="button"
                   onClick={handleAddRecipient}
                   disabled={!selectedRecipient}
-                  className="px-4 py-2 bg-green-600 hover:bg-green-500 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-md flex items-center gap-2 transition-colors"
+                  className="px-4 py-2 bg-blue-400 hover:bg-blue-500 dark:disabled:bg-gray-600 disabled:cursor-not-allowed text-white  rounded-md flex items-center gap-2 transition-colors"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-4 h-4 " />
                   Add
                 </button>
               </div>
@@ -312,7 +312,7 @@ const SendMoney = () => {
                     {formData.recipients.map((recipientName) => {
                       const recipientUser = users.find(u => u.name === recipientName);
                       return (
-                        <div key={recipientName} className="flex items-center justify-between p-3 bg-blue-300 dark:bg-blue-900/20 rounded-lg border border-blue-700/30">
+                        <div key={recipientName} className="flex items-center justify-between p-3 text-white bg-blue-300 dark:bg-blue-900/20 rounded-lg border border-blue-700/30">
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
                               {recipientName.charAt(0).toUpperCase()}
@@ -339,7 +339,7 @@ const SendMoney = () => {
 
             {/* Total Amount */}
             <div>
-              <label className="block text-sm text-black font-medium dark:text-avengers-silver mb-2">
+              <label className="block text-sm  text-black font-medium dark:text-avengers-silver mb-2">
                 Total Amount (₹)
               </label>
               <input
@@ -348,7 +348,7 @@ const SendMoney = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, amount: e.target.value })
                 }
-                className="input-field  w-full   text-black placeholder-white"
+                className="input-field  w-full  bg-blue-300 border-blue-500 text-white placeholder-white"
                 placeholder="Enter total amount (max ₹10,000)"
                 min="1"
                 max="10000"
@@ -369,8 +369,8 @@ const SendMoney = () => {
                   onClick={() => handleSplitTypeChange("equal")}
                   className={`p-3 rounded-lg border transition-all ${
                     formData.splitType === "equal"
-                      ? "bg-blue-600 border-blue-500 text-white"
-                      : "bg-gray-600/50 border-gray-200 text-avengers-silver hover:bg-gray-400/50"
+                      ? "bg-blue-600 border-blue-700 text-white"
+                      : "bg-blue-300 border-gray-200 text-avengers-silver hover:bg-blue-600"
                   }`}
                 >
                   <div className="text-center">
@@ -389,8 +389,8 @@ const SendMoney = () => {
                   onClick={() => handleSplitTypeChange("manual")}
                   className={`p-3 rounded-lg border transition-all ${
                     formData.splitType === "manual"
-                      ? "bg-blue-600 border-blue-500 text-white"
-                      : "bg-gray-700/50 border-gray-200 text-avengers-silver hover:bg-gray-600/50"
+                      ? "bg-blue-600 border-blue-700 text-white"
+                      : "bg-blue-300 border-gray-200 text-avengers-silver hover:bg-blue-600"
                   }`}
                 >
                   <div className="text-center">
@@ -475,42 +475,42 @@ const SendMoney = () => {
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium dark:text-avengers-silver mb-2">
+                    <label className="block text-sm font-medium text-white dark:text-avengers-silver mb-2">
                       Advanced Amount (₹) - Immediate
                     </label>
                     <input
                       type="number"
                       value={formData.advancedAmount}
                       onChange={handleAdvancedAmountChange}
-                      className="input-field w-full"
+                      className="input-field w-full bg-white text-blue-500 placeholder:text-blue-500 font-bold"
                       placeholder="Immediate amount"
                       min="1"
                       max={parseInt(formData.amount) || 10000}
                       required={formData.isAdvancedMode}
                     />
                     {formData.advancedAmount && formData.recipients.length > 0 && (
-                      <p className="text-xs dark:text-green-400 mt-1">
+                      <p className="text-xs text-white dark:text-green-400 mt-1">
                         Each gets: ₹{Math.round(parseInt(formData.advancedAmount) / formData.recipients.length)} immediately
                       </p>
                     )}
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium dark:text-avengers-silver mb-2">
+                    <label className="block text-sm font-medium text-white dark:text-avengers-silver mb-2">
                       Remaining Amount (₹) - After Approval
                     </label>
                     <input
                       type="number"
                       value={formData.remainingAmount}
                       onChange={handleRemainingAmountChange}
-                      className="input-field w-full"
+                      className="input-field w-full bg-white text-blue-500 placeholder:text-blue-500 font-bold"
                       placeholder="Remaining amount"
                       min="1"
                       max={parseInt(formData.amount) || 10000}
                       required={formData.isAdvancedMode}
                     />
                     {formData.remainingAmount && formData.recipients.length > 0 && (
-                      <p className="text-xs dark:text-orange-400 mt-1">
+                      <p className="text-xs text-white dark:text-orange-400 mt-1">
                         Each gets: ₹{Math.round(parseInt(formData.remainingAmount) / formData.recipients.length)} after approval
                       </p>
                     )}
@@ -518,8 +518,8 @@ const SendMoney = () => {
                 </div>
                 
                 {formData.amount && formData.advancedAmount && formData.remainingAmount && (
-                  <div className="text-center p-2 dark:bg-blue-900/30 rounded">
-                    <p className="text-sm text-blue-300">
+                  <div className="text-left p-2 text-white dark:bg-blue-900/30 rounded">
+                    <p className="text-sm text-white dark:text-blue-300">
                       Total: ₹{parseInt(formData.advancedAmount) + parseInt(formData.remainingAmount)} 
                       {parseInt(formData.advancedAmount) + parseInt(formData.remainingAmount) === parseInt(formData.amount) 
                         ? " ✅" : " ❌ (Must equal total amount)"}
@@ -539,7 +539,7 @@ const SendMoney = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, feedback: e.target.value })
                 }
-                className="input-field w-full min-h-[80px] resize-none text-black placeholder-white"
+                className="input-field w-full min-h-[80px] resize-none bg-blue-300 text-white font-semibold placeholder-white"
                 placeholder="Add a message to include in the email notification..."
                 maxLength="500"
               />
@@ -572,8 +572,8 @@ const SendMoney = () => {
             Transaction History
           </h2>
 
-          <table className="w-full text-sm text-gray-700 text-left dark:text-avengers-silver">
-            <thead className="border-b text-gray-700 border-gray-600 dark:text-white">
+          <table className="w-full text-sm text-black text-left dark:text-avengers-silver">
+            <thead className="border-b text-black border-gray-600 dark:text-white">
               <tr>
                 <th className="py-2">From</th>
                 <th className="py-2">To</th>
@@ -585,7 +585,7 @@ const SendMoney = () => {
             <tbody>
               {transactions.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="py-4 text-center text-avengers-silver">
+                  <td colSpan="5" className="py-4 text-center text-black text-avengers-silver">
                     No transactions yet.
                   </td>
                 </tr>
@@ -604,8 +604,8 @@ const SendMoney = () => {
                     </td>
                     <td className="py-2">
                       <span className={`px-2 py-1 rounded text-xs ${
-                        txn.status === 'completed' ? 'bg-blue-200 dark:bg-green-900/30 text-green-400 font-semibold' :
-                        txn.status === 'partially_completed' ? 'bg-yellow-900/30 text-yellow-400' :
+                        txn.status === 'completed' ? 'bg-green-300 dark:bg-green-900/30  font-semibold' :
+                        txn.status === 'partially_completed' ? 'dark:bg-yellow-900/30 bg-yellow-200/80  dark:text-yellow-400 font-semibold ' :
                         'bg-gray-900/30 text-gray-400'
                       }`}>
                         {txn.status}

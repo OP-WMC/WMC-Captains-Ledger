@@ -359,7 +359,7 @@ useEffect(() => {
           <div className="flex items-center gap-4 flex-wrap">
             <button
               onClick={generateCode}
-              className="bg-gray-400 hover:bg-blue-500 dark:bg-avengers-gold text-black px-4 py-2 rounded-xl font-semibold dark:hover:bg-yellow-400"
+              className="bg-white hover:bg-blue-500 dark:bg-avengers-gold text-black px-4 py-2 rounded-xl font-semibold dark:hover:bg-yellow-400"
             >
               <RefreshCw className="inline w-4 h-4 mr-1" /> Start Attendance
             </button>

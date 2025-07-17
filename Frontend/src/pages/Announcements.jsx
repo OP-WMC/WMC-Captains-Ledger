@@ -98,7 +98,7 @@ const Announcements = () => {
           <div className="mb-8 text-center">
             <button
               onClick={() => setShowForm(!showForm)}
-              className=" bg-gray-400 hover:bg-blue-400 dark:bg-gradient-to-r from-yellow-500 to-orange-500 dark:hover:from-yellow-600 dark:hover:to-orange-600 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-500/25 flex items-center mx-auto"
+              className=" bg-white hover:bg-blue-400 text-blue-600 hover:text-white font-bold dark:bg-gradient-to-r from-yellow-500 to-orange-500 dark:hover:from-yellow-600 dark:hover:to-orange-600 dark:text-white dark:font-semibold px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-500/25 flex items-center mx-auto"
             >
               <Plus className="w-5 h-5 mr-2" />
               {showForm ? "Cancel" : "Post New Announcement"}
@@ -111,36 +111,36 @@ const Announcements = () => {
           <div className="mb-10 animate-fadeIn">
             <form
               onSubmit={handleSubmit}
-              className="bg-gray-400 dark:bg-gradient-to-br from-gray-800 to-gray-700 p-8 rounded-2xl shadow-2xl border dark:border-gray-600 max-w-2xl mx-auto backdrop-blur-sm"
+              className="bg-white dark:bg-gradient-to-br from-gray-800 to-gray-700 p-8 rounded-2xl shadow-2xl border dark:border-gray-600 max-w-2xl mx-auto backdrop-blur-sm"
             >
-              <h2 className="text-2xl font-bold text-white mb-6 text-center">Create New Announcement</h2>
+              <h2 className="text-2xl font-bold text-blue-500 dark:text-white mb-6 text-center">Create New Announcement</h2>
               
               <div className="mb-6">
-                <label className="block text-sm font-semibold mb-2 text-white dark:text-gray-300">Title</label>
+                <label className="block text-sm font-semibold mb-2 text-blue-500 dark:text-gray-300">Title</label>
                 <input
                   type="text"
                   value={formData.title}
                   required
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full p-4 rounded-lg dark:bg-gray-600 dark:text-white border border-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200"
+                  className="w-full p-4 rounded-lg text-black placeholder:text-black dark:bg-gray-600 dark:text-white border border-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter announcement title..."
                 />
               </div>
 
               <div className="mb-6">
-                <label className="block text-sm font-semibold mb-2 text-white dark:text-gray-300">Description</label>
+                <label className="block text-sm font-semibold mb-2 text-blue-500 dark:text-gray-300">Description</label>
                 <textarea
                   value={formData.body}
                   required
                   onChange={(e) => setFormData({ ...formData, body: e.target.value })}
-                  className="w-full p-4 rounded-lg dark:bg-gray-600 dark:text-white border border-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 resize-none"
+                  className="w-full p-4 rounded-lg text-black placeholder:text-black dark:bg-gray-600 dark:text-white border border-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 resize-none"
                   rows="4"
                   placeholder="Enter announcement details..."
                 ></textarea>
               </div>
 
               <div className="mb-6">
-                <label className="block text-sm font-semibold mb-2 text-white dark:text-gray-300">Type</label>
+                <label className="block text-sm font-semibold mb-2 text-blue-500 dark:text-gray-300">Type</label>
                 <select
                   value={formData.important ? "important" : "normal"}
                   onChange={e => setFormData({ ...formData, important: e.target.value === "important" })}
@@ -185,7 +185,7 @@ const Announcements = () => {
           <select
             value={filter}
             onChange={handleFilterChange}
-            className="p-3 rounded-lg bg-gray-400 dark:bg-gray-700 text-white border border-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 shadow-lg"
+            className="p-3 rounded-lg bg-white dark:bg-gray-700 text-blue-500 font-semibold border dark:border-gray-500 focus:outline-none focus:ring-2 dark:focus:ring-yellow-500 focus:border-transparent transition-all duration-200 shadow-lg"
           >
             <option value="all">All Announcements</option>
             <option value="important">🚨 Important</option>
@@ -226,7 +226,7 @@ const Announcements = () => {
                 <button
                   onClick={handlePrevPage}
                   disabled={currentPage === 1}
-                  className={`px-5 py-2 rounded-lg font-semibold transition-all duration-200 shadow-lg border bg-gray-400 hover:bg-blue-500  border-gray-600 dark:bg-gray-700 text-white dark:text-yellow-400 dark:hover:bg-yellow-500 hover:text-white disabled:bg-gray-600 disabled:text-gray-400`}
+                  className={`px-5 py-2 rounded-lg font-bold transition-all duration-200 shadow-lg border bg-white hover:bg-blue-500  dark:border-gray-600 dark:bg-gray-700 text-blue-500 dark:text-yellow-400 dark:hover:bg-yellow-500 hover:text-white disabled:bg-white disabled:text-blue-500 disabled:cursor-not-allowed disabled:opacity-40`}
                 >
                   &#8592; Prev
                 </button>
@@ -236,8 +236,8 @@ const Announcements = () => {
                 <button
                   onClick={handleNextPage}
                   disabled={currentPage === totalPages || totalPages === 0}
-                  className={`px-5 py-2 rounded-lg font-semibold transition-all duration-200 shadow-lg border
-                    bg-gray-400 hover:bg-blue-500 border-gray-600 dark:bg-gray-700 text-white dark:text-yellow-400 dark:hover:bg-yellow-500 hover:text-white disabled:bg-gray-600 disabled:text-gray-400`}
+                  className={`px-5 py-2 rounded-lg font-bold transition-all duration-200 shadow-lg border
+                    bg-white hover:bg-blue-500 dark:border-gray-600 dark:bg-gray-700 text-blue-500 dark:text-yellow-400 dark:hover:bg-yellow-500 hover:text-white disabled:bg-white disabled:text-blue-500 disabled:cursor-not-allowed disabled:opacity-40`}
                 >
                   Next &#8594;
                 </button>
