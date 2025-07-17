@@ -390,7 +390,7 @@ useEffect(() => {
               </div>
             ) : (
               <>
-                <label className="block text-m text-white dark:text-avengers-silver font-medium">
+                <label className="block text-m text-white font-bold dark:text-avengers-silver ">
                   Enter Attendance Code
                 </label>
                 <input
@@ -398,7 +398,7 @@ useEffect(() => {
                   value={userCode}
                   onChange={(e) => setUserCode(e.target.value)}
                   maxLength={6}
-                  className="px-3 py-2 rounded-lg bg-gray-400 dark:bg-gray-800 text-white focus:outline-none w-40"
+                  className="px-3 py-2 rounded-lg  bg-white font-semibold dark:bg-gray-800 text-blue-500 focus:outline-none w-40"
                 />
                 <button
                   onClick={markAttendance}

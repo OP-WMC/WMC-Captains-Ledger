@@ -17,8 +17,8 @@ const AnnouncementCard = ({ title, body, important, author, date }) => {
   return (
     <div className={`group relative overflow-hidden rounded-2xl shadow-xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl ${
       important 
-        ? 'bg-gradient-to-br from-red-900/20 to-red-800/30 border border-red-500/30' 
-        : 'bg-gray-400 dark:bg-gradient-to-br from-gray-800/50 to-gray-700/50 border border-gray-600/30'
+        ? 'bg-white text-blue-500 dark:bg-gradient-to-br dark:from-red-900/20 dark:to-red-800/30 border border-blue-600 dark:border-red-500/30' 
+        : 'bg-white dark:bg-gradient-to-br from-gray-800/50 to-gray-700/50 border border-gray-600/30'
     } backdrop-blur-sm`}>
       
       {/* Important Badge */}
@@ -36,13 +36,13 @@ const AnnouncementCard = ({ title, body, important, author, date }) => {
         {/* Header */}
         <div className="flex items-start mb-4">
           <div className={`p-3 rounded-full mr-4 ${
-            important ? 'bg-red-500/20 text-red-400' : 'bg-yellow-500/20 text-yellow-400'
+            important ? 'text-blue-500 dark:bg-red-500/20 dark:text-red-400' : 'text-blue-500 dark:bg-yellow-500/20 dark:text-yellow-400'
           }`}>
             <Megaphone className="w-6 h-6" />
           </div>
           <div className="flex-1">
             <h3 className={`font-bold text-xl mb-2 ${
-              important ? 'text-red-100' : 'text-yellow-400'
+              important ? 'text-blue-500 dark:text-red-100' : 'text-blue-500 dark:text-yellow-400'
             }`}>
               {title}
             </h3>
@@ -51,13 +51,13 @@ const AnnouncementCard = ({ title, body, important, author, date }) => {
 
         {/* Body */}
         <div className="mb-6">
-          <p className="text-white dark:text-gray-300 leading-relaxed text-base">
+          <p className="text-blue-500 font-semibold dark:text-gray-300 leading-relaxed text-base">
             {body}
           </p>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between text-sm text-white dark:text-gray-400 border-t border-gray-600/30 pt-4">
+        <div className="flex items-center justify-between text-sm text-blue-500 dark:text-gray-400 border-t border-blue-300 dark:border-gray-600/30 pt-4">
           <div className="flex items-center">
             <User className="w-4 h-4 mr-2" />
             <span>{author || 'Unknown'}</span>
@@ -72,8 +72,8 @@ const AnnouncementCard = ({ title, body, important, author, date }) => {
       {/* Hover Effect */}
       <div className={`absolute inset-0 bg-gradient-to-r ${
         important 
-          ? 'from-red-500/5 to-red-600/5' 
-          : 'from-yellow-500/5 to-orange-500/5'
+          ? 'from-red-400/20 to-red-500/30' 
+          : 'from-yellow-200/20 to-orange-200/30'
       } opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />
     </div>
   );

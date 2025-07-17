@@ -50,7 +50,7 @@ const Layout = ({ children }) => {
       name: 'Stats',
       icon: BarChart3,
       path: '/stats',
-      adminOnly: false
+      adminOnly: true
     },
     {
       name: 'Announcements',
