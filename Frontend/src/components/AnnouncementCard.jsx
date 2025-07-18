@@ -17,8 +17,8 @@ const AnnouncementCard = ({ title, body, important, author, date }) => {
   return (
     <div className={`group relative overflow-hidden rounded-2xl shadow-xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl ${
       important 
-        ? 'bg-white text-blue-500 dark:bg-gradient-to-br dark:from-red-900/20 dark:to-red-800/30 border border-blue-600 dark:border-red-500/30' 
-        : 'bg-white dark:bg-gradient-to-br from-gray-800/50 to-gray-700/50 border border-gray-600/30'
+        ? 'bg-white text-blue-500 dark:bg-[rgba(255,255,255,0.05)] border border-blue-600 dark:border-red-500/30' 
+        : 'bg-white dark:bg-[rgba(255,255,255,0.05)] border border-gray-600/30'
     } backdrop-blur-sm`}>
       
       {/* Important Badge */}
@@ -72,7 +72,7 @@ const AnnouncementCard = ({ title, body, important, author, date }) => {
       {/* Hover Effect */}
       <div className={`absolute inset-0 bg-gradient-to-r ${
         important 
-          ? 'from-red-400/20 to-red-500/30' 
+          ? 'from-red-400/20 to-red-500/20' 
           : 'from-yellow-200/20 to-orange-200/30'
       } opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />
     </div>

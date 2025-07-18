@@ -103,9 +103,9 @@ const ChartContainer = ({
   };
 
   return (
-    <div className="bg-gradient-to-br from-gray-800/50 to-gray-700/50 p-6 rounded-2xl shadow-xl border border-gray-600/30 backdrop-blur-sm">
+    <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-600/30 backdrop-blur-sm">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-white">{title}</h2>
+        <h2 className="text-xl font-semibold text-blue-600">{title}</h2>
         
         {/* Chart Type Selector */}
         <div className="flex space-x-2">
@@ -117,8 +117,8 @@ const ChartContainer = ({
                 onClick={() => setChartType(type.key)}
                 className={`p-2 rounded-lg transition-all duration-200 flex items-center space-x-2 ${
                   chartType === type.key
-                    ? 'bg-yellow-500 text-white shadow-lg'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white'
+                    ? 'bg-yellow-500 text-blue-500 shadow-lg'
+                    : 'bg-gray-700 text-blue-400 hover:bg-gray-600 hover:text-black'
                 }`}
                 title={type.label}
               >

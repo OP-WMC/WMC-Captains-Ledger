@@ -14,7 +14,7 @@ const data = [
 
 const PaymentChart = () => {
   return (
-    <div className="bg-gray-800 p-6 rounded-2xl text-white">
+    <div className="bg-white p-6 rounded-2xl text-white">
       <h2 className="text-xl font-semibold mb-4">Monthly Payment Overview</h2>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data}>

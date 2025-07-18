@@ -246,7 +246,7 @@ const Dashboard = () => {
 <div className="space-y-3">
   {(isAdmin ? missions : userMissions).slice(0, 4).map((mission) => (
     <div key={mission._id} className="flex items-center justify-between p-4 dark:bg-avengers-gray/30 rounded-lg">
-      <div className="flex-1 p-4 bg-blue-100 dark:bg-cyan-950/40 rounded-lg transition-transform hover:scale-105">
+      <div className="flex-1 p-4 bg-blue-100 dark:bg-blue-900/20 rounded-lg transition-transform hover:scale-105">
         <h3 className="text-gray-700 font-semibold dark:text-white  text-lg">{mission.title}</h3>
         <p className="text-sm text-gray-700 dark:text-cyan-300">{mission.location}</p>
       </div>
@@ -277,7 +277,7 @@ const Dashboard = () => {
                 className="flex items-center justify-between p-4  dark:bg-avengers-gray/30 rounded-lg">
               
                 <div className="flex items-start justify-between w-full">
-                  <div className="flex-1  p-4 bg-blue-100 dark:bg-cyan-950/40 rounded-lg transition-transform hover:scale-105">
+                  <div className="flex-1  p-4 bg-blue-100 dark:bg-blue-900/20 rounded-lg transition-transform hover:scale-105">
                     <h3 className="text-gray-700 dark:text-white text-lg font-semibold">{announcement.title}</h3>
                     <p className="text-sm text-gray-700 dark:text-cyan-300 mt-2">{announcement.body || announcement.content}</p>
                     <p className="text-xs text-gray-700 dark:text-cyan-300 mt-3">
@@ -307,7 +307,7 @@ const Dashboard = () => {
         ));
 
         return (
-          <li key={fb._id || fb.id} className="flex-1 p-4 bg-blue-100 dark:bg-cyan-950/40 rounded-lg transition-transform hover:scale-105">
+          <li key={fb._id || fb.id} className="flex-1 p-4 bg-blue-100 dark:bg-blue-900/20 rounded-lg transition-transform hover:scale-105">
             <p className="text-gray-700 dark:text-white font-semibold text-lg">
               From: {fb.user?.name || fb.user?.codename || "Anonymous"} • {stars}
             </p>

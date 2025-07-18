@@ -280,7 +280,7 @@ const SendMoney = () => {
                   value={selectedRecipient}
                   onChange={(e) => setSelectedRecipient(e.target.value)}
                   className="input-field flex-1 text-white font-semibold rounded-md px-3 py-2 dark:text-white
-                  bg-blue-300 dark:bg-blue-700 hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  bg-blue-300 dark:bg-blue-700/50 hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 >
                   <option value="">Choose an Avenger...</option>
                   {users
@@ -295,7 +295,7 @@ const SendMoney = () => {
                   type="button"
                   onClick={handleAddRecipient}
                   disabled={!selectedRecipient}
-                  className="px-4 py-2 bg-blue-400 hover:bg-blue-500 dark:disabled:bg-blue-700  disabled:cursor-not-allowed text-white  rounded-md flex items-center gap-2 transition-colors"
+                  className="px-4 py-2 bg-blue-400 hover:bg-blue-500 dark:bg-blue-900 dark:disabled:bg-blue-900/20 dark:hover:bg-blue-700 disabled:cursor-not-allowed text-white  rounded-md flex items-center gap-2 transition-colors"
                 >
                   <Plus className="w-4 h-4 " />
                   Add
@@ -348,7 +348,7 @@ const SendMoney = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, amount: e.target.value })
                 }
-                className="input-field  w-full dark:bg-blue-700 bg-blue-300 border-blue-500 text-white placeholder-white"
+                className="input-field  w-full dark:bg-blue-900/20 bg-blue-300 border-blue-500 text-white placeholder-white"
                 placeholder="Enter total amount (max ₹10,000)"
                 min="1"
                 max="10000"
@@ -369,8 +369,8 @@ const SendMoney = () => {
                   onClick={() => handleSplitTypeChange("equal")}
                   className={`p-3 rounded-lg border transition-all ${
                     formData.splitType === "equal"
-                      ? "bg-blue-600 border-blue-700 text-white"
-                      : "bg-gray-400 border-gray-200 text-avengers-silver hover:bg-blue-600"
+                      ? "bg-blue-600 border-blue-700 text-white dark:bg-blue-600 dark:hover:bg-blue-600 dark:border-blue-700"
+                      : "bg-gray-400 border-gray-200 text-avengers-silver hover:bg-blue-600 dark:bg-blue-900/20 dark:hover:bg-blue-600 dark:border-blue-700"
                   }`}
                 >
                   <div className="text-center">
@@ -389,8 +389,8 @@ const SendMoney = () => {
                   onClick={() => handleSplitTypeChange("manual")}
                   className={`p-3 rounded-lg border transition-all ${
                     formData.splitType === "manual"
-                      ? "bg-blue-600 border-blue-700 text-white"
-                      : "bg-gray-400 border-gray-200 text-avengers-silver hover:bg-blue-600"
+                      ? "bg-blue-600 border-blue-700 text-white dark:bg-blue-600 dark:hover:bg-blue-600 dark:border-blue-700"
+                      : "bg-gray-400 border-gray-200 text-avengers-silver hover:bg-blue-600 dark:bg-blue-900/20 dark:hover:bg-blue-600 dark:border-blue-700"
                   }`}
                 >
                   <div className="text-center">
@@ -483,7 +483,7 @@ const SendMoney = () => {
                           type="number"
                           value={formData.advancedAmount}
                           onChange={handleAdvancedAmountChange}
-                          className="input-field w-full bg-white dark:bg-avengers-silver text-blue-500 placeholder:text-blue-500 font-bold"
+                          className="input-field w-full bg-white dark:bg-blue-900/20 dark:border-blue-700/30 text-white placeholder:text-gray-400 font-semibold"
                           placeholder="Immediate amount"
                           min="1"
                           max={parseInt(formData.amount) || 10000}
@@ -503,7 +503,7 @@ const SendMoney = () => {
                           type="number"
                           value={formData.remainingAmount}
                           onChange={handleRemainingAmountChange}
-                          className="input-field w-full bg-white dark:bg-avengers-silver text-blue-500 placeholder:text-blue-500 font-semibold"
+                          className="input-field w-full bg-white dark:bg-blue-900/20 dark:border-blue-700/30 text-white placeholder:text-gray-400 font-semibold"
                           placeholder="Remaining amount"
                           min="1"
                           max={parseInt(formData.amount) || 10000}
@@ -540,7 +540,7 @@ const SendMoney = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, feedback: e.target.value })
                 }
-                className="input-field w-full min-h-[80px] resize-none bg-blue-300 dark:bg-blue-900/30 text-white font-semibold dark:font-medium placeholder-white"
+                className="input-field w-full min-h-[80px] resize-none bg-blue-300 dark:bg-blue-900/30 text-white font-semibold dark:font-medium placeholder-gray-300"
                 placeholder="Add a message to include in the email notification..."
                 maxLength="500"
               />

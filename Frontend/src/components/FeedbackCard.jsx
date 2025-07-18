@@ -36,7 +36,7 @@ const FeedbackCard = ({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg text-blue-500 border border-blue-500 dark:hover:border-gray-600 transition-all duration-200 ">
+    <div className="bg-white dark:bg-gray-800 dark:border-gray-900 p-6 rounded-xl shadow-lg text-blue-500 border border-blue-500 dark:hover:border-gray-600 transition-all duration-200 ">
       <div className="flex justify-between items-start mb-3">
         <div className="flex items-center space-x-2">
           <h3 className="font-semibold text-green-400 text-lg">

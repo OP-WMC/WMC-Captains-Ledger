@@ -89,17 +89,18 @@
   border-radius: 0.75rem;
   border: none;
   font-family: 'Orbitron', sans-serif;
-  /* background-color:; */
+  background-color:rgba(96, 165, 250, 1);
+  color:white;
 }
 .dark .react-calendar {
-  background-color: #1f2937; /* Tailwind gray-800 */
+  background-color: rgba(30, 58, 138, 0.2); /* Tailwind gray-800 */
   color: white;
   border-radius: 0.75rem;
   border: none;
   font-family: 'Orbitron', sans-serif;
 }
 .react-calendar__tile--now {
-  background: #bbd5fa !important; /* Tailwind gray-700 */
+  background: rgba(29, 78, 216, 0.3) !important; /* Tailwind gray-700 */
   color: white !important;
 }
 .react-calendar__tile--active {
@@ -133,7 +134,7 @@
 
     .glass-card {
       background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);/*bg-white/5*/
       border: 1px solid rgba(0, 224, 255, 0.2);
       padding: 1.5rem;
       border-radius: 16px;

@@ -98,7 +98,7 @@ const Announcements = () => {
           <div className="mb-8 text-center">
             <button
               onClick={() => setShowForm(!showForm)}
-              className=" bg-white hover:bg-blue-400 text-blue-600 hover:text-white font-bold dark:bg-blue-500 dark:hover:bg-blue-700 dark:text-white dark:font-semibold px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-500/25 hover:shadow-none flex items-center mx-auto"
+              className=" bg-white hover:bg-blue-400 text-blue-600 hover:text-white font-bold dark:bg-[rgba(255,255,255,0.05)] dark:hover:bg-gray-700 dark:text-white dark:font-semibold px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-500/25 hover:shadow-none flex items-center mx-auto"
             >
               <Plus className="w-5 h-5 mr-2" />
               {showForm ? "Cancel" : "Post New Announcement"}
@@ -122,7 +122,7 @@ const Announcements = () => {
                   value={formData.title}
                   required
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full p-4 rounded-lg text-black placeholder:text-black dark:bg-blue-400 dark:text-white border border-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200"
+                  className="w-full p-4 rounded-lg text-black placeholder:text-black dark:placeholder:text-white dark:bg-blue-700/30 dark:text-white border border-gray-500 font-medium dark:border-blue-900/20 focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200"
                   placeholder="Enter announcement title..."
                 />
               </div>
@@ -133,7 +133,7 @@ const Announcements = () => {
                   value={formData.body}
                   required
                   onChange={(e) => setFormData({ ...formData, body: e.target.value })}
-                  className="w-full p-4 rounded-lg text-black placeholder:text-black dark:bg-gray-600 dark:text-white border border-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 resize-none"
+                  className="w-full p-4 rounded-lg text-black placeholder:text-black dark:placeholder:text-white  dark:bg-blue-700/30 dark:text-white border border-gray-500 font-medium dark:border-blue-900/20  focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200 resize-none"
                   rows="4"
                   placeholder="Enter announcement details..."
                 ></textarea>
@@ -144,7 +144,7 @@ const Announcements = () => {
                 <select
                   value={formData.important ? "important" : "normal"}
                   onChange={e => setFormData({ ...formData, important: e.target.value === "important" })}
-                  className="w-full p-4 rounded-lg dark:bg-gray-600 dark:text-white border border-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200"
+                  className="w-full p-4 rounded-lg dark:bg-blue-700/30 dark:text-white border border-gray-500 font-medium dark:border-blue-900/20 focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200"
                 >
                   <option value="normal">📢 Normal Announcement</option>
                   <option value="important">🚨 Important Announcement (Will send email to all users)</option>
@@ -154,7 +154,7 @@ const Announcements = () => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full bg-blue-500 dark:bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 disabled:from-gray-500 disabled:to-gray-600 text-white font-semibold px-6 py-4 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-500/25 disabled:transform-none disabled:shadow-none flex items-center justify-center"
+                className="w-full bg-blue-500 dark:bg-blue-900/20 dark:hover:bg-blue-600 disabled:from-gray-500 disabled:to-gray-600 text-white font-semibold px-6 py-4 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-500/25 disabled:transform-none disabled:shadow-none flex items-center justify-center"
               >
                 {submitting ? (
                   <>
@@ -185,7 +185,7 @@ const Announcements = () => {
           <select
             value={filter}
             onChange={handleFilterChange}
-            className="p-3 rounded-lg bg-white dark:bg-blue-500 dark:text-white text-blue-500 font-semibold border dark:border-blue-700 focus:outline-none focus:ring-2 dark:focus:ring-yellow-500 focus:border-transparent transition-all duration-200 shadow-lg"
+            className="p-3 rounded-lg bg-white dark:bg-gray-700 dark:text-white text-blue-500 font-semibold border dark:border-gray-700 focus:outline-none transition-all duration-200 shadow-lg"
           >
             <option value="all">All Announcements</option>
             <option value="important">🚨 Important</option>
@@ -226,7 +226,7 @@ const Announcements = () => {
                 <button
                   onClick={handlePrevPage}
                   disabled={currentPage === 1}
-                  className={`px-5 py-2 rounded-lg font-bold transition-all duration-200 shadow-lg border bg-white hover:bg-blue-500  dark:border-gray-600 dark:bg-blue-500 text-blue-500 dark:text-white dark:hover:bg-blue-700 hover:text-white disabled:bg-white disabled:text-blue-500 disabled:cursor-not-allowed disabled:opacity-40`}
+                  className={`px-5 py-2 rounded-lg font-bold transition-all duration-200 shadow-lg border bg-white hover:bg-blue-500  dark:border-gray-600 dark:bg-gray-500 text-blue-500 dark:text-white dark:hover:bg-gray-700 hover:text-white disabled:bg-white disabled:text-blue-500 disabled:cursor-not-allowed disabled:opacity-40`}
                 >
                   &#8592; Prev
                 </button>
@@ -237,7 +237,7 @@ const Announcements = () => {
                   onClick={handleNextPage}
                   disabled={currentPage === totalPages || totalPages === 0}
                   className={`px-5 py-2 rounded-lg font-bold transition-all duration-200 shadow-lg border
-                    bg-white hover:bg-blue-500 dark:border-gray-600 dark:bg-blue-500 text-blue-500 dark:text-white dark:hover:bg-blue-700 hover:text-white disabled:bg-white disabled:text-blue-500 disabled:cursor-not-allowed disabled:opacity-40`}
+                    bg-white hover:bg-blue-500 dark:border-gray-600 dark:bg-gray-500 text-blue-500 dark:text-white dark:hover:bg-gray-700 hover:text-white disabled:bg-white disabled:text-blue-500 disabled:cursor-not-allowed disabled:opacity-40`}
                 >
                   Next &#8594;
                 </button>

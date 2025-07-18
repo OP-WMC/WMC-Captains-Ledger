@@ -96,7 +96,7 @@ const Feedback = () => {
               placeholder="Search feedback by comment, name, or codename..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-3 bg-white hover:bg-blue-500 dark:bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-blue-500 hover:placeholder:text-white font-semibold dark:placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors"
+              className="w-full px-4 py-3 bg-white hover:bg-blue-500 dark:bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-blue-500 hover:placeholder:text-white font-semibold dark:placeholder-gray-400 focus:outline-none  transition-colors"
             />
           </div>
 
@@ -105,7 +105,7 @@ const Feedback = () => {
             <select
               value={ratingFilter}
               onChange={(e) => setRatingFilter(e.target.value)}
-              className="w-full px-4 py-3 bg-white font-semibold hover:bg-blue-500 hover:text-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg text-blue-500 focus:outline-none focus:border-blue-500 transition-colors"
+              className="w-full px-4 py-3 bg-white font-semibold hover:bg-blue-500 dark:text-white hover:text-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg text-blue-500 focus:outline-none focus:border-blue-500 transition-colors"
             >
               <option value="all">All Ratings</option>
               <option value="5">⭐⭐⭐⭐⭐ 5 Stars</option>
@@ -168,7 +168,7 @@ const Feedback = () => {
           <button
             onClick={handlePrevPage}
             disabled={currentPage === 1}
-            className={`px-4 py-2 rounded-full bg-white hover:bg-blue-500 hover:text-white dark:bg-gray-800 border border-blue-500 dark:border-gray-700 text-blue-500 text-lg font-bold transition-colors duration-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed`}
+            className={`px-4 py-2 rounded-full bg-white dark:text-white hover:bg-blue-500 hover:text-white dark:bg-gray-800 border border-blue-500 dark:border-gray-700 text-blue-500 text-lg font-bold transition-colors duration-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed`}
             aria-label="Previous page"
           >
             &#8592;
@@ -179,7 +179,7 @@ const Feedback = () => {
           <button
             onClick={handleNextPage}
             disabled={currentPage === totalPages}
-            className={`px-4 py-2 rounded-full bg-white hover:bg-blue-500 hover:text-white dark:bg-gray-800 border border-blue-500 dark:border-gray-700 text-blue-500 text-lg font-bold transition-colors duration-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed`}
+            className={`px-4 py-2 rounded-full bg-white dark:text-white hover:bg-blue-500 hover:text-white dark:bg-gray-800 border border-blue-500 dark:border-gray-700 text-blue-500 text-lg font-bold transition-colors duration-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed`}
             aria-label="Next page"
           >
             &#8594;

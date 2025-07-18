@@ -70,15 +70,15 @@ const AdminProfiles = () => {
             placeholder="Search by name or codename..."
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(1); }}
-            className="w-full rounded-lg border-blue-200 dark:border-cyan-400 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-cyan-200 px-3 py-2 focus:outline-none"
+            className="w-full rounded-lg border-blue-200 dark:border-cyan-300 bg-blue-50 dark:bg-[rgba(255,255,255,0.05)] text-blue-700 dark:text-white px-3 py-2 focus:outline-none"
           />
         </div>
         <div className="flex items-center gap-3 w-full md:w-auto order-2 md:order-none justify-end">
-          <label className="font-semibold text-blue-700 dark:text-cyan-300">Role:</label>
+          <label className="font-semibold text-blue-700 dark:text-white ">Role:</label>
           <select
             value={roleFilter}
             onChange={e => { setRoleFilter(e.target.value); setPage(1); }}
-            className="rounded-lg border-blue-200 dark:border-cyan-400 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-cyan-200 px-3 py-2 focus:outline-none"
+            className=" rounded-lg border-blue-200 dark:border-black bg-blue-50 dark:bg-gray-700 text-blue-700 dark:text-white px-3 py-2 focus:outline-none "
           >
             <option value="all">All</option>
             <option value="admin">Admin</option>
@@ -97,7 +97,7 @@ const AdminProfiles = () => {
             {paginatedProfiles.map((profile) => (
               <div
                 key={profile._id}
-                className="relative glass-card group rounded-xl shadow-xl p-4 flex flex-col items-center transition-transform duration-300 hover:scale-105 hover:shadow-blue-300/40 dark:hover:shadow-cyan-400/30 bg-white/70 dark:bg-blue-950/70 border border-blue-200 dark:border-blue-900 min-h-[270px]"
+                className="relative glass-card group rounded-xl shadow-xl p-4 flex flex-col items-center transition-transform duration-300   bg-white/70  border border-blue-200 min-h-[270px]"
               >
                 {/* Profile photo - inside card, not overlapping heading */}
                 <div className="flex flex-col items-center w-full">
@@ -105,18 +105,18 @@ const AdminProfiles = () => {
                     <img
                       src={profile.profilePhoto}
                       alt="Profile"
-                      className="w-28 h-28 rounded-full object-cover border-4 border-blue-300 dark:border-cyan-400 shadow bg-white dark:bg-blue-900 mb-2"
+                      className="w-28 h-28 rounded-full object-cover border-4 border-blue-300 dark:border-avengers-silver shadow bg-white dark:bg-[#0f172a] mb-2"
                     />
                   ) : (
-                    <div className="w-28 h-28 rounded-full bg-blue-200 dark:bg-blue-800 flex items-center justify-center border-4 border-blue-300 dark:border-cyan-400 text-xl font-bold text-blue-500 dark:text-cyan-300 shadow mb-2">
+                    <div className="w-28 h-28 rounded-full bg-blue-200 dark:bg-[#0f172a] flex items-center justify-center border-4 border-blue-300 dark:border-avengers-silver text-xl font-bold text-blue-500 dark:text-gray-300 shadow mb-2">
                       No Photo
                     </div>
                   )}
-                  <div className="text-base font-bold text-blue-700 dark:text-cyan-200 mb-1 tracking-wide text-center">{profile.name}</div>
+                  <div className="text-base font-bold text-blue-700 dark:text-white mb-1 tracking-wide text-center">{profile.name}</div>
                 </div>
                 {/* Expand/collapse details */}
                 <button
-                  className="mt-2 mb-1 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-cyan-300 text-xs font-semibold shadow hover:bg-blue-200 dark:hover:bg-cyan-800 transition"
+                  className="mt-2 mb-1 px-3 py-1 rounded-full bg-blue-100 dark:bg-[#0f172a] text-blue-700 dark:text-cyan-300 text-xs font-semibold shadow hover:bg-blue-200 dark:hover:bg-cyan-800/70 transition"
                   onClick={() => toggleExpand(profile._id)}
                   aria-label={expanded[profile._id] ? 'Hide Details' : 'View Details'}
                 >
@@ -125,13 +125,13 @@ const AdminProfiles = () => {
                 </button>
                 {expanded[profile._id] && (
                   <div className="w-full flex flex-col gap-1 mt-2 text-xs animate-fadeIn">
-                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Email:</span> <span className="text-gray-900 dark:text-gray-200">{profile.email}</span></div>
-                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Power:</span> <span className="text-gray-900 dark:text-gray-200">{profile.power || '-'}</span></div>
-                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Abilities:</span> <span className="text-gray-900 dark:text-gray-200">{profile.abilities?.join(', ') || '-'}</span></div>
-                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Weapons:</span> <span className="text-gray-900 dark:text-gray-200">{profile.weapons?.join(', ') || '-'}</span></div>
-                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Past Achievements:</span> <span className="text-gray-900 dark:text-gray-200">{profile.pastAchievements || '-'}</span></div>
-                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Role:</span> <span className="text-gray-900 dark:text-gray-200">{profile.role}</span></div>
-                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Balance:</span> <span className="text-blue-700 dark:text-cyan-200 font-bold">₹{profile.balance?.toLocaleString()}</span></div>
+                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Email:</span> <span className="text-gray-900 dark:text-gray-100 font-medium">{profile.email}</span></div>
+                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Power:</span> <span className="text-gray-900 dark:text-gray-200 font-medium">{profile.power || '-'}</span></div>
+                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Abilities:</span> <span className="text-gray-900 dark:text-gray-200 font-medium">{profile.abilities?.join(', ') || '-'}</span></div>
+                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Weapons:</span> <span className="text-gray-900 dark:text-gray-200 font-medium">{profile.weapons?.join(', ') || '-'}</span></div>
+                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Past Achievements:</span> <span className="text-gray-900 dark:text-gray-200 font-medium">{profile.pastAchievements || '-'}</span></div>
+                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Role:</span> <span className="text-gray-900 dark:text-gray-200 font-medium">{profile.role}</span></div>
+                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Balance:</span> <span className="text-blue-700 dark:text-gray-200 font-bold">₹{profile.balance?.toLocaleString()}</span></div>
                   </div>
                 )}
               </div>
@@ -143,7 +143,7 @@ const AdminProfiles = () => {
 <br />
               <div className="flex justify-between items-center mb-6 max-w-6xl mx-auto">
             <button
-              className="p-2 rounded-full bg-blue-200 dark:bg-blue-900 text-blue-700 dark:text-cyan-300 hover:bg-blue-300 dark:hover:bg-cyan-800 transition disabled:opacity-40 disabled:cursor-not-allowed "
+              className="p-2 rounded-full bg-blue-200 dark:bg-[rgba(255,255,255,0.05)] text-blue-700 dark:text-white hover:bg-blue-300 dark:hover:bg-[rgba(201,150,150,0.05)]  transition disabled:opacity-40 disabled:cursor-not-allowed "
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
               aria-label="Previous"
@@ -151,9 +151,9 @@ const AdminProfiles = () => {
               
               <ChevronLeft size={24} />
             </button>
-            <span className="text-blue-700 dark:text-cyan-300 font-semibold">Page {page} of {totalPages}</span>
+            <span className="text-blue-700 dark:text-white font-semibold">Page {page} of {totalPages}</span>
             <button
-              className="p-2 rounded-full bg-blue-200 dark:bg-blue-900 text-blue-700 dark:text-cyan-300 hover:bg-blue-300 dark:hover:bg-cyan-800 transition disabled:opacity-40 disabled:cursor-not-allowed "
+              className="p-2 rounded-full bg-blue-200 dark:bg-[rgba(255,255,255,0.05)] text-blue-700 dark:text-white hover:bg-blue-300 dark:hover:bg-[rgba(201,150,150,0.05)] transition disabled:opacity-40 disabled:cursor-not-allowed "
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
               aria-label="Next"

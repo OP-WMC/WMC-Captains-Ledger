@@ -139,14 +139,14 @@ const Stats = () => {
 
         {/* View Toggle */}
         <div className="flex justify-center mb-8">
-          <div className="bg-gray-500 dark:bg-gray-800/50 p-2 rounded-2xl border border-gray-600/30 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-800/50 p-2 rounded-2xl border border-gray-600/30 backdrop-blur-sm">
             <div className="flex space-x-2">
               <button
                 onClick={() => setView('attendance')}
                 className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center space-x-2 ${
                   view === 'attendance'
-                    ? 'bg-blue-500 dark:bg-yellow-500 text-white shadow-lg'
-                    : 'text-white dark:text-gray-300 hover:text-white hover:bg-blue-400 dark:hover:bg-gray-700'
+                    ? 'bg-blue-600 dark:bg-yellow-500 text-white shadow-lg'
+                    : 'text-white bg-blue-400 dark:text-gray-300 hover:text-white hover:bg-blue-400 dark:hover:bg-gray-700'
                 }`}
               >
                 <Calendar className="w-5 h-5" />
@@ -157,7 +157,7 @@ const Stats = () => {
                 className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center space-x-2 ${
                   view === 'payment'
                     ? 'bg-blue-500 dark:bg-yellow-500 text-white shadow-lg'
-                    : 'text-white dark:text-gray-300 hover:text-white hover:bg-blue-400 dark:hover:bg-gray-700'
+                    : 'text-white bg-blue-400 dark:text-gray-300 hover:text-white hover:bg-blue-400 dark:hover:bg-gray-700'
                 }`}
               >
                 <DollarSign className="w-5 h-5" />
@@ -223,19 +223,19 @@ const Stats = () => {
             </div>
 
             {/* Top Performers */}
-            <div className="bg-gray-500 dark:bg-gradient-to-br from-gray-800/50 to-gray-700/50 p-6 rounded-2xl shadow-xl border border-gray-600/30 backdrop-blur-sm">
-              <h2 className="text-xl font-semibold text-white mb-6 flex items-center">
+            <div className="bg-white dark:bg-gradient-to-br from-gray-800/50 to-gray-700/50 p-6 rounded-2xl shadow-xl border border-gray-600/30 backdrop-blur-sm">
+              <h2 className="text-xl font-semibold text-blue-600 mb-6 flex items-center">
                 <Award className="w-6 h-6 mr-3 text-yellow-400" />
                 Top Attendance Performers
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {attendanceStats?.userStats?.slice(0, 6).map((user, index) => (
-                  <div key={user.userId} className="bg-gray-700/50 p-4 rounded-lg border border-gray-600/30">
+                  <div key={user.userId} className="bg-white p-4 rounded-lg border border-blue-300">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-white font-semibold">{user.name}</span>
-                      <span className="text-yellow-400 font-bold">{user.attendancePercentage}%</span>
+                      <span className="text-blue-600 font-bold">{user.name}</span>
+                      <span className="text-blue-700 text-shadow-glow font-bold">{user.attendancePercentage}%</span>
                     </div>
-                    <div className="text-sm text-white dark:text-gray-400">
+                    <div className="font-medium text-blue-600 dark:text-gray-400">
                       {user.attendedSessions} of {user.totalSessions} sessions
                     </div>
                   </div>
@@ -290,27 +290,27 @@ const Stats = () => {
             </div>
 
             {/* Payment Summary */}
-            <div className="bg-gray-500 dark:bg-gradient-to-br from-gray-800/50 to-gray-700/50 p-6 rounded-2xl shadow-xl border border-gray-600/30 backdrop-blur-sm">
-              <h2 className="text-xl font-semibold text-white mb-6 flex items-center">
+            <div className="bg-white dark:bg-gradient-to-br from-gray-800/50 to-gray-700/50 p-6 rounded-2xl shadow-xl border border-gray-600/30 backdrop-blur-sm">
+              <h2 className="text-xl font-semibold text-blue-600 mb-6 flex items-center">
                 <BarChart3 className="w-6 h-6 mr-3 text-yellow-400" />
                 Payment Summary by User
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {paymentStats?.userPaymentStats?.slice(0, 6).map((user) => (
-                  <div key={user.userId} className="bg-gray-700/50 p-4 rounded-lg border border-gray-600/30">
-                    <div className="text-white font-semibold mb-2">{user.name}</div>
+                  <div key={user.userId} className="bg-white p-4 rounded-lg border border-gray-600/30">
+                    <div className="text-blue-600 font-semibold mb-2">{user.name}</div>
                     <div className="space-y-1 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-white dark:text-gray-400">Sent:</span>
-                        <span className="text-red-400">₹{user.totalSent.toLocaleString()}</span>
+                        <span className="text-blue-500 font-medium dark:text-gray-400">Sent:</span>
+                        <span className="text-red-400 font-semibold">₹{user.totalSent.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-white dark:text-gray-400">Received:</span>
-                        <span className="text-green-400">₹{user.totalReceived.toLocaleString()}</span>
+                        <span className="text-blue-500 font-medium dark:text-gray-400">Received:</span>
+                        <span className="text-green-400 font-semibold">₹{user.totalReceived.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between border-t border-gray-600 pt-1">
-                        <span className="text-white dark:text-gray-300 font-semibold">Net:</span>
-                        <span className={`font-semibold ${user.netAmount >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        <span className="text-blue-600 dark:text-gray-300 font-semibold">Net:</span>
+                        <span className={`font-bold ${user.netAmount >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                           ₹{user.netAmount.toLocaleString()}
                         </span>
                       </div>
