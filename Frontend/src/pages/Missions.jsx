@@ -235,7 +235,7 @@ const fetchUsers = async () => {
     <div className="space-y-6 px-4 md:px-10 pt-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-orbitron font-bold text-blue-700 dark:text-white mb-2">🛰️ Mission Control</h1>
+          <h1 className="text-3xl font-orbitron font-bold text-blue-700 dark:text-white mb-2 dark:text-shadow-glow">🛰️ Mission Control</h1>
           <p className="text-slate-600 dark:text-cyan-100">
             {isAdmin ? 'Manage and assign missions' : 'Your assigned missions'}
           </p>

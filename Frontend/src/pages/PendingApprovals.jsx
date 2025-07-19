@@ -100,7 +100,7 @@ const PendingApprovals = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-orbitron font-bold text-blue-700 dark:text-white mb-2">
+        <h1 className="text-3xl font-orbitron font-bold text-blue-700 dark:text-white mb-2 text-shadow-glow">
           Pending Approvals
         </h1>
         <p className="text-blue-400 dark:text-avengers-silver">

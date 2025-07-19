@@ -104,7 +104,7 @@ const Layout = ({ children }) => {
 
         <div className="flex flex-col h-full ">
           {/* Logo */}
-          <div className="flex items-center justify-between p-6 border-b text-blue-700 border-gray-700 dark:border-avengers-silver/20">
+          <div className="flex items-center justify-between p-6 border-b text-blue-700 border-[#00e0ff] dark:border-avengers-silver/20">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 dark:bg-gradient-to-br rounded-lg flex items-center justify-center">
                 <Shield className="w-6 h-6 text-blue-700 dark:text-white" />
@@ -144,7 +144,7 @@ const Layout = ({ children }) => {
           </nav>
 
           {/* User info */}
-          <div className="p-4 border-t border-gray-700 dark:border-avengers-silver/20">
+          <div className="p-4 border-t border-[#00e0ff] dark:border-avengers-silver/20">
             <Link to="/profile" className="flex items-center space-x-3 mb-4 hover:bg-gray-200 dark:hover:bg-gray-700 p-2 rounded transition cursor-pointer">
               <div className="w-10 h-10 bg-gradient-to-br rounded-full flex items-center justify-center text-2xl">
                 {user?.avatar}

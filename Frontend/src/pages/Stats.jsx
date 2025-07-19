@@ -230,7 +230,7 @@ const Stats = () => {
                 Top Attendance Performers
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {attendanceStats?.userStats?.slice(0, 6).map((user, index) => (
+                {attendanceStats?.userStats?.sort((a, b) => b.netAmount - a.netAmount).slice(0, 6).map((user, index) => (
                   <div key={user.userId} className="bg-white p-4 rounded-lg border border-blue-300">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-blue-600 font-bold">{user.name}</span>
@@ -298,7 +298,7 @@ const Stats = () => {
                 Payment Summary by User
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {paymentStats?.userPaymentStats?.slice(0, 6).map((user) => (
+                {paymentStats?.userPaymentStats?.sort((a, b) => b.netAmount - a.netAmount).slice(0, 9).map((user) => (
                   <div key={user.userId} className="bg-white p-4 rounded-lg border border-gray-600/30">
                     <div className="text-blue-600 font-semibold mb-2">{user.name}</div>
                     <div className="space-y-1 text-sm">
