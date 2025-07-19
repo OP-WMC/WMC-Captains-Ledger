@@ -179,43 +179,47 @@ exports.getPaymentTrends = async (req, res) => {
     const { days = 30 } = req.query;
     const endDate = new Date();
     const startDate = new Date();
-    startDate.setDate(startDate.getDate() - parseInt(days));
-    
-    // Get transactions within date range
+    startDate.setDate(startDate.getDate() - parseInt(days) + 1); // include today
+
+    // Get transactions within date range (use 'timestamp' instead of 'createdAt')
     const transactions = await Transaction.find({
-      createdAt: { $gte: startDate, $lte: endDate }
+      timestamp: { $gte: startDate, $lte: endDate }
     }).populate("sender", "name email codename").populate("receiver", "name email codename");
-    
-    // Group by date
+
+    // Initialize daily stats for ALL days (even if no transactions)
     const dailyStats = {};
-    
+    for (let i = 0; i < parseInt(days); i++) {
+      const date = new Date();
+      date.setDate(date.getDate() - (parseInt(days) - 1 - i));
+      const dateKey = date.toLocaleDateString("en-CA");
+      dailyStats[dateKey] = {
+        date: dateKey,
+        totalAmount: 0,
+        transactionCount: 0,
+        sentAmount: 0,
+        receivedAmount: 0
+      };
+    }
+
+    // Group transactions by date (use 'timestamp')
     transactions.forEach(transaction => {
-      const date = new Date(transaction.createdAt).toLocaleDateString("en-CA");
-      if (!dailyStats[date]) {
-        dailyStats[date] = { 
-          date, 
-          totalAmount: 0, 
-          transactionCount: 0,
-          sentAmount: 0,
-          receivedAmount: 0
-        };
-      }
+      const date = new Date(transaction.timestamp).toLocaleDateString("en-CA");
+      if (!dailyStats[date]) return; // skip if out of range
       dailyStats[date].totalAmount += transaction.amount;
       dailyStats[date].transactionCount++;
-      
-      // Categorize as sent or received (simplified - you might want to adjust this logic)
       if (transaction.status === 'completed') {
         dailyStats[date].receivedAmount += transaction.amount;
       }
     });
-    
-    // Convert to array
-    const trends = Object.values(dailyStats).map(stat => ({
-      ...stat,
-      averageAmount: stat.transactionCount > 0 ? 
-        Math.round(stat.totalAmount / stat.transactionCount) : 0
-    }));
-    
+
+    // Convert to array and sort by date
+    const trends = Object.values(dailyStats)
+      .map(stat => ({
+        ...stat,
+        averageAmount: stat.transactionCount > 0 ? Math.round(stat.totalAmount / stat.transactionCount) : 0
+      }))
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+
     res.json(trends);
   } catch (err) {
     console.error(err);

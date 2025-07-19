@@ -79,42 +79,55 @@ exports.getAttendanceStats = async (req, res) => {
     const allSessions = await AttendanceSession.find({}).sort({ createdAt: 1 });
     
     // Get all attendance records
-    const allRecords = await AttendanceRecord.find({}).populate("user", "name email codename");
+    const allRecords = await AttendanceRecord.find({})
+      .populate("user", "name email codename");
     
-    // Map user attendance by sessions and unique days
+    // Get all unique days where any user attended (this represents all available attendance days)
+    const allAttendanceDays = new Set();
+    allRecords.forEach(record => {
+      const dayKey = new Date(record.markedAt).toLocaleDateString("en-CA");
+      allAttendanceDays.add(dayKey);
+    });
+    const totalAvailableDays = allAttendanceDays.size;
+    
+    // Map user attendance by days
     const userStats = allUsers.map(user => {
       const userRecords = allRecords.filter(record => 
         record.user && record.user._id.toString() === user._id.toString()
       );
-      // Unique days attended
-      const uniqueDays = new Set(userRecords.map(r => new Date(r.markedAt).toLocaleDateString("en-CA")));
-      // All unique days with any session
-      const allSessionDays = new Set(allSessions.map(s => new Date(s.createdAt).toLocaleDateString("en-CA")));
-      const totalDays = allSessionDays.size;
-      const attendedDays = uniqueDays.size;
-      // --- Session-based fields ---
-      const totalSessions = allSessions.length;
-      const attendedSessions = userRecords.length;
-      const attendancePercentage = totalSessions > 0 ? Math.round((attendedSessions / totalSessions) * 100) : 0;
-      // --- End session-based fields ---
+      
+      // Get unique days where this user attended (using markedAt field)
+      const userAttendedDays = new Set();
+      userRecords.forEach(record => {
+        const dayKey = new Date(record.markedAt).toLocaleDateString("en-CA");
+        userAttendedDays.add(dayKey);
+      });
+      
+      const attendedDays = userAttendedDays.size;
+      
+      // Calculate attendance percentage based on total available days
+      const attendancePercentage = totalAvailableDays > 0 ? Math.round((attendedDays / totalAvailableDays) * 100) : 0;
+      
       return {
         userId: user._id,
         name: user.name || user.codename || user.email,
         email: user.email,
         codename: user.codename,
-        totalDays,
+        totalDays: totalAvailableDays,
         attendedDays,
-        totalSessions,
-        attendedSessions,
+        totalSessions: allSessions.length, // Keep for reference
+        attendedSessions: userRecords.length, // Keep for reference
         attendancePercentage,
         lastAttendance: userRecords.length > 0 ? 
           new Date(Math.max(...userRecords.map(r => new Date(r.markedAt)))) : null
       };
     });
+    
     // Sort by attendance percentage (highest first)
     userStats.sort((a, b) => b.attendancePercentage - a.attendancePercentage);
+    
     res.json({
-      totalDays: Array.from(new Set(allSessions.map(s => new Date(s.createdAt).toLocaleDateString("en-CA")))).length,
+      totalDays: totalAvailableDays,
       totalSessions: allSessions.length,
       totalUsers: allUsers.length,
       userStats
@@ -215,34 +228,60 @@ exports.getAttendanceTrends = async (req, res) => {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - parseInt(days));
     
-    // Get sessions within date range
-    const sessions = await AttendanceSession.find({
-      createdAt: { $gte: startDate, $lte: endDate }
-    }).sort({ createdAt: 1 });
+    // Get all users for total count
+    const User = require("../models/User");
+    const allUsers = await User.find({ role: "user" });
+    const totalUsers = allUsers.length;
+    console.log('DEBUG: Total users for attendance trends:', totalUsers);
+    console.log('DEBUG: User IDs:', allUsers.map(u => u._id.toString()), allUsers.map(u => u.name));
     
     // Get records within date range
     const records = await AttendanceRecord.find({
       markedAt: { $gte: startDate, $lte: endDate }
     }).populate("user", "name email codename");
     
-    // Group by date (unique days)
+    // Initialize daily stats for ALL 30 days
     const dailyStats = {};
-    // Find all unique days with sessions
-    const allSessionDays = Array.from(new Set(sessions.map(s => new Date(s.createdAt).toLocaleDateString("en-CA"))));
-    allSessionDays.forEach(date => {
-      dailyStats[date] = { date, attendedUsers: new Set() };
-    });
+    
+    // Create entries for all 30 days (even if no attendance)
+    for (let i = 0; i < parseInt(days); i++) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dateKey = date.toLocaleDateString("en-CA");
+      dailyStats[dateKey] = { 
+        date: dateKey, 
+        attendedUsers: new Set(),
+        totalUsers: totalUsers,
+        attendedCount: 0,
+        attendancePercentage: 0
+      };
+    }
+    
+    // Count unique users per day (using markedAt field)
     records.forEach(record => {
-      const date = new Date(record.markedAt).toLocaleDateString("en-CA");
-      if (dailyStats[date]) {
-        dailyStats[date].attendedUsers.add(record.user._id.toString());
+      if (!record.user) return; // Skip if user is null
+      const recordDate = new Date(record.markedAt).toLocaleDateString("en-CA");
+      if (dailyStats[recordDate]) {
+        dailyStats[recordDate].attendedUsers.add(record.user._id.toString());
       }
     });
-    // Convert to array and count unique users per day
-    const trends = Object.values(dailyStats).map(stat => ({
-      date: stat.date,
-      attendedCount: stat.attendedUsers.size
-    }));
+    
+    // Calculate attendance percentage for each day
+    Object.values(dailyStats).forEach(stat => {
+      stat.attendedCount = stat.attendedUsers.size;
+      stat.attendancePercentage = totalUsers > 0 ? Math.round((stat.attendedCount / totalUsers) * 100) : 0;
+    });
+    
+    // Convert to array and sort by date (oldest first)
+    const trends = Object.values(dailyStats)
+      .map(stat => ({
+        date: stat.date,
+        attendedCount: stat.attendedCount,
+        totalUsers: stat.totalUsers,
+        attendancePercentage: stat.attendancePercentage
+      }))
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+    
     res.json(trends);
   } catch (err) {
     console.error(err);
@@ -262,26 +301,36 @@ exports.getAttendanceStatsForUser = async (req, res) => {
     const allSessions = await AttendanceSession.find({}).sort({ createdAt: 1 });
     // Get all attendance records for this user
     const userRecords = await AttendanceRecord.find({ user: userId });
-    // Unique days attended
-    const uniqueDays = new Set(userRecords.map(r => new Date(r.markedAt).toLocaleDateString("en-CA")));
-    // All unique days with any session
-    const allSessionDays = new Set(allSessions.map(s => new Date(s.createdAt).toLocaleDateString("en-CA")));
-    const totalDays = allSessionDays.size;
-    const attendedDays = uniqueDays.size;
-    // --- Session-based fields ---
-    const totalSessions = allSessions.length;
-    const attendedSessions = userRecords.length;
-    const attendancePercentage = totalSessions > 0 ? Math.round((attendedSessions / totalSessions) * 100) : 0;
-    // --- End session-based fields ---
+    
+    // Get all unique days where any user attended (this represents all available attendance days)
+    const allRecords = await AttendanceRecord.find({});
+    const allAttendanceDays = new Set();
+    allRecords.forEach(record => {
+      const dayKey = new Date(record.markedAt).toLocaleDateString("en-CA");
+      allAttendanceDays.add(dayKey);
+    });
+    const totalAvailableDays = allAttendanceDays.size;
+    
+    // Get unique days where this user attended (using markedAt field)
+    const userAttendedDays = new Set();
+    userRecords.forEach(record => {
+      userAttendedDays.add(new Date(record.markedAt).toLocaleDateString("en-CA"));
+    });
+    
+    const attendedDays = userAttendedDays.size;
+    
+    // Calculate attendance percentage based on total available days
+    const attendancePercentage = totalAvailableDays > 0 ? Math.round((attendedDays / totalAvailableDays) * 100) : 0;
+    
     res.json({
       userId: user._id,
       name: user.name || user.codename || user.email,
       email: user.email,
       codename: user.codename,
-      totalDays,
+      totalDays: totalAvailableDays,
       attendedDays,
-      totalSessions,
-      attendedSessions,
+      totalSessions: allSessions.length, // Keep for reference
+      attendedSessions: userRecords.length, // Keep for reference
       attendancePercentage,
       lastAttendance: userRecords.length > 0 ? new Date(Math.max(...userRecords.map(r => new Date(r.markedAt)))) : null
     });

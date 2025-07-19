@@ -71,16 +71,16 @@ const Stats = () => {
   const attendanceChartData = attendanceStats?.userStats?.slice(0, 10).map(user => ({
     name: user.name,
     attendance: user.attendancePercentage,
-    attended: user.attendedSessions,
-    total: user.totalSessions
+    attended: user.attendedDays,
+    total: user.totalDays
   })) || [];
 
   // Prepare attendance trends data
   const attendanceTrendsData = attendanceTrends.map(trend => ({
     date: new Date(trend.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
     percentage: trend.attendancePercentage,
-    attended: trend.attendedSessions,
-    total: trend.totalSessions
+    attended: trend.attendedCount,
+    total: trend.totalUsers
   }));
 
   // Prepare payment chart data
@@ -181,9 +181,9 @@ const Stats = () => {
             {/* Attendance Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6  glass-card ">
               <StatsCard
-                title="Total Sessions"
-                value={attendanceStats?.totalSessions || 0}
-                subtitle="Attendance sessions created"
+                title="Total Days"
+                value={attendanceStats?.totalDays || 0}
+                subtitle="Days with attendance sessions"
                 icon={Calendar}
                 color="blue"
               />
@@ -198,7 +198,7 @@ const Stats = () => {
                 title="Avg Attendance"
                 value={`${attendanceStats?.userStats?.length > 0 ? 
                   Math.round(attendanceStats.userStats.reduce((sum, user) => sum + user.attendancePercentage, 0) / attendanceStats.userStats.length) : 0}%`}
-                subtitle="Average team attendance"
+                subtitle="Average team attendance (by days)"
                 icon={Target}
                 color="yellow"
               />
@@ -219,6 +219,7 @@ const Stats = () => {
                 dataKey="percentage"
                 xAxisKey="date"
                 height={400}
+                labelFormat="date"
               />
             </div>
 
@@ -236,7 +237,7 @@ const Stats = () => {
                       <span className="text-blue-700 text-shadow-glow font-bold">{user.attendancePercentage}%</span>
                     </div>
                     <div className="font-medium text-blue-600 dark:text-gray-400">
-                      {user.attendedSessions} of {user.totalSessions} sessions
+                      {user.attendedDays} of {user.totalDays} days
                     </div>
                   </div>
                 ))}
@@ -286,6 +287,7 @@ const Stats = () => {
                 dataKey="amount"
                 xAxisKey="date"
                 height={400}
+                labelFormat="date"
               />
             </div>
 

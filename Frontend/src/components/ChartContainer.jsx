@@ -11,7 +11,8 @@ const ChartContainer = ({
   dataKey, 
   xAxisKey = 'name',
   height = 400,
-  colors = ['#00ffcc', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57']
+  colors = ['#00ffcc', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57'],
+  labelFormat = 'default' // 'default' for name+percentage, 'date' for date only
 }) => {
   const [chartType, setChartType] = useState('bar');
 
@@ -76,7 +77,12 @@ const ChartContainer = ({
               cx="50%"
               cy="50%"
               labelLine={false}
-              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+              label={({ name, percent, date }) => {
+                if (labelFormat === 'date' && date) {
+                  return date; // Show only date for attendance trends
+                }
+                return `${name} ${(percent * 100).toFixed(0)}%`; // Default format
+              }}
               outerRadius={80}
               fill="#8884d8"
               dataKey={dataKey}
@@ -90,7 +96,7 @@ const ChartContainer = ({
                 backgroundColor: '#1f2937', 
                 border: '1px solid #374151',
                 borderRadius: '8px',
-                color: '#f9fafb'
+                color: '#00ffcc' // Changed to green color
               }}
             />
             <Legend />
@@ -102,6 +108,11 @@ const ChartContainer = ({
     }
   };
 
+  // Only show pie chart option if labelFormat is not 'date' (i.e., not for attendance trends)
+  const filteredChartTypes = labelFormat === 'date'
+    ? chartTypes.filter(type => type.key !== 'pie')
+    : chartTypes;
+
   return (
     <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-600/30 backdrop-blur-sm">
       <div className="flex items-center justify-between mb-6">
@@ -109,7 +120,7 @@ const ChartContainer = ({
         
         {/* Chart Type Selector */}
         <div className="flex space-x-2">
-          {chartTypes.map((type) => {
+          {filteredChartTypes.map((type) => {
             const Icon = type.icon;
             return (
               <button
