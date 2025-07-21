@@ -92,7 +92,7 @@ const Announcements = () => {
   }
 
   return (
-    <div className="min-h-screen bg-blue-300 dark:bg-[#0f172a] p-3 sm:p-6 w-full max-w-full overflow-x-hidden">
+    <div className="min-h-screen bg-blue-300 dark:bg-[rgb(15,23,42)] p-3 sm:p-6 w-full max-w-full overflow-x-hidden">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-6 sm:mb-8">

@@ -6,7 +6,7 @@ const Chatbot = () => {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: "Hi! I'm SkyWing. How can I help you today? 💪" }
+    { role: 'assistant', content: "Hi! I'm CAPCORE. How can I help you today? 💪" }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -80,46 +80,50 @@ const Chatbot = () => {
         )}
       </div>
 
-      {/* Chat Window */}
-      {open && (
-        <div className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-50 w-[90vw] max-w-xs sm:max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-2xl flex flex-col border border-blue-400">
-          {/* Header */}
-          <div className="flex items-center justify-between p-3 sm:p-4 border-b border-blue-200 dark:border-blue-800 bg-blue-600 rounded-t-2xl">
-            <span className="text-white font-bold text-base sm:text-lg">SkyWing</span>
-            <button onClick={() => setOpen(false)} className="text-white text-xl font-bold">×</button>
+     {/* Chat Window */}
+{open && (
+  <div className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-50 w-[95vw] max-w-sm sm:max-w-lg h-[450px] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl flex flex-col border border-blue-400">
+    
+    {/* Header */}
+    <div className="flex items-center justify-between p-3 sm:p-4 border-b border-blue-200 dark:border-blue-800 bg-blue-600 rounded-t-2xl">
+      <span className="text-white font-bold text-base sm:text-lg">CAPCORE</span>
+      <button onClick={() => setOpen(false)} className="text-white text-xl font-bold">×</button>
+    </div>
+
+    {/* Messages */}
+    <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-2 bg-blue-50 dark:bg-gray-800" style={{ maxHeight: 400 }}>
+      {messages.map((msg, i) => (
+        <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+          <div className={`px-3 py-2 sm:px-4 sm:py-2 rounded-2xl shadow text-xs sm:text-sm max-w-[80%] ${msg.role === 'user' ? 'bg-blue-500 text-white' : 'bg-white dark:bg-gray-700 text-blue-700 dark:text-blue-200'}`}>
+            {msg.content}
           </div>
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-2 bg-blue-50 dark:bg-gray-800" style={{ maxHeight: 350 }}>
-            {messages.map((msg, i) => (
-              <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`px-3 py-2 sm:px-4 sm:py-2 rounded-2xl shadow text-xs sm:text-sm max-w-[80%] ${msg.role === 'user' ? 'bg-blue-500 text-white' : 'bg-white dark:bg-gray-700 text-blue-700 dark:text-blue-200'}`}>
-                  {msg.content}
-                </div>
-              </div>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
-          {/* Input */}
-          <form onSubmit={handleSend} className="flex items-center p-2 sm:p-3 border-t border-blue-200 dark:border-blue-800 bg-white dark:bg-gray-900 rounded-b-2xl">
-            <input
-              type="text"
-              className="flex-1 px-2 sm:px-3 py-2 rounded-lg border border-blue-300 dark:border-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-800 dark:text-white text-xs sm:text-base"
-              placeholder={loading ? 'Thinking...' : 'Type your message...'}
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              disabled={loading}
-              autoFocus
-            />
-            <button
-              type="submit"
-              className="ml-1 sm:ml-2 px-2 sm:px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold disabled:opacity-50 text-xs sm:text-base"
-              disabled={loading || !input.trim()}
-            >
-              Send
-            </button>
-          </form>
         </div>
-      )}
+      ))}
+      <div ref={messagesEndRef} />
+    </div>
+
+    {/* Input */}
+    <form onSubmit={handleSend} className="flex items-center p-2 sm:p-3 border-t border-blue-200 dark:border-blue-800 bg-white dark:bg-gray-900 rounded-b-2xl">
+      <input
+        type="text"
+        className="flex-1 px-2 sm:px-3 py-2 rounded-lg border border-blue-300 dark:border-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-800 dark:text-white text-xs sm:text-base"
+        placeholder={loading ? 'Thinking...' : 'Type your message...'}
+        value={input}
+        onChange={e => setInput(e.target.value)}
+        disabled={loading}
+        autoFocus
+      />
+      <button
+        type="submit"
+        className="ml-1 sm:ml-2 px-2 sm:px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold disabled:opacity-50 text-xs sm:text-base"
+        disabled={loading || !input.trim()}
+      >
+        Send
+      </button>
+    </form>
+  </div>
+)}
+
 
       {/* Mission Assignment Modal */}
       {showModal && (

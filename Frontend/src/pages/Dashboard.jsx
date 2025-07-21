@@ -304,9 +304,10 @@ const Dashboard = () => {
           <h3 className="text-2xl text-blue-700 dark:text-white font-semibold">{totalPayments}</h3>
         </div>
         <div className="glass-card text-center">
-          <p className="text-gray-700 font-bold dark:text-cyan-300 mb-1">📊 Avg Attendance Rate</p>
+          <p className="text-gray-700 font-bold dark:text-cyan-300 mb-1">📊 {isAdmin ? 'Avg Attendance Rate' : 'Attendance Rate'}</p>
           <h3 className="text-2xl text-blue-700 dark:text-white font-semibold">{attendanceRate}</h3>
         </div>
+        
       </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">

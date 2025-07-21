@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import Modal from 'react-modal';
 
+
 const Missions = () => {
   const { user, isAdmin } = useAuth();
 
@@ -595,7 +596,7 @@ const fetchUsers = async () => {
                   setFormData(defaultForm);
                   setValidationError("");
                 }}
-                className="avengers-button-secondary border-2 border-blue-500 text-blue-700 dark:border-blue-500 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 font-semibold text-xs sm:text-base w-full sm:w-auto py-1 sm:py-3 h-9"
+                className="avengers-button  font-semibold text-xs sm:text-base w-full sm:w-auto py-1 sm:py-3 h-9"
                 type="button"
               >
                 Clear Fields
@@ -606,7 +607,7 @@ const fetchUsers = async () => {
                   setShowEditModal(false);
                   setShowMemberDropdown(false);
                 }}
-                className="avengers-button-secondary border-2 border-blue-500 text-gray-700 dark:border-blue-500 dark:text-avengers-silver hover:bg-gray-100 dark:hover:bg-blue-900/10 font-semibold text-xs sm:text-base w-full sm:w-auto py-1 sm:py-3 h-9"
+                className="avengers-button  font-semibold text-xs sm:text-base w-full sm:w-auto py-1 sm:py-3 h-9"
                 type="button"
               >
                 Cancel

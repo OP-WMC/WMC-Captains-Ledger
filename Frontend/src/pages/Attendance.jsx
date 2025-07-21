@@ -176,7 +176,7 @@ useEffect(() => {
   };
 
   return (
-    <div className="p-3 sm:p-6 space-y-4 sm:space-y-6 w-full max-w-full overflow-x-hidden">
+    <div className="p-3 sm:p-6 space-y-4 sm:space-y-6 w-full max-w-full overflow-visible">
       {/* HEADER */}
       <h2 className="text-xl sm:text-2xl font-bold text-blue-700 dark:text-white dark:text-shadow-glow flex items-center gap-2 mt-10 sm:mt-0">
         <LucideCalendar /> Attendance System

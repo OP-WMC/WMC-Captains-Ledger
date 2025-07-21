@@ -37,9 +37,10 @@ const ChartContainer = ({
                 borderRadius: '8px',
                 color: '#f9fafb'
               }}
+              cursor={{ fill: 'transparent' }}
             />
             <Legend />
-            <Bar dataKey={dataKey} fill="#00ffcc" radius={[4, 4, 0, 0]} />
+            <Bar dataKey={dataKey} fill="#00ffcc" radius={[4, 4, 0, 0]} activeBar={false} />
           </BarChart>
         );
       
@@ -56,6 +57,7 @@ const ChartContainer = ({
                 borderRadius: '8px',
                 color: '#f9fafb'
               }}
+              cursor={false}
             />
             <Legend />
             <Line 
@@ -64,7 +66,7 @@ const ChartContainer = ({
               stroke="#00ffcc" 
               strokeWidth={3}
               dot={{ fill: '#00ffcc', strokeWidth: 2, r: 4 }}
-              activeDot={{ r: 6, stroke: '#00ffcc', strokeWidth: 2 }}
+              activeDot={{ r: 6, stroke: '#00ffcc', strokeWidth: 2 }} 
             />
           </LineChart>
         );
@@ -86,6 +88,8 @@ const ChartContainer = ({
               outerRadius={80}
               fill="#8884d8"
               dataKey={dataKey}
+              activeIndex={undefined}
+              activeShape={() => null}
             >
               {data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
@@ -93,10 +97,10 @@ const ChartContainer = ({
             </Pie>
             <Tooltip 
               contentStyle={{ 
-                backgroundColor: '#1f2937', 
+                backgroundColor: '#59a8f7', 
                 border: '1px solid #374151',
                 borderRadius: '8px',
-                color: '#00ffcc' // Changed to green color
+                color: '#00ffcc' 
               }}
             />
             <Legend />
@@ -114,9 +118,9 @@ const ChartContainer = ({
     : chartTypes;
 
   return (
-    <div className="bg-white p-3 sm:p-6 rounded-2xl shadow-xl border border-gray-600/30 backdrop-blur-sm w-full max-w-xs sm:max-w-full scale-90 sm:scale-100 overflow-x-hidden mx-auto">
+    <div className="bg-white dark:bg-[rgba(255,255,255,0.05)] p-3 sm:p-6 rounded-2xl shadow-xl border border-gray-600/30 backdrop-blur-sm w-full max-w-xs sm:max-w-full scale-90 sm:scale-100 overflow-x-hidden mx-auto">
       <div className="flex flex-col sm:flex-row items-center justify-between mb-4 sm:mb-6 gap-2 sm:gap-0">
-        <h2 className="text-lg sm:text-xl font-semibold text-blue-600">{title}</h2>
+        <h2 className="text-lg sm:text-xl font-semibold text-blue-600 dark:text-white">{title}</h2>
         {/* Chart Type Selector */}
         <div className="flex space-x-1 sm:space-x-2 mt-2 sm:mt-0">
           {filteredChartTypes.map((type) => {
@@ -127,8 +131,8 @@ const ChartContainer = ({
                 onClick={() => setChartType(type.key)}
                 className={`p-2 rounded-lg transition-all duration-200 flex items-center space-x-1 sm:space-x-2 ${
                   chartType === type.key
-                    ? 'bg-yellow-500 text-blue-500 shadow-lg'
-                    : 'bg-gray-700 text-blue-400 hover:bg-gray-600 hover:text-black'
+                    ? 'bg-blue-700/90 text-white dark:bg-blue-900/80 dark:text-white  shadow-lg'
+                    : 'bg-blue-400 dark:bg-gray-600 dark:hover:bg-gray-400 text-white dark:text-white hover:bg-blue-600  '
                 }`}
                 title={type.label}
               >

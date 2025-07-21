@@ -152,3 +152,6 @@
     transform: none; /* no scaling on small screens */
   }
 }
+.glass-card-r {
+  @apply bg-white dark:bg-[rgba(31,41,55,0.6)] rounded-xl p-6 shadow-md;
+}

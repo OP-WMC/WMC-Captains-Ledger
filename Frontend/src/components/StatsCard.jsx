@@ -20,7 +20,7 @@ const StatsCard = ({ title, value, subtitle, trend, icon: Icon, color = "green" 
   };
 
   return (
-    <div className="bg-white p-3 sm:p-6 rounded-2xl shadow-xl border border-gray-600/30 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 transform hover:scale-105 w-full max-w-full">
+    <div className="bg-white dark:bg-[rgba(255,255,255,0.05)] p-3 sm:p-6 rounded-2xl shadow-xl border border-gray-600/30 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 transform hover:scale-105 w-full max-w-full">
       <div className="flex items-center justify-between mb-2 sm:mb-4">
         <div className={`p-2 sm:p-3 rounded-full ${getColorClasses(color)}`}>
           {Icon && <Icon className="w-5 h-5 sm:w-6 sm:h-6" />}
@@ -35,9 +35,9 @@ const StatsCard = ({ title, value, subtitle, trend, icon: Icon, color = "green" 
         )}
       </div>
       
-      <h2 className="text-base sm:text-lg font-semibold mb-1 text-blue-600">{title}</h2>
-      <p className="text-2xl sm:text-3xl font-semibold text-black mb-1">{value}</p>
-      {subtitle && <p className="text-xs sm:text-sm font-medium text-blue-500">{subtitle}</p>}
+      <h2 className="text-base sm:text-lg font-semibold mb-1 text-blue-600 dark:text-white">{title}</h2>
+      <p className="text-2xl sm:text-3xl font-semibold text-black dark:text-blue-700 mb-1">{value}</p>
+      {subtitle && <p className="text-xs sm:text-sm font-medium text-blue-500 dark:text-gray-200">{subtitle}</p>}
     </div>
   );
 };
