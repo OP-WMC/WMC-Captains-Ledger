@@ -243,7 +243,7 @@ const Dashboard = () => {
   }, [showMissionModal]);
 
   return (
-    <div className="space-y-4 sm:space-y-6 w-full max-w-full overflow-x-hidden">
+    <div className="space-y-4 sm:space-y-6 w-full max-w-full  overflow-visible">
       {/* Welcome Header */}
       <div className="glass-card">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-0">
@@ -290,8 +290,8 @@ const Dashboard = () => {
       </div>
 
       {/* Stats Cards */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <div className="glass-card text-center ">
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 ">
+        <div className="glass-card transform-gpu will-change-transform hover:scale-[1.02] transition-transform duration-300 text-center ">
           <p className="text-gray-700 font-bold dark:text-cyan-300 mb-1">🗺️ Total Missions</p>
           <h3 className="text-2xl text-blue-700  dark:text-white font-semibold">{totalMissions}</h3>
         </div>
@@ -371,7 +371,7 @@ const Dashboard = () => {
       {/* New feedback... */}
       {/* Feedback Section */}
       {isAdmin && (
-        <div className="glass-card mt-4 sm:mt-6">
+        <div className="glass-card mt-4 sm:mt-6 overflow-hidden">
           <h2 className="text-xl font-orbitron font-semibold text-blue-700 dark:text-white mb-4">Recent Feedback</h2>
           <ul className="space-y-3">
             {feedbacks.slice(0, 3).map((fb) => {
@@ -380,7 +380,7 @@ const Dashboard = () => {
               ));
 
               return (
-                <li key={fb._id || fb.id} className="flex-1 p-4 bg-blue-100 dark:bg-blue-900/20 rounded-lg transition-transform hover:scale-105">
+                <li key={fb._id || fb.id} className="flex-1 p-4 bg-blue-100 dark:bg-blue-900/20 rounded-lg transition-transform transform-gpu will-change-transform hover:scale-[1.02]">
                   <p className="text-gray-700 dark:text-white font-semibold text-lg">
                     From: {fb.user?.name || fb.user?.codename || "Anonymous"} • {stars}
                   </p>

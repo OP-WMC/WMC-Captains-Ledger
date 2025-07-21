@@ -93,7 +93,7 @@ const Feedback = () => {
 
   return (
     <div className="p-3 sm:p-8 bg-blue-300 dark:bg-[#0f172a] min-h-screen text-white w-full max-w-full overflow-x-hidden">
-      <h1 className="text-2xl sm:text-4xl font-bold mb-4 sm:mb-8 font-orbitron text-center text-blue-700 dark:text-white text-shadow-glow">Feedback</h1>
+      <h1 className="text-2xl sm:text-4xl font-bold mb-4 sm:mb-8 font-orbitron text-center text-blue-700 dark:text-white dark:text-shadow-glow">Feedback</h1>
 
       {/* Search and Filter Section */}
       <div className="mb-4 sm:mb-8 space-y-2 sm:space-y-4">

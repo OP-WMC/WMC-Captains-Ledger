@@ -104,7 +104,7 @@
   color: white !important;
 }
 .react-calendar__tile--active {
-  background: #facc15 !important; /* Tailwind yellow-400 */
+  background: #68b2ee !important; /* Tailwind yellow-400 */
   color: black !important;
 }
 .react-calendar__navigation {
@@ -142,7 +142,13 @@
     }
 
     .glass-card:hover {
-      transform: scale(1.02);
+      transform: scale(1.015);
       border-color: rgba(0, 224, 255, 0.4);
       box-shadow: 0 0 30px rgba(0, 224, 255, 0.15);
     }
+
+    @media (max-width: 640px) {
+  .glass-card:hover {
+    transform: none; /* no scaling on small screens */
+  }
+}

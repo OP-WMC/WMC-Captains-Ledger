@@ -9,7 +9,6 @@ const chatLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 10,
   message: { error: 'Too many chat requests, please slow down.' },
-  keyGenerator: (req) => req.user?._id || req.ip,
 });
 
 router.post('/chat', verifyToken, chatLimiter, handleChat);

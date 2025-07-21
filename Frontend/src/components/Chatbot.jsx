@@ -6,7 +6,7 @@ const Chatbot = () => {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: "Hi! I'm JARVIS. How can I help you today? 💪" }
+    { role: 'assistant', content: "Hi! I'm SkyWing. How can I help you today? 💪" }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -85,7 +85,7 @@ const Chatbot = () => {
         <div className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-50 w-[90vw] max-w-xs sm:max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-2xl flex flex-col border border-blue-400">
           {/* Header */}
           <div className="flex items-center justify-between p-3 sm:p-4 border-b border-blue-200 dark:border-blue-800 bg-blue-600 rounded-t-2xl">
-            <span className="text-white font-bold text-base sm:text-lg">JARVIS</span>
+            <span className="text-white font-bold text-base sm:text-lg">SkyWing</span>
             <button onClick={() => setOpen(false)} className="text-white text-xl font-bold">×</button>
           </div>
           {/* Messages */}

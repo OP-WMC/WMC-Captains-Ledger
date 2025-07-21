@@ -20,6 +20,7 @@
     "mongoose": "^8.16.1",
     "nodemailer": "^7.0.4",
     "openai": "^5.10.1",
+    "p-limit": "^6.2.0",
     "stripe": "^18.3.0"
   },
   "devDependencies": {

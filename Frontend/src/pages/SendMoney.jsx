@@ -258,7 +258,7 @@ const SendMoney = () => {
   return (
     <div className="space-y-4 sm:space-y-6 w-full max-w-full overflow-x-hidden">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-orbitron text-blue-700 font-bold dark:text-white mb-1 sm:mb-2 text-shadow-glow mt-10 sm:mt-0">
+        <h1 className="text-2xl sm:text-3xl font-orbitron text-blue-700 font-bold dark:text-white mb-1 sm:mb-2 dark:text-shadow-glow mt-10 sm:mt-0">
           Send Money
         </h1>
         <p className="text-xs sm:text-base text-gray-700 dark:text-avengers-silver">

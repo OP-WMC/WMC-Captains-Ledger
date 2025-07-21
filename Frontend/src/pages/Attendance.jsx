@@ -350,10 +350,10 @@ useEffect(() => {
 
 {/* MAIN ACTIONS + CALENDAR in tighter single box */}
 <div className="bg-blue-300 glass-card dark:border-gray-700 p-3 sm:p-6 rounded-xl shadow-lg">
-  <div className="flex flex-col md:flex-row items-start gap-4 sm:gap-6">
+  <div className="flex flex-col md:flex-row items-start gap-4 ">
     
     {/* LEFT: Attendance Control */}
-    <div className="space-y-3 sm:space-y-4">
+    <div className=" space-y-3 sm:space-y-4">
       {isAdmin ? (
         <>
           <div className="flex items-center gap-4 flex-wrap">
@@ -385,7 +385,7 @@ useEffect(() => {
         !loadingTodayStatus && (
           <>
             {hasMarkedToday ? (
-              <div className="text-white dark:text-green-400 font-semibold text-lg flex items-center gap-2">
+              <div className="text-blue-600 dark:text-green-400 font-semibold text-lg flex items-center gap-2">
                 <CheckCircle className="w-5 h-5" /> Attendance already marked for today ✅
               </div>
             ) : (
@@ -415,7 +415,7 @@ useEffect(() => {
     </div>
 
     {/* RIGHT: Calendar - now closer */}
-    <div className="w-full max-w-xs scale-90 sm:scale-100 md:w-72 mx-auto">
+    <div className="w-72">
       <Calendar
         tileClassName={({ date, view }) => {
           if (view === "month") {
@@ -429,33 +429,6 @@ useEffect(() => {
     </div>
   </div>
 </div>
-
-
-
-      {/* STATS */}
-      {/* <div>
-        <h3 className="text-xl font-semibold text-avengers-silver flex items-center gap-2">
-          <Users /> Attendance Stats
-        </h3>
-        <div className="w-full h-72 bg-gray-900 mt-4 p-4 rounded-xl">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={[
-              { name: 'Steve', attendance: 80 },
-              { name: 'Tony', attendance: 65 },
-              { name: 'Sam', attendance: 92 },
-              { name: 'Natasha', attendance: 75 },
-              { name: 'Bruce', attendance: 50 },
-            ]}>
-              <XAxis dataKey="name" stroke="#ccc" />
-              <YAxis stroke="#ccc" />
-              <Tooltip />
-              <Bar dataKey="attendance" fill="#facc15" radius={[8, 8, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div> */}
-       
-    
     </div>
   );
 };
