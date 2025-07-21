@@ -114,19 +114,18 @@ const ChartContainer = ({
     : chartTypes;
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-600/30 backdrop-blur-sm">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-blue-600">{title}</h2>
-        
+    <div className="bg-white p-3 sm:p-6 rounded-2xl shadow-xl border border-gray-600/30 backdrop-blur-sm w-full max-w-xs sm:max-w-full scale-90 sm:scale-100 overflow-x-hidden mx-auto">
+      <div className="flex flex-col sm:flex-row items-center justify-between mb-4 sm:mb-6 gap-2 sm:gap-0">
+        <h2 className="text-lg sm:text-xl font-semibold text-blue-600">{title}</h2>
         {/* Chart Type Selector */}
-        <div className="flex space-x-2">
+        <div className="flex space-x-1 sm:space-x-2 mt-2 sm:mt-0">
           {filteredChartTypes.map((type) => {
             const Icon = type.icon;
             return (
               <button
                 key={type.key}
                 onClick={() => setChartType(type.key)}
-                className={`p-2 rounded-lg transition-all duration-200 flex items-center space-x-2 ${
+                className={`p-2 rounded-lg transition-all duration-200 flex items-center space-x-1 sm:space-x-2 ${
                   chartType === type.key
                     ? 'bg-yellow-500 text-blue-500 shadow-lg'
                     : 'bg-gray-700 text-blue-400 hover:bg-gray-600 hover:text-black'
@@ -134,14 +133,13 @@ const ChartContainer = ({
                 title={type.label}
               >
                 <Icon className="w-4 h-4" />
-                <span className="hidden sm:inline text-sm font-medium">{type.label}</span>
+                <span className="hidden sm:inline text-xs sm:text-sm font-medium">{type.label}</span>
               </button>
             );
           })}
         </div>
       </div>
-      
-      <ResponsiveContainer width="100%" height={height}>
+      <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? (chartType === 'pie' ? 340 : 220) : height}>
         {renderChart()}
       </ResponsiveContainer>
     </div>

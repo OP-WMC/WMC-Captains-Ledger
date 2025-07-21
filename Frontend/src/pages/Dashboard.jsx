@@ -243,23 +243,22 @@ const Dashboard = () => {
   }, [showMissionModal]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 w-full max-w-full overflow-x-hidden">
       {/* Welcome Header */}
       <div className="glass-card">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-0">
           <div>
-            <h1 className="text-3xl font-orbitron font-bold text-blue-700 dark:text-white dark:text-shadow-glow mb-2">
+            <h1 className="text-2xl sm:text-3xl font-orbitron font-bold text-blue-700 dark:text-white dark:text-shadow-glow mb-1 sm:mb-2">
               Welcome back, {user?.codename}
             </h1>
-            <p className="text-slate-600 dark:text-cyan-100">
+            <p className="text-slate-600 dark:text-cyan-100 text-sm sm:text-base">
               {isAdmin ? 'Command Center Dashboard' : 'Agent Dashboard'}
             </p>
           </div>
-
-          {/* 🌗 Dark Mode Toggle */}
-          <div className="flex items-center gap-6">
+          {/* Dark Mode Toggle and Wallet */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-6 w-full sm:w-auto">
             <label className="flex items-center cursor-pointer space-x-2 group">
-              <span className="text-sm text-cyan-300">☀️</span>
+              <span className="text-xs sm:text-sm text-cyan-300">☀️</span>
               <input
                 type="checkbox"
                 id="theme-toggle"
@@ -267,24 +266,22 @@ const Dashboard = () => {
                 checked={darkMode}
                 onChange={toggleTheme}
               />
-              <div className={`w-12 h-6 rounded-full bg-blue-700 relative transition-all duration-300 ring-1 ring-violet-400/30 shadow-md
+              <div className={`w-8 sm:w-12 h-5 sm:h-6 rounded-full bg-blue-700 relative transition-all duration-300 ring-1 ring-violet-400/30 shadow-md
                 ${darkMode ? "bg-blue-800 dark:bg-cyan-300 shadow-[0_0_15px_#a78bfa]" : ""}
               `}>
                 <div
-                  className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all duration-300
-                    ${darkMode ? "left-6" : "left-0.5"}
+                  className={`w-4 sm:w-5 h-4 sm:h-5 bg-white rounded-full absolute top-0.5 transition-all duration-300
+                    ${darkMode ? "left-6 sm:left-6" : "left-0.5"}
                   `}
                 ></div>
               </div>
-              <span className="text-sm text-cyan-300">🌙</span>
+              <span className="text-xs sm:text-sm text-cyan-300">🌙</span>
             </label>
-
-            {/* Wallet */}
-            <div className="text-right">
-              <p className="text-gray-700 dark:text-cyan-300 text-m flex items-center justify-end gap-1  font-semibold">
+            <div className="text-right w-full sm:w-auto">
+              <p className="text-gray-700 dark:text-cyan-300 text-xs sm:text-m flex items-center justify-end gap-1 font-semibold">
                 💰 Wallet Balance:
               </p>
-              <p className="text-3xl font-orbitron font-bold text-blue-700 dark:text-yellow-400 dark:text-shadow-glow">
+              <p className="text-2xl sm:text-3xl font-orbitron font-bold text-blue-700 dark:text-yellow-400 dark:text-shadow-glow">
                 ₹{user?.balance?.toLocaleString()}
               </p>
             </div>
@@ -292,49 +289,47 @@ const Dashboard = () => {
         </div>
       </div>
 
-
-
       {/* Stats Cards */}
-    <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 ">
-      <div className="glass-card text-center ">
-        <p className="text-gray-700 font-bold dark:text-cyan-300 mb-1">🗺️ Total Missions</p>
-        <h3 className="text-2xl text-blue-700  dark:text-white font-semibold">{totalMissions}</h3>
-      </div>
-      <div className="glass-card text-center">
-        <p className="text-gray-700 font-bold dark:text-cyan-300 mb-1">🛡️ Active Agents</p>
-        <h3 className="text-2xl text-blue-700 dark:text-white font-semibold">{activeAgents}</h3>
-      </div>
-      <div className="glass-card text-center">
-        <p className="text-gray-700 font-bold dark:text-cyan-300 mb-1">💳 Total Payments</p>
-        <h3 className="text-2xl text-blue-700 dark:text-white font-semibold">{totalPayments}</h3>
-      </div>
-      <div className="glass-card text-center">
-        <p className="text-gray-700 font-bold dark:text-cyan-300 mb-1">📊 Avg Attendance Rate</p>
-        <h3 className="text-2xl text-blue-700 dark:text-white font-semibold">{attendanceRate}</h3>
-      </div>
-    </section>
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="glass-card text-center ">
+          <p className="text-gray-700 font-bold dark:text-cyan-300 mb-1">🗺️ Total Missions</p>
+          <h3 className="text-2xl text-blue-700  dark:text-white font-semibold">{totalMissions}</h3>
+        </div>
+        <div className="glass-card text-center">
+          <p className="text-gray-700 font-bold dark:text-cyan-300 mb-1">🛡️ Active Agents</p>
+          <h3 className="text-2xl text-blue-700 dark:text-white font-semibold">{activeAgents}</h3>
+        </div>
+        <div className="glass-card text-center">
+          <p className="text-gray-700 font-bold dark:text-cyan-300 mb-1">💳 Total Payments</p>
+          <h3 className="text-2xl text-blue-700 dark:text-white font-semibold">{totalPayments}</h3>
+        </div>
+        <div className="glass-card text-center">
+          <p className="text-gray-700 font-bold dark:text-cyan-300 mb-1">📊 Avg Attendance Rate</p>
+          <h3 className="text-2xl text-blue-700 dark:text-white font-semibold">{attendanceRate}</h3>
+        </div>
+      </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
 
         {/* Missions Section */}
         <div className="glass-card">
           <h2 className="text-xl font-orbitron font-semibold text-blue-700 dark:text-white mb-4">
             {isAdmin ? '🗺️ All Missions' : '🗺️ Your Missions'}
           </h2>
-<div className="space-y-3">
-  {(isAdmin ? missions : userMissions).slice(0, 4).map((mission) => (
-    <div key={mission._id} className="flex items-center justify-between p-4 dark:bg-avengers-gray/30 rounded-lg">
-      <div className="flex-1 p-4 bg-blue-100 dark:bg-blue-900/20 rounded-lg transition-transform hover:scale-105">
-        <h3 className="text-gray-700 font-semibold dark:text-white  text-lg">{mission.title}</h3>
-        <p className="text-sm text-gray-700 dark:text-cyan-300">{mission.location}</p>
-      </div>
-      <div className="px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-        {/* {getStatusIcon(mission.status)} */}
-        {/* <span className="capitalize">{mission.status}</span> */}
-      </div>
-    </div>
-  ))}
-</div>
+          <div className="space-y-3">
+            {(isAdmin ? missions : userMissions).slice(0, 4).map((mission) => (
+              <div key={mission._id} className="flex items-center justify-between p-4 dark:bg-avengers-gray/30 rounded-lg">
+                <div className="flex-1 p-4 bg-blue-100 dark:bg-blue-900/20 rounded-lg transition-transform hover:scale-105">
+                  <h3 className="text-gray-700 font-semibold dark:text-white  text-lg">{mission.title}</h3>
+                  <p className="text-sm text-gray-700 dark:text-cyan-300">{mission.location}</p>
+                </div>
+                <div className="px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                  {/* {getStatusIcon(mission.status)} */}
+                  {/* <span className="capitalize">{mission.status}</span> */}
+                </div>
+              </div>
+            ))}
+          </div>
 
           <div className="mt-4">
             <a href="/missions" className="text-blue-700 dark:text-white text-shadow-glow font-medium">
@@ -375,42 +370,39 @@ const Dashboard = () => {
       </div>
       {/* New feedback... */}
       {/* Feedback Section */}
-{isAdmin && (
-  <div className="glass-card mt-6">
-    <h2 className="text-xl font-orbitron font-semibold text-blue-700 dark:text-white mb-4">Recent Feedback</h2>
-    <ul className="space-y-3">
-      {feedbacks.slice(0, 3).map((fb) => {
-        const stars = Array.from({ length: fb.rating }, (_, i) => (
-          <span key={i}>⭐</span>
-        ));
+      {isAdmin && (
+        <div className="glass-card mt-4 sm:mt-6">
+          <h2 className="text-xl font-orbitron font-semibold text-blue-700 dark:text-white mb-4">Recent Feedback</h2>
+          <ul className="space-y-3">
+            {feedbacks.slice(0, 3).map((fb) => {
+              const stars = Array.from({ length: fb.rating }, (_, i) => (
+                <span key={i}>⭐</span>
+              ));
 
-        return (
-          <li key={fb._id || fb.id} className="flex-1 p-4 bg-blue-100 dark:bg-blue-900/20 rounded-lg transition-transform hover:scale-105">
-            <p className="text-gray-700 dark:text-white font-semibold text-lg">
-              From: {fb.user?.name || fb.user?.codename || "Anonymous"} • {stars}
-            </p>
-            <p className="text-sm text-gray-700 dark:text-cyan-300">{fb.comment}</p>
-          </li>
-        );
-      })}
-    </ul>
-    <div className="mt-3">
-      <a href="/feedback" className="text-blue-700 dark:text-white text-shadow-glow font-medium">
-        View all feedback →
-      </a>
-    </div>
-  </div>
-)}
-
-
-
+              return (
+                <li key={fb._id || fb.id} className="flex-1 p-4 bg-blue-100 dark:bg-blue-900/20 rounded-lg transition-transform hover:scale-105">
+                  <p className="text-gray-700 dark:text-white font-semibold text-lg">
+                    From: {fb.user?.name || fb.user?.codename || "Anonymous"} • {stars}
+                  </p>
+                  <p className="text-sm text-gray-700 dark:text-cyan-300">{fb.comment}</p>
+                </li>
+              );
+            })}
+          </ul>
+          <div className="mt-3">
+            <a href="/feedback" className="text-blue-700 dark:text-white text-shadow-glow font-medium">
+              View all feedback →
+            </a>
+          </div>
+        </div>
+      )}
 
       {/* Quick Actions */}
       <div className="glass-card">
-        <h2 className="text-xl font-orbitron font-semibold  text-blue-700 dark:text-white mb-4">
+        <h2 className="text-lg sm:text-xl font-orbitron font-semibold text-blue-700 dark:text-white mb-2 sm:mb-4">
           Quick Actions
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 ">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4">
           <a 
             href="/send-money" 
             className="p-4 bg-gradient-to-r from-avengers-blue to-avengers-light-blue rounded-lg text-white text-center hover:from-avengers-light-blue hover:to-avengers-blue transition-all duration-300"
@@ -439,7 +431,7 @@ const Dashboard = () => {
       <Modal
         isOpen={showMissionModal}
         onRequestClose={() => setShowMissionModal(false)}
-        className="bg-blue-100 dark:bg-gray-900 p-8 rounded-2xl shadow-2xl w-full max-w-lg mx-auto mt-24 relative"
+        className="bg-blue-100 dark:bg-gray-900 p-4 sm:p-8 rounded-2xl shadow-2xl w-full max-w-lg mx-auto mt-12 sm:mt-24 relative"
         overlayClassName="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center"
         ariaHideApp={false}
       >

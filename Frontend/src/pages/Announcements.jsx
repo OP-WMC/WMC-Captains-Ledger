@@ -16,6 +16,7 @@ const Announcements = () => {
   const [filter, setFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const announcementsPerPage = 4;
+  const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
 
   useEffect(() => {
     const loadAnnouncements = async () => {
@@ -68,6 +69,10 @@ const Announcements = () => {
     currentPage * announcementsPerPage
   );
 
+  // Helper: get only 3 announcements for mobile, else normal
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+  const displayedAnnouncements = isMobile ? paginatedAnnouncements.slice(0, 3) : paginatedAnnouncements;
+
   // Handle filter change
   const handleFilterChange = (e) => {
     setFilter(e.target.value);
@@ -87,17 +92,17 @@ const Announcements = () => {
   }
 
   return (
-    <div className="min-h-screen bg-blue-300 dark:bg-[#0f172a]  p-6">
+    <div className="min-h-screen bg-blue-300 dark:bg-[#0f172a] p-3 sm:p-6 w-full max-w-full overflow-x-hidden">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <Megaphone className="w-12 h-12 text-blue-500 dark:text-white mr-4" />
-            <h1 className="text-5xl font-bold font-orbitron text-blue-700  dark:text-white dark:text-shadow-glow dark:bg-clip-text dark:text-transparent">
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row items-center justify-center mb-2 sm:mb-4 gap-2 sm:gap-4">
+            <Megaphone className="w-8 h-8 sm:w-12 sm:h-12 text-blue-500 dark:text-white mr-0 sm:mr-4" />
+            <h1 className="text-2xl sm:text-5xl font-bold font-orbitron text-blue-700 dark:text-white dark:text-shadow-glow dark:bg-clip-text dark:text-transparent">
               Announcements
             </h1>
           </div>
-          <p className="text-white dark:text-gray-400 text-lg">
+          <p className="text-white dark:text-gray-400 text-base sm:text-lg">
             Stay updated with the latest news and important updates from the team
           </p>
         </div>
@@ -150,13 +155,63 @@ const Announcements = () => {
 
               <div className="mb-6">
                 <label className="block text-sm font-semibold mb-2 text-blue-500 dark:text-gray-300">Type</label>
+                {/* Custom dropdown for mobile */}
+                <div className="block sm:hidden w-full max-w-[220px]">
+                  <button
+                    type="button"
+                    onClick={() => setMobileDropdownOpen('type')}
+                    className="p-2 rounded-lg bg-white dark:bg-blue-700/30 dark:text-white text-blue-500 font-semibold border dark:border-blue-900/20 focus:outline-none transition-all duration-200 shadow-lg text-xs w-full flex items-center justify-between"
+                  >
+                    {formData.important ? '🚨 Important Announcement' : '📢 Normal Announcement'}
+                    <span className="ml-2">▼</span>
+                  </button>
+                  {mobileDropdownOpen === 'type' && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+                      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-xl w-11/12 max-w-xs mx-auto p-2">
+                        <h3 className="text-xs font-bold mb-2 text-blue-700 dark:text-cyan-400">Select Type</h3>
+                        <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+                          <li>
+                            <button
+                              type="button"
+                              className={`w-full text-left px-3 py-2 text-xs hover:bg-blue-100 dark:hover:bg-blue-800 text-blue-700 dark:text-cyan-300 ${!formData.important ? 'font-bold' : ''}`}
+                              onClick={() => { setFormData({ ...formData, important: false }); setMobileDropdownOpen(false); }}
+                            >
+                              📢 Normal Announcement
+                            </button>
+                          </li>
+                          <li>
+                            <button
+                              type="button"
+                              className={`w-full text-left px-3 py-2 text-xs hover:bg-blue-100 dark:hover:bg-blue-800 text-blue-700 dark:text-cyan-300 ${formData.important ? 'font-bold' : ''}`}
+                              onClick={() => { setFormData({ ...formData, important: true }); setMobileDropdownOpen(false); }}
+                            >
+                              🚨 Important Announcement (Will send email to all users)
+                            </button>
+                          </li>
+                        </ul>
+                        <button
+                          type="button"
+                          className="mt-2 w-full py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold text-xs"
+                          onClick={() => setMobileDropdownOpen(false)}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {/* Native select for desktop/tablet */}
                 <select
                   value={formData.important ? "important" : "normal"}
                   onChange={e => setFormData({ ...formData, important: e.target.value === "important" })}
-                  className="w-full p-4 rounded-lg dark:bg-blue-700/30 dark:text-white border border-gray-500 font-medium dark:border-blue-900/20 focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200"
+                  className="hidden sm:block w-full p-2 rounded-lg dark:bg-blue-700/30 dark:text-white border border-gray-500 font-medium dark:border-blue-900/20 focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200 text-xs h-8"
                 >
-                  <option value="normal">📢 Normal Announcement</option>
-                  <option value="important">🚨 Important Announcement (Will send email to all users)</option>
+                  <option value="normal" style={{fontSize: '0.75rem', lineHeight: '1.2'}}>
+                    📢 Normal Announcement
+                  </option>
+                  <option value="important" style={{fontSize: '0.75rem', lineHeight: '1.2'}}>
+                    🚨 Important Announcement (Will send email to all users)
+                  </option>
                 </select>
               </div>
 
@@ -190,14 +245,71 @@ const Announcements = () => {
 
         {/* Filter Dropdown */}
         <div className="mb-8 flex justify-end">
+          {/* Mobile custom dropdown */}
+          <div className="block sm:hidden w-full max-w-[180px]">
+            <button
+              type="button"
+              onClick={() => setMobileDropdownOpen(true)}
+              className="p-2 rounded-lg bg-white dark:bg-gray-700 dark:text-white text-blue-500 font-semibold border dark:border-gray-700 focus:outline-none transition-all duration-200 shadow-lg text-xs w-full flex items-center justify-between"
+            >
+              {filter === 'all' && 'All Announcements'}
+              {filter === 'important' && '🚨 Important'}
+              {filter === 'normal' && '📢 Normal'}
+              <span className="ml-2">▼</span>
+            </button>
+            {mobileDropdownOpen && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+                <div className="bg-white dark:bg-gray-900 rounded-xl shadow-xl w-11/12 max-w-xs mx-auto p-2">
+                  <h3 className="text-xs font-bold mb-2 text-blue-700 dark:text-cyan-400">Filter Announcements</h3>
+                  <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+                    <li>
+                      <button
+                        type="button"
+                        className="w-full text-left px-3 py-2 text-xs hover:bg-blue-100 dark:hover:bg-blue-800 text-blue-700 dark:text-cyan-300"
+                        onClick={() => { setFilter('all'); setMobileDropdownOpen(false); }}
+                      >
+                        All Announcements
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        type="button"
+                        className="w-full text-left px-3 py-2 text-xs hover:bg-blue-100 dark:hover:bg-blue-800 text-blue-700 dark:text-cyan-300"
+                        onClick={() => { setFilter('important'); setMobileDropdownOpen(false); }}
+                      >
+                        🚨 Important
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        type="button"
+                        className="w-full text-left px-3 py-2 text-xs hover:bg-blue-100 dark:hover:bg-blue-800 text-blue-700 dark:text-cyan-300"
+                        onClick={() => { setFilter('normal'); setMobileDropdownOpen(false); }}
+                      >
+                        📢 Normal
+                      </button>
+                    </li>
+                  </ul>
+                  <button
+                    type="button"
+                    className="mt-2 w-full py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold text-xs"
+                    onClick={() => setMobileDropdownOpen(false)}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+          {/* Desktop native select */}
           <select
             value={filter}
             onChange={handleFilterChange}
-            className="p-3 rounded-lg bg-white dark:bg-gray-700 dark:text-white text-blue-500 font-semibold border dark:border-gray-700 focus:outline-none transition-all duration-200 shadow-lg"
+            className="hidden sm:block p-2 sm:p-3 rounded-lg bg-white dark:bg-gray-700 dark:text-white text-blue-500 font-semibold border dark:border-gray-700 focus:outline-none transition-all duration-200 shadow-lg text-xs sm:text-base w-full max-w-[180px]"
           >
-            <option value="all">All Announcements</option>
-            <option value="important">🚨 Important</option>
-            <option value="normal">📢 Normal</option>
+            <option value="all" className="text-xs py-2 px-3">All Announcements</option>
+            <option value="important" className="text-xs py-2 px-3">🚨 Important</option>
+            <option value="normal" className="text-xs py-2 px-3">📢 Normal</option>
           </select>
         </div>
 
@@ -217,7 +329,7 @@ const Announcements = () => {
           ) : (
             <>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {paginatedAnnouncements.map((ann, index) => (
+                {displayedAnnouncements.map((ann, index) => (
                   <div key={ann._id || ann.id} className="animate-fadeInUp" style={{ animationDelay: `${index * 0.1}s` }}>
                     <AnnouncementCard 
                       title={ann.title} 

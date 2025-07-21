@@ -36,10 +36,10 @@ const FeedbackCard = ({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 dark:border-gray-900 p-6 rounded-xl shadow-lg text-blue-500 border border-blue-500 dark:hover:border-gray-600 transition-all duration-200 ">
-      <div className="flex justify-between items-start mb-3">
-        <div className="flex items-center space-x-2">
-          <h3 className="font-semibold text-green-400 text-lg">
+    <div className="bg-white dark:bg-gray-800 dark:border-gray-900 p-4 sm:p-6 rounded-xl shadow-lg text-blue-500 border border-blue-500 dark:hover:border-gray-600 transition-all duration-200 w-full max-w-full">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 sm:mb-3 gap-2 sm:gap-0">
+        <div className="flex items-center space-x-1 sm:space-x-2">
+          <h3 className="font-semibold text-green-400 text-base sm:text-lg">
             {feedbackerName || name || "Anonymous"}
           </h3>
           <div className="flex items-center space-x-1">
@@ -50,14 +50,12 @@ const FeedbackCard = ({
           {formatDate(submittedAt)}
         </span>
       </div>
-      
-      <div className="mb-3">
-        <p className="text-sm text-blue-500 font-semibold dark:text-gray-400 mb-1">
+      <div className="mb-2 sm:mb-3">
+        <p className="text-xs sm:text-sm text-blue-500 font-semibold dark:text-gray-400 mb-1">
           <span className="text-blue-500 font-semibold">Paid by:</span> {paidBy || "Unknown"}
         </p>
       </div>
-      
-      <p className="text-black font-semibold dark:text-gray-300 leading-relaxed">{comment}</p>
+      <p className="text-black font-semibold dark:text-gray-300 leading-relaxed text-sm sm:text-base">{comment}</p>
     </div>
   );
 };

@@ -120,22 +120,22 @@ const Stats = () => {
   }
 
   return (
-    <div className="min-h-screen bg-blue-300 dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6">
+    <div className="min-h-screen bg-blue-300 dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-3 sm:p-6 w-full max-w-full overflow-x-hidden">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold font-orbitron bg-blue-700  dark:bg-gradient-to-r dark:from-yellow-400 dark:via-orange-500 dark:to-red-500 bg-clip-text text-transparent mb-4">
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-3xl sm:text-5xl font-bold font-orbitron bg-blue-700 dark:bg-gradient-to-r dark:from-yellow-400 dark:via-orange-500 dark:to-red-500 bg-clip-text text-transparent mb-2 sm:mb-4 mt-10 sm:mt-0">
             Analytics Dashboard
           </h1>
-          <p className="text-white dark:text-gray-400 text-lg">
+          <p className="text-white dark:text-gray-400 text-base sm:text-lg">
             Comprehensive insights into team performance and financial metrics
           </p>
         </div>
 
         {/* View Toggle */}
-        <div className="flex justify-center mb-8">
-          <div className="bg-white dark:bg-gray-800/50 p-2 rounded-2xl border border-gray-600/30 backdrop-blur-sm">
-            <div className="flex space-x-2">
+        <div className="flex justify-center mb-6 sm:mb-8">
+          <div className="bg-white dark:bg-gray-800/50 p-1 sm:p-2 rounded-2xl border border-gray-600/30 backdrop-blur-sm">
+            <div className="flex space-x-1 sm:space-x-2">
               <button
                 onClick={() => setView('attendance')}
                 className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center space-x-2 ${
@@ -164,7 +164,7 @@ const Stats = () => {
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 bg-red-500/10 border border-red-500/30 rounded-lg p-4 flex items-center">
+          <div className="mb-4 sm:mb-6 bg-red-500/10 border border-red-500/30 rounded-lg p-3 sm:p-4 flex items-center">
             <AlertCircle className="w-5 h-5 text-red-400 mr-3" />
             <span className="text-red-400">{error}</span>
           </div>
@@ -172,9 +172,9 @@ const Stats = () => {
 
         {view === 'attendance' ? (
           /* Attendance View */
-          <div className="space-y-8 ">
+          <div className="space-y-6 sm:space-y-8">
             {/* Attendance Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6  glass-card ">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 glass-card">
               <StatsCard
                 title="Total Days"
                 value={attendanceStats?.totalDays || 0}
@@ -200,7 +200,7 @@ const Stats = () => {
             </div>
 
             {/* Attendance Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 glass-card">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8 glass-card">
               <ChartContainer
                 title="Individual Attendance Rates"
                 data={attendanceChartData}
@@ -219,13 +219,15 @@ const Stats = () => {
             </div>
 
             {/* Top Performers */}
-            <div className="bg-white dark:bg-gradient-to-br from-gray-800/50 to-gray-700/50 p-6 rounded-2xl shadow-xl border border-gray-600/30 backdrop-blur-sm">
+            <div className="bg-white dark:bg-gradient-to-br from-gray-800/50 to-gray-700/50 p-3 sm:p-6 rounded-2xl shadow-xl border border-gray-600/30 backdrop-blur-sm">
               <h2 className="text-xl font-semibold text-blue-600 mb-6 flex items-center">
                 <Award className="w-6 h-6 mr-3 text-yellow-400" />
                 Top Attendance Performers
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {attendanceStats?.userStats?.sort((a, b) => b.netAmount - a.netAmount).slice(0, 6).map((user, index) => (
+                {(attendanceStats?.userStats?.sort((a, b) => b.netAmount - a.netAmount) || [])
+                  .slice(0, window.innerWidth < 640 ? 3 : 6)
+                  .map((user, index) => (
                   <div key={user.userId} className="bg-white p-4 rounded-lg border border-blue-300">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-blue-600 font-bold">{user.name}</span>
@@ -241,9 +243,9 @@ const Stats = () => {
           </div>
         ) : (
           /* Payment View */
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             {/* Payment Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 glass-card">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 glass-card">
               <StatsCard
                 title="Total Transactions"
                 value={paymentStats?.totalTransactions || 0}
@@ -268,7 +270,7 @@ const Stats = () => {
             </div>
 
             {/* Payment Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 glass-card">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8 glass-card">
               <ChartContainer
                 title="Individual Payment Activity"
                 data={paymentChartData}
@@ -287,13 +289,15 @@ const Stats = () => {
             </div>
 
             {/* Payment Summary */}
-            <div className="bg-white dark:bg-gradient-to-br from-gray-800/50 to-gray-700/50 p-6 rounded-2xl shadow-xl border border-gray-600/30 backdrop-blur-sm">
+            <div className="bg-white dark:bg-gradient-to-br from-gray-800/50 to-gray-700/50 p-3 sm:p-6 rounded-2xl shadow-xl border border-gray-600/30 backdrop-blur-sm">
               <h2 className="text-xl font-semibold text-blue-600 mb-6 flex items-center">
                 <BarChart3 className="w-6 h-6 mr-3 text-yellow-400" />
                 Payment Summary by User
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {paymentStats?.userPaymentStats?.sort((a, b) => b.netAmount - a.netAmount).slice(0, 6).map((user) => (
+                {(paymentStats?.userPaymentStats?.sort((a, b) => b.netAmount - a.netAmount) || [])
+                  .slice(0, window.innerWidth < 640 ? 3 : 6)
+                  .map((user) => (
                   <div key={user.userId} className="bg-white p-4 rounded-lg border border-gray-600/30">
                     <div className="text-blue-600 font-semibold mb-2">{user.name}</div>
                     <div className="space-y-1 text-sm">

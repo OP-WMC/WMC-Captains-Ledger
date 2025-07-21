@@ -68,10 +68,10 @@ const Chatbot = () => {
   return (
     <>
       {/* Floating Chat Bubble */}
-      <div className="fixed bottom-8 right-8 z-50">
+      <div className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-50">
         {!open && (
           <button
-            className="bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg w-16 h-16 flex items-center justify-center text-3xl animate-bounce"
+            className="bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center text-2xl sm:text-3xl animate-bounce"
             onClick={() => setOpen(true)}
             aria-label="Open chat"
           >
@@ -82,17 +82,17 @@ const Chatbot = () => {
 
       {/* Chat Window */}
       {open && (
-        <div className="fixed bottom-8 right-8 z-50 w-80 max-w-full bg-white dark:bg-gray-900 rounded-2xl shadow-2xl flex flex-col border border-blue-400">
+        <div className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-50 w-[90vw] max-w-xs sm:max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-2xl flex flex-col border border-blue-400">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-blue-200 dark:border-blue-800 bg-blue-600 rounded-t-2xl">
-            <span className="text-white font-bold text-lg">JARVIS</span>
+          <div className="flex items-center justify-between p-3 sm:p-4 border-b border-blue-200 dark:border-blue-800 bg-blue-600 rounded-t-2xl">
+            <span className="text-white font-bold text-base sm:text-lg">JARVIS</span>
             <button onClick={() => setOpen(false)} className="text-white text-xl font-bold">×</button>
           </div>
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-blue-50 dark:bg-gray-800" style={{ maxHeight: 350 }}>
+          <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-2 bg-blue-50 dark:bg-gray-800" style={{ maxHeight: 350 }}>
             {messages.map((msg, i) => (
               <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`px-4 py-2 rounded-2xl shadow text-sm max-w-[80%] ${msg.role === 'user' ? 'bg-blue-500 text-white' : 'bg-white dark:bg-gray-700 text-blue-700 dark:text-blue-200'}`}>
+                <div className={`px-3 py-2 sm:px-4 sm:py-2 rounded-2xl shadow text-xs sm:text-sm max-w-[80%] ${msg.role === 'user' ? 'bg-blue-500 text-white' : 'bg-white dark:bg-gray-700 text-blue-700 dark:text-blue-200'}`}>
                   {msg.content}
                 </div>
               </div>
@@ -100,10 +100,10 @@ const Chatbot = () => {
             <div ref={messagesEndRef} />
           </div>
           {/* Input */}
-          <form onSubmit={handleSend} className="flex items-center p-3 border-t border-blue-200 dark:border-blue-800 bg-white dark:bg-gray-900 rounded-b-2xl">
+          <form onSubmit={handleSend} className="flex items-center p-2 sm:p-3 border-t border-blue-200 dark:border-blue-800 bg-white dark:bg-gray-900 rounded-b-2xl">
             <input
               type="text"
-              className="flex-1 px-3 py-2 rounded-lg border border-blue-300 dark:border-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-800 dark:text-white"
+              className="flex-1 px-2 sm:px-3 py-2 rounded-lg border border-blue-300 dark:border-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-800 dark:text-white text-xs sm:text-base"
               placeholder={loading ? 'Thinking...' : 'Type your message...'}
               value={input}
               onChange={e => setInput(e.target.value)}
@@ -112,7 +112,7 @@ const Chatbot = () => {
             />
             <button
               type="submit"
-              className="ml-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold disabled:opacity-50"
+              className="ml-1 sm:ml-2 px-2 sm:px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold disabled:opacity-50 text-xs sm:text-base"
               disabled={loading || !input.trim()}
             >
               Send

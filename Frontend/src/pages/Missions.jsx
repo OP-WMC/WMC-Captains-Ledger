@@ -324,30 +324,29 @@ const fetchUsers = async () => {
   };
 
   return (
-    <div className="space-y-6 px-4 md:px-10 pt-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 sm:space-y-6 px-2 sm:px-4 md:px-10 pt-4 sm:pt-6 w-full max-w-full overflow-x-hidden">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
         <div>
-          <h1 className="text-3xl font-orbitron font-bold text-blue-700 dark:text-white mb-2 dark:text-shadow-glow">🛰️ Mission Control</h1>
-          <p className="text-slate-600 dark:text-cyan-100">
+          <h1 className="text-2xl sm:text-3xl font-orbitron font-bold text-blue-700 dark:text-white mb-1 sm:mb-2 dark:text-shadow-glow mt-10 sm:mt-0">🛰️ Mission Control</h1>
+          <p className="text-slate-600 dark:text-cyan-100 text-sm sm:text-base">
             {isAdmin ? 'Manage and assign missions' : 'Your assigned missions'}
           </p>
         </div>
         {isAdmin && (
-          <button onClick={() => setShowCreateModal(true)} className="avengers-button flex items-center space-x-2">
+          <button onClick={() => setShowCreateModal(true)} className="avengers-button flex items-center space-x-2 mt-2 sm:mt-0">
             <Plus className="w-5 h-5" /> <span>Create</span>
           </button>
         )}
       </div>
-
       {/* Filter */}
       <div className="glass-card">
-        <div className="flex items-center flex-wrap gap-3">
-          <span className="text-slate-600 dark:text-cyan-100">Filter:</span>
+        <div className="flex items-center flex-wrap gap-2 sm:gap-3">
+          <span className="text-slate-600 dark:text-cyan-100 text-xs sm:text-base">Filter:</span>
           {['all', 'ongoing', 'completed', 'failed', 'martyred'].map(status => (
             <button
               key={status}
               onClick={() => setFilter(status)}
-              className={`px-4 py-2 rounded-lg transition ${
+              className={`px-3 sm:px-4 py-1 sm:py-2 rounded-lg transition text-xs sm:text-base ${
                 filter === status
                   ? 'bg-blue-400 text-white'
                   : 'bg-avengers-gray/50 text-white hover:bg-blue-400'
@@ -358,9 +357,8 @@ const fetchUsers = async () => {
           ))}
         </div>
       </div>
-
       {/* Mission Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         {filteredMissions.map((mission) => (
           <div key={mission._id} className="glass-card p-4">
             <div className="flex justify-between items-start">
@@ -406,26 +404,24 @@ const fetchUsers = async () => {
           </div>
         ))}
       </div>
-
       {/* Empty State */}
       {filteredMissions.length === 0 && (
-        <div className="text-center text-gray-700 dark:text-avengers-silver mt-10">
+        <div className="text-center text-gray-700 dark:text-avengers-silver mt-6 sm:mt-10 text-sm sm:text-base">
           🚫 No missions found for your selection.
         </div>
       )}
-
       {/* Create/Edit Modal */}
       {(showCreateModal || showEditModal) && isAdmin && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-          <div className="bg-blue-100 dark:bg-gray-900 p-8 rounded-2xl shadow-2xl w-full max-w-lg relative">
+          <div className="bg-blue-100 dark:bg-gray-900 p-1 sm:p-8 rounded-2xl shadow-2xl w-full max-w-[95vw] sm:max-w-lg mx-1 sm:mx-auto relative max-h-[90vh] overflow-y-auto">
             {/* Validation Error Popup */}
             {validationError && (
               <div className="fixed inset-0 flex items-center justify-center z-50">
-                <div className="bg-white dark:bg-avengers-gray border-2 border-avengers-red text-avengers-red dark:text-red-400 rounded-xl shadow-2xl p-6 max-w-xs w-full flex flex-col items-center animate-fadeInUp">
+                <div className="bg-white dark:bg-avengers-gray border-2 border-avengers-red text-avengers-red dark:text-red-400 rounded-xl shadow-2xl p-4 sm:p-6 max-w-xs w-full flex flex-col items-center animate-fadeInUp">
                   <span className="text-3xl mb-2">⚠️</span>
                   <p className="text-center font-semibold mb-4">{validationError}</p>
                   <button
-                    className="avengers-button px-4 py-2 text-white bg-avengers-red hover:bg-red-600 rounded-lg"
+                    className="avengers-button px-2 py-1 text-xs text-white bg-avengers-red hover:bg-red-600 rounded-lg h-9"
                     onClick={() => setValidationError("")}
                   >
                     Close
@@ -433,34 +429,32 @@ const fetchUsers = async () => {
                 </div>
               </div>
             )}
-            <button onClick={() => { setShowCreateModal(false); setShowEditModal(false); }} className="absolute top-4 right-4 text-[#f8fafc] hover:text-blue-700 dark:hover:text-white font-bold"
-              style={{ fontSize: "40px" }}
+            <button onClick={() => { setShowCreateModal(false); setShowEditModal(false); }} className="absolute top-2 right-2 text-[#f8fafc] hover:text-blue-700 dark:hover:text-white font-bold text-2xl sm:text-4xl"
               >&times;</button>
-            <h2 className="text-2xl font-bold text-blue-700 dark:text-white mb-6 text-center">{showEditModal ? 'Edit Mission' : 'Create Mission'}</h2>
-            <div className="space-y-4">
+            <h2 className="text-base sm:text-2xl font-bold text-blue-700 dark:text-white mb-2 sm:mb-6 text-center">{showEditModal ? 'Edit Mission' : 'Create Mission'}</h2>
+            <div className="space-y-2 sm:space-y-4">
               {/* Mission Details Section */}
               <div className="bg-[#f8fafc] dark:bg-gray-800 rounded-xl p-4 mb-2 shadow-inner">
                 <h3 className="text-lg font-bold text-blue-700 dark:text-avengers-blue mb-3 flex items-center gap-2">📝 Mission Details</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <input
-                    className="input bg-blue-100  dark:bg-avengers-gray text-gray-700 font-semibold dark:text-white w-full"
+                    className="input bg-blue-100 dark:bg-avengers-gray dark:text-white w-full text-gray-700 font-semibold text-xs p-2 h-8 max-w-xs sm:max-w-full"
                     placeholder="🕵️‍♂️ Title"
                     value={formData.title}
                     onChange={e => setFormData({ ...formData, title: e.target.value })}
                   />
                   <input
-                    className="input bg-blue-100  dark:bg-avengers-gray dark:text-white w-full text-gray-700 font-semibold "
+                    className="input bg-blue-100 dark:bg-avengers-gray dark:text-white w-full text-gray-700 font-semibold text-xs p-2 h-8 max-w-xs sm:max-w-full"
                     placeholder="📍 Location"
                     value={formData.location}
                     onChange={e => setFormData({ ...formData, location: e.target.value })}
                   />
                   <input
-                  
                     type="datetime-local"
                     value={formData.startDate}
                     min={nowISOString}
                     onChange={e => setFormData({ ...formData, startDate: e.target.value })}
-                    className="input bg-blue-100  dark:bg-avengers-gray dark:text-white w-full text-gray-700 font-semibold "
+                    className="input bg-blue-100 dark:bg-avengers-gray dark:text-white w-full text-gray-700 font-semibold text-xs p-2 h-8 max-w-xs sm:max-w-full"
                     required
                   />
                   <input
@@ -468,28 +462,28 @@ const fetchUsers = async () => {
                     value={formData.endDate}
                     min={formData.startDate || nowISOString}
                     onChange={e => setFormData({ ...formData, endDate: e.target.value })}
-                    className="input bg-blue-100  dark:bg-avengers-gray dark:text-white w-full text-gray-700 font-semibold "
+                    className="input bg-blue-100 dark:bg-avengers-gray dark:text-white w-full text-gray-700 font-semibold text-xs p-2 h-8 max-w-xs sm:max-w-full"
                     required
                   />
                   <select
-                    className="input bg-blue-100  dark:bg-avengers-gray dark:text-white w-full text-gray-700 font-semibold "
+                    className="input bg-blue-100 dark:bg-avengers-gray dark:text-white w-full text-gray-700 font-semibold text-xs p-2"
                     value={formData.status}
                     onChange={e => setFormData({ ...formData, status: e.target.value })}
                   >
-                    <option>ongoing</option>
-                    <option>completed</option>
-                    <option>failed</option>
-                    <option>martyred</option>
+                    <option className="text-xs">ongoing</option>
+                    <option className="text-xs">completed</option>
+                    <option className="text-xs">failed</option>
+                    <option className="text-xs">martyred</option>
                   </select>
                   <select
-                    className="input bg-blue-100  dark:bg-avengers-gray dark:text-white w-full text-gray-700 font-semibold "
+                    className="input bg-blue-100 dark:bg-avengers-gray dark:text-white w-full text-gray-700 font-semibold text-xs p-2"
                     value={formData.priority}
                     onChange={e => setFormData({ ...formData, priority: e.target.value })}
                   >
-                    <option>critical</option>
-                    <option>high</option>
-                    <option>medium</option>
-                    <option>low</option>
+                    <option className="text-xs">critical</option>
+                    <option className="text-xs">high</option>
+                    <option className="text-xs">medium</option>
+                    <option className="text-xs">low</option>
                   </select>
                 </div>
                 <textarea
@@ -595,13 +589,13 @@ const fetchUsers = async () => {
                 </div>
               )}
             </div>
-            <div className="flex justify-end gap-2 pt-4">
+            <div className="flex flex-col sm:flex-row justify-end gap-2 pt-2 sm:pt-4">
               <button
                 onClick={() => {
                   setFormData(defaultForm);
                   setValidationError("");
                 }}
-                className="avengers-button-secondary border-2 border-blue-500 text-blue-700 dark:border-blue-500 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 font-semibold"
+                className="avengers-button-secondary border-2 border-blue-500 text-blue-700 dark:border-blue-500 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 font-semibold text-xs sm:text-base w-full sm:w-auto py-1 sm:py-3 h-9"
                 type="button"
               >
                 Clear Fields
@@ -612,12 +606,12 @@ const fetchUsers = async () => {
                   setShowEditModal(false);
                   setShowMemberDropdown(false);
                 }}
-                className="avengers-button-secondary border-2 border-blue-500 text-gray-700 dark:border-blue-500 dark:text-avengers-silver hover:bg-gray-100 dark:hover:bg-blue-900/10 font-semibold"
+                className="avengers-button-secondary border-2 border-blue-500 text-gray-700 dark:border-blue-500 dark:text-avengers-silver hover:bg-gray-100 dark:hover:bg-blue-900/10 font-semibold text-xs sm:text-base w-full sm:w-auto py-1 sm:py-3 h-9"
                 type="button"
               >
                 Cancel
               </button>
-              <button onClick={handleSubmit} className="avengers-button">
+              <button onClick={handleSubmit} className="avengers-button w-full sm:w-auto py-1 sm:py-3 text-xs sm:text-base h-9">
                 {showEditModal ? 'Save' : 'Create'}
               </button>
             </div>
@@ -630,7 +624,7 @@ const fetchUsers = async () => {
         <Modal
           isOpen={showFinalizeModal}
           onRequestClose={() => setShowFinalizeModal(false)}
-          className="bg-[#f8fafc] dark:bg-gray-900 p-8 rounded-2xl shadow-2xl w-full max-w-lg mx-auto mt-24 relative"
+          className="bg-[#f8fafc] dark:bg-gray-900 p-4 sm:p-8 rounded-2xl shadow-2xl w-full max-w-lg mx-auto mt-12 sm:mt-24 relative"
           overlayClassName="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center"
           ariaHideApp={false}
         >
@@ -640,7 +634,7 @@ const fetchUsers = async () => {
             <select
               value={finalizeStatus}
               onChange={e => setFinalizeStatus(e.target.value)}
-              className="w-full p-3 rounded-lg bg-blue-500 dark:bg-gray-700 text-white border border-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200"
+              className="w-full p-2 rounded-lg bg-blue-500 dark:bg-gray-700 text-white border border-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 text-xs"
             >
               <option value="completed">Completed</option>
               <option value="failed">Failed</option>
@@ -654,7 +648,7 @@ const fetchUsers = async () => {
                 multiple
                 value={selectedMartyrs}
                 onChange={e => setSelectedMartyrs(Array.from(e.target.selectedOptions, option => option.value))}
-                className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200"
+                className="w-full p-2 rounded-lg bg-gray-700 text-white border border-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 text-xs"
               >
                 {finalizeMission.assignedMembers
                   .filter(member => member.status === 'accepted')
@@ -688,7 +682,7 @@ const fetchUsers = async () => {
         <Modal
           isOpen={showSendSalaryModal}
           onRequestClose={() => setShowSendSalaryModal(false)}
-          className="bg-[#f8fafc] dark:bg-gray-900 p-8 rounded-2xl shadow-2xl w-full max-w-lg mx-auto mt-24 relative"
+          className="bg-[#f8fafc] dark:bg-gray-900 p-4 sm:p-8 rounded-2xl shadow-2xl w-full max-w-lg mx-auto mt-12 sm:mt-24 relative"
           overlayClassName="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center"
           ariaHideApp={false}
         >
@@ -800,7 +794,7 @@ const fetchUsers = async () => {
       <Modal
         isOpen={showReassignModal}
         onRequestClose={() => setShowReassignModal(false)}
-        className="bg-blue-100 dark:bg-gray-900 p-8 rounded-2xl shadow-2xl w-full max-w-lg mx-auto mt-24 relative"
+        className="bg-blue-100 dark:bg-gray-900 p-4 sm:p-8 rounded-2xl shadow-2xl w-full max-w-lg mx-auto mt-12 sm:mt-24 relative"
         overlayClassName="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center"
         ariaHideApp={false}
       >
@@ -820,7 +814,7 @@ const fetchUsers = async () => {
             <form onSubmit={handleReassign} className="mt-6">
               <label className="block text-gray-700 dark:text-cyan-200 font-semibold mb-2">Select Replacement Member</label>
               <select
-                className="w-full p-2 rounded border border-gray-400 dark:bg-gray-800 dark:text-white"
+                className="w-full p-2 rounded border border-gray-400 dark:bg-gray-800 dark:text-white text-xs"
                 value={selectedReplacement}
                 onChange={e => setSelectedReplacement(e.target.value)}
                 required

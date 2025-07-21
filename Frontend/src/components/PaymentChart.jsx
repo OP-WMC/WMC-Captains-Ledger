@@ -14,8 +14,8 @@ const data = [
 
 const PaymentChart = () => {
   return (
-    <div className="bg-white p-6 rounded-2xl text-white">
-      <h2 className="text-xl font-semibold mb-4">Monthly Payment Overview</h2>
+    <div className="bg-white p-3 sm:p-6 rounded-2xl text-white w-full max-w-full overflow-x-auto">
+      <h2 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4">Monthly Payment Overview</h2>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />

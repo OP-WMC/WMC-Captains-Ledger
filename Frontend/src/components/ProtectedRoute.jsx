@@ -7,7 +7,7 @@ function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
 
   if (loading) return (
-    <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-white/70 dark:bg-black/80">
+    <div className="fixed inset-0 flex items-center justify-center z-[9999] bg-white/70 dark:bg-black/80 w-full h-full">
       <Loader />
     </div>
   );

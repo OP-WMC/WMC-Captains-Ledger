@@ -3,7 +3,7 @@ import FeedbackCard from "../components/FeedbackCard";
 import { fetchFeedback } from "../api/feedbackAPI";
 import Loader from '../components/Loader';
 
-const FEEDBACKS_PER_PAGE = 9;
+const getFeedbacksPerPage = () => (typeof window !== 'undefined' && window.innerWidth < 640 ? 4 : 9);
 
 const Feedback = () => {
   const [feedbacks, setFeedbacks] = useState([]);
@@ -13,6 +13,8 @@ const Feedback = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [ratingFilter, setRatingFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [FEEDBACKS_PER_PAGE, setFeedbacksPerPage] = useState(getFeedbacksPerPage());
+  const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
 
   useEffect(() => {
     const loadFeedback = async () => {
@@ -27,6 +29,12 @@ const Feedback = () => {
       }
     };
     loadFeedback();
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => setFeedbacksPerPage(getFeedbacksPerPage());
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // Filter feedbacks based on search term and rating
@@ -84,12 +92,12 @@ const Feedback = () => {
   };
 
   return (
-    <div className="p-8 bg-blue-300 dark:bg-[#0f172a] min-h-screen text-white">
-      <h1 className="text-4xl font-bold mb-8 font-orbitron text-center text-blue-700 dark:text-white text-shadow-glow">Feedback</h1>
+    <div className="p-3 sm:p-8 bg-blue-300 dark:bg-[#0f172a] min-h-screen text-white w-full max-w-full overflow-x-hidden">
+      <h1 className="text-2xl sm:text-4xl font-bold mb-4 sm:mb-8 font-orbitron text-center text-blue-700 dark:text-white text-shadow-glow">Feedback</h1>
 
       {/* Search and Filter Section */}
-      <div className="mb-8 space-y-4">
-        <div className="flex flex-col md:flex-row gap-4">
+      <div className="mb-4 sm:mb-8 space-y-2 sm:space-y-4">
+        <div className="flex flex-col md:flex-row gap-2 sm:gap-4">
           {/* Search Bar */}
           <div className="flex-1">
             <input
@@ -97,16 +105,49 @@ const Feedback = () => {
               placeholder="Search feedback by comment, name, or codename..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-3 bg-white hover:bg-blue-500 dark:bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-blue-500 hover:placeholder:text-white font-semibold dark:placeholder-gray-400 focus:outline-none  transition-colors"
+              className="w-full px-2 sm:px-4 py-2 sm:py-3 bg-white hover:bg-blue-500 dark:bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-blue-500 hover:placeholder:text-white font-semibold dark:placeholder-gray-400 focus:outline-none transition-colors text-xs sm:text-base"
             />
           </div>
 
           {/* Rating Filter */}
-          <div className="md:w-48">
+          <div className="md:w-36 sm:md:w-48">
+            {/* Custom dropdown for mobile */}
+            <div className="block sm:hidden w-full max-w-[180px]">
+              <button
+                type="button"
+                onClick={() => setMobileDropdownOpen('rating')}
+                className="p-2 rounded-lg bg-white dark:bg-gray-800 dark:text-white text-blue-500 font-semibold border dark:border-gray-700 focus:outline-none transition-all duration-200 shadow-lg text-xs w-full flex items-center justify-between"
+              >
+                {ratingFilter === 'all' && 'All Ratings'}
+                {ratingFilter === '5' && '⭐⭐⭐⭐⭐ 5 Stars'}
+                {ratingFilter === '4' && '⭐⭐⭐⭐ 4 Stars'}
+                {ratingFilter === '3' && '⭐⭐⭐ 3 Stars'}
+                {ratingFilter === '2' && '⭐⭐ 2 Stars'}
+                {ratingFilter === '1' && '⭐ 1 Star'}
+                <span className="ml-2">▼</span>
+              </button>
+              {mobileDropdownOpen === 'rating' && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+                  <div className="bg-white dark:bg-gray-900 rounded-xl shadow-xl w-11/12 max-w-xs mx-auto p-2">
+                    <h3 className="text-xs font-bold mb-2 text-blue-700 dark:text-cyan-400">Filter by Rating</h3>
+                    <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+                      <li><button type="button" className={`w-full text-left px-3 py-2 text-xs hover:bg-blue-100 dark:hover:bg-blue-800 text-blue-700 dark:text-cyan-300 ${ratingFilter === 'all' ? 'font-bold' : ''}`} onClick={() => { setRatingFilter('all'); setMobileDropdownOpen(false); }}>All Ratings</button></li>
+                      <li><button type="button" className={`w-full text-left px-3 py-2 text-xs hover:bg-blue-100 dark:hover:bg-blue-800 text-blue-700 dark:text-cyan-300 ${ratingFilter === '5' ? 'font-bold' : ''}`} onClick={() => { setRatingFilter('5'); setMobileDropdownOpen(false); }}>⭐⭐⭐⭐⭐ 5 Stars</button></li>
+                      <li><button type="button" className={`w-full text-left px-3 py-2 text-xs hover:bg-blue-100 dark:hover:bg-blue-800 text-blue-700 dark:text-cyan-300 ${ratingFilter === '4' ? 'font-bold' : ''}`} onClick={() => { setRatingFilter('4'); setMobileDropdownOpen(false); }}>⭐⭐⭐⭐ 4 Stars</button></li>
+                      <li><button type="button" className={`w-full text-left px-3 py-2 text-xs hover:bg-blue-100 dark:hover:bg-blue-800 text-blue-700 dark:text-cyan-300 ${ratingFilter === '3' ? 'font-bold' : ''}`} onClick={() => { setRatingFilter('3'); setMobileDropdownOpen(false); }}>⭐⭐⭐ 3 Stars</button></li>
+                      <li><button type="button" className={`w-full text-left px-3 py-2 text-xs hover:bg-blue-100 dark:hover:bg-blue-800 text-blue-700 dark:text-cyan-300 ${ratingFilter === '2' ? 'font-bold' : ''}`} onClick={() => { setRatingFilter('2'); setMobileDropdownOpen(false); }}>⭐⭐ 2 Stars</button></li>
+                      <li><button type="button" className={`w-full text-left px-3 py-2 text-xs hover:bg-blue-100 dark:hover:bg-blue-800 text-blue-700 dark:text-cyan-300 ${ratingFilter === '1' ? 'font-bold' : ''}`} onClick={() => { setRatingFilter('1'); setMobileDropdownOpen(false); }}>⭐ 1 Star</button></li>
+                    </ul>
+                    <button type="button" className="mt-2 w-full py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold text-xs" onClick={() => setMobileDropdownOpen(false)}>Cancel</button>
+                  </div>
+                </div>
+              )}
+            </div>
+            {/* Native select for desktop/tablet */}
             <select
               value={ratingFilter}
               onChange={(e) => setRatingFilter(e.target.value)}
-              className="w-full px-4 py-3 bg-white font-semibold hover:bg-blue-500 dark:text-white hover:text-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg text-blue-500 focus:outline-none focus:border-blue-500 transition-colors"
+              className="hidden sm:block w-full px-2 sm:px-4 py-2 sm:py-3 bg-white font-semibold hover:bg-blue-500 dark:text-white hover:text-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg text-blue-500 focus:outline-none focus:border-blue-500 transition-colors text-xs sm:text-base"
             >
               <option value="all">All Ratings</option>
               <option value="5">⭐⭐⭐⭐⭐ 5 Stars</option>
@@ -119,13 +160,13 @@ const Feedback = () => {
         </div>
 
         {/* Results Count */}
-        <div className="text-sm text-white dark:text-gray-400">
+        <div className="text-xs sm:text-sm text-white dark:text-gray-400">
           Showing {filteredFeedbacks.length} of {feedbacks.length} feedbacks
         </div>
       </div>
 
       {/* Feedback Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
         {loading && (
           <div className="col-span-full text-center py-8">
             <Loader />
@@ -165,7 +206,7 @@ const Feedback = () => {
 
       {/* Pagination Controls */}
       {!loading && filteredFeedbacks.length > FEEDBACKS_PER_PAGE && (
-        <div className="flex justify-center items-center mt-8 space-x-6">
+        <div className="flex justify-center items-center mt-6 sm:mt-8 space-x-4 sm:space-x-6">
           <button
             onClick={handlePrevPage}
             disabled={currentPage === 1}

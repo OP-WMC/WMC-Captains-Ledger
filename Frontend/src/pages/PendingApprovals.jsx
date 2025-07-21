@@ -100,26 +100,27 @@ const PendingApprovals = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 w-full max-w-full overflow-x-hidden">
       <div>
-        <h1 className="text-3xl font-orbitron font-bold text-blue-700 dark:text-white mb-2 text-shadow-glow">
+        <h1 className="text-2xl sm:text-3xl font-orbitron font-bold text-blue-700 dark:text-white mb-1 sm:mb-2 text-shadow-glow mt-10 sm:mt-0">
           Pending Approvals
         </h1>
-        <p className="text-blue-400 dark:text-avengers-silver">
+        <p className="text-xs sm:text-base text-blue-400 dark:text-avengers-silver">
           Review and approve remaining amounts for advanced money mode transactions
         </p>
       </div>
 
       <div className="glass-card">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-orbitron font-semibold dark:text-white flex items-center gap-2">
-            <Clock className="w-5 h-5" />
-            Pending Advanced Transactions
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-2 sm:mb-6 gap-1 sm:gap-0">
+          <h2 className="text-base sm:text-xl font-orbitron font-semibold dark:text-white flex items-center gap-1 sm:gap-2">
+            <Clock className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="text-xs sm:text-lg">Pending Advanced Transactions</span>
           </h2>
           <button
             onClick={fetchPendingTransactions}
             disabled={loading}
-            className="avengers-button px-4 py-2 text-sm"
+            className="avengers-button px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm"
+            style={{ minWidth: 80 }}
           >
             {loading ? "Refreshing..." : "Refresh"}
           </button>
@@ -137,49 +138,49 @@ const PendingApprovals = () => {
             <p className="dark:text-avengers-silver text-sm">All advanced money mode transactions have been processed.</p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-2 sm:space-y-4">
             {pendingTransactions.map((transaction) => (
               <div
                 key={transaction._id}
-                className="bg-blue-300 dark:bg-blue-900/20 border border-blue-700/30 rounded-lg p-4"
+                className="bg-blue-300 dark:bg-blue-900/20 border border-blue-700/30 rounded-lg p-2 sm:p-4"
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-4 mb-3">
-                      <div className="flex items-center gap-2">
-                        <User className="w-4 h-4 text-blue-400" />
-                        <span className="text-white font-semibold">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4">
+                  <div className="flex-1 w-full">
+                    <div className="flex flex-col xs:flex-row items-start xs:items-center gap-1 xs:gap-2 mb-2">
+                      <div className="flex items-center gap-1 xs:gap-2">
+                        <User className="w-3 h-3 sm:w-4 sm:h-4 text-blue-400" />
+                        <span className="text-xs sm:text-base text-white font-semibold">
                           {transaction.sender?.name}
                         </span>
-                        <span className="dark:text-avengers-silver">→</span>
-                        <span className="text-white font-semibold">
+                        <span className="dark:text-avengers-silver text-xs">→</span>
+                        <span className="text-xs sm:text-base text-white font-semibold">
                           {transaction.receiver?.name}
                         </span>
                       </div>
-                      <span className="px-2 py-1 bg-yellow-900/70 text-yellow-400 text-xs rounded">
+                      <span className="px-2 py-0.5 bg-yellow-900/70 text-yellow-400 text-xs rounded mt-1 xs:mt-0">
                         Advanced Mode
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
-                      <div className="flex items-center gap-2">
-                        <DollarSign className="w-4 h-4 text-green-400" />
-                        <span className="text-white dark:text-avengers-silver font-semibold">Total Amount:</span>
-                        <span className="text-white font-semibold">₹{transaction.amount}</span>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-1 sm:gap-4 mb-2 sm:mb-3">
+                      <div className="flex items-center gap-1 sm:gap-2">
+                        <DollarSign className="w-3 h-3 sm:w-4 sm:h-4 text-green-400" />
+                        <span className="text-xs sm:text-base text-white dark:text-avengers-silver font-semibold">Total Amount:</span>
+                        <span className="text-xs sm:text-base text-white font-semibold">₹{transaction.amount}</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <DollarSign className="w-4 h-4 text-blue-400" />
-                        <span className="text-white dark:text-avengers-silver font-semibold">Advanced (Sent):</span>
-                        <span className="text-green-400 font-semibold">₹{transaction.advancedAmount}</span>
+                      <div className="flex items-center gap-1 sm:gap-2">
+                        <DollarSign className="w-3 h-3 sm:w-4 sm:h-4 text-blue-400" />
+                        <span className="text-xs sm:text-base text-white dark:text-avengers-silver font-semibold">Advanced (Sent):</span>
+                        <span className="text-xs sm:text-base text-green-400 font-semibold">₹{transaction.advancedAmount}</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <DollarSign className="w-4 h-4 text-orange-400" />
-                        <span className="text-white dark:text-avengers-silver font-semibold">Remaining (Pending):</span>
-                        <span className="text-orange-400 font-semibold">₹{transaction.remainingAmount}</span>
+                      <div className="flex items-center gap-1 sm:gap-2">
+                        <DollarSign className="w-3 h-3 sm:w-4 sm:h-4 text-orange-400" />
+                        <span className="text-xs sm:text-base text-white dark:text-avengers-silver font-semibold">Remaining (Pending):</span>
+                        <span className="text-xs sm:text-base text-orange-400 font-semibold">₹{transaction.remainingAmount}</span>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-4 text-m text-white dark:text-avengers-silver">
+                    <div className="flex flex-col xs:flex-row items-start xs:items-center gap-1 xs:gap-4 text-xs sm:text-m text-white dark:text-avengers-silver">
                       <div className="flex items-center gap-1">
                         <Mail className="w-3 h-3" />
                         <span>{transaction.sender?.email}</span>
@@ -195,20 +196,20 @@ const PendingApprovals = () => {
                     </div>
                   </div>
 
-                  <div className="ml-4">
+                  <div className="w-full sm:w-auto mt-2 sm:mt-0 flex justify-end">
                     <button
                       onClick={() => handleApproveClick(transaction._id)}
                       disabled={approving === transaction._id}
-                      className="avengers-button px-4 py-2 text-sm flex items-center gap-2"
+                      className="avengers-button px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm flex items-center gap-1 sm:gap-2 w-full sm:w-auto"
                     >
                       {approving === transaction._id ? (
                         <>
-                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                           Approving...
                         </>
                       ) : (
                         <>
-                          <CheckCircle className="w-4 h-4" />
+                          <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
                           Approve ₹{transaction.remainingAmount}
                         </>
                       )}
@@ -229,7 +230,7 @@ const PendingApprovals = () => {
         overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-40"
         ariaHideApp={false}
       >
-        <div className="bg-blue-300 dark:bg-blue-900/90 p-8 rounded-xl shadow-lg border border-blue-400 max-w-sm w-full mx-4">
+        <div className="bg-blue-300 dark:bg-blue-900/90 p-4 sm:p-8 rounded-xl shadow-lg border border-blue-400 max-w-sm w-full mx-2 sm:mx-4">
           <h2 className="text-xl font-bold text-blue-700 dark:text-white mb-4">Admin Password Required</h2>
           <p className="mb-4 text-blue-900 dark:text-avengers-silver">Please enter your password to approve this request.</p>
           <input
@@ -268,7 +269,7 @@ const PendingApprovals = () => {
         overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-40"
         ariaHideApp={false}
       >
-        <div className="bg-blue-300 dark:bg-blue-900/90 p-8 rounded-xl shadow-lg border border-blue-400 max-w-sm w-full mx-4">
+        <div className="bg-blue-300 dark:bg-blue-900/90 p-4 sm:p-8 rounded-xl shadow-lg border border-blue-400 max-w-sm w-full mx-2 sm:mx-4">
           <h2 className="text-xl font-bold text-blue-700 dark:text-white mb-4">
             {resultModal.type === "success" ? "Success" : "Error"}
           </h2>

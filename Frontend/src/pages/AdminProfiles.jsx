@@ -22,6 +22,7 @@ const AdminProfiles = () => {
   const [adminEnd, setAdminEnd] = useState('');
   const [assigning, setAssigning] = useState(false);
   const [modalMsg, setModalMsg] = useState('');
+  const [mobileDropdownOpen, setMobileDropdownOpen] = useState(null);
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -125,12 +126,39 @@ const AdminProfiles = () => {
             className="w-full rounded-lg border-blue-200 dark:border-cyan-300 bg-blue-50 dark:bg-[rgba(255,255,255,0.05)] text-blue-700 dark:text-white px-3 py-2 focus:outline-none"
           />
         </div>
-        <div className="flex items-center gap-3 w-full md:w-auto order-2 md:order-none justify-end">
+        <div className="flex items-center gap-2 sm:gap-3 w-full md:w-auto order-2 md:order-none justify-end">
           <label className="font-semibold text-blue-700 dark:text-white ">Role:</label>
+          {/* Custom dropdown for mobile */}
+          <div className="block sm:hidden w-full max-w-[120px]">
+            <button
+              type="button"
+              onClick={() => setMobileDropdownOpen('role')}
+              className="p-2 rounded-lg bg-white dark:bg-gray-700 dark:text-white text-blue-700 font-semibold border dark:border-black focus:outline-none transition-all duration-200 shadow-lg text-xs w-full flex items-center justify-between"
+            >
+              {roleFilter === 'all' && 'All'}
+              {roleFilter === 'admin' && 'Admin'}
+              {roleFilter === 'user' && 'User'}
+              <span className="ml-2">▼</span>
+            </button>
+            {mobileDropdownOpen === 'role' && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+                <div className="bg-white dark:bg-gray-900 rounded-xl shadow-xl w-11/12 max-w-xs mx-auto p-2">
+                  <h3 className="text-xs font-bold mb-2 text-blue-700 dark:text-cyan-400">Filter by Role</h3>
+                  <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+                    <li><button type="button" className={`w-full text-left px-3 py-2 text-xs hover:bg-blue-100 dark:hover:bg-blue-800 text-blue-700 dark:text-cyan-300 ${roleFilter === 'all' ? 'font-bold' : ''}`} onClick={() => { setRoleFilter('all'); setPage(1); setMobileDropdownOpen(null); }}>All</button></li>
+                    <li><button type="button" className={`w-full text-left px-3 py-2 text-xs hover:bg-blue-100 dark:hover:bg-blue-800 text-blue-700 dark:text-cyan-300 ${roleFilter === 'admin' ? 'font-bold' : ''}`} onClick={() => { setRoleFilter('admin'); setPage(1); setMobileDropdownOpen(null); }}>Admin</button></li>
+                    <li><button type="button" className={`w-full text-left px-3 py-2 text-xs hover:bg-blue-100 dark:hover:bg-blue-800 text-blue-700 dark:text-cyan-300 ${roleFilter === 'user' ? 'font-bold' : ''}`} onClick={() => { setRoleFilter('user'); setPage(1); setMobileDropdownOpen(null); }}>User</button></li>
+                  </ul>
+                  <button type="button" className="mt-2 w-full py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold text-xs" onClick={() => setMobileDropdownOpen(null)}>Cancel</button>
+                </div>
+              </div>
+            )}
+          </div>
+          {/* Native select for desktop/tablet */}
           <select
             value={roleFilter}
             onChange={e => { setRoleFilter(e.target.value); setPage(1); }}
-            className=" rounded-lg border-blue-200 dark:border-black bg-blue-50 dark:bg-gray-700 text-blue-700 dark:text-white px-3 py-2 focus:outline-none "
+            className="hidden sm:block rounded-lg border-blue-200 dark:border-black bg-blue-50 dark:bg-gray-700 text-blue-700 dark:text-white px-2 sm:px-3 py-2 focus:outline-none"
           >
             <option value="all">All</option>
             <option value="admin">Admin</option>

@@ -103,57 +103,62 @@ const Layout = ({ children }) => {
   );
 
   return (
-    <div className="min-h-screen  flex">
+    <div className="min-h-screen flex overflow-x-hidden">
+      {/* Mobile Hamburger Button (floating, only on mobile) */}
+      {!sidebarOpen && (
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="fixed top-1 left-2 z-50 lg:hidden bg-white dark:bg-black/80 border border-gray-300 dark:border-gray-700 shadow-lg rounded-full p-2 flex items-center justify-center focus:outline-none transition-colors"
+          aria-label="Open sidebar"
+        >
+          <Menu className="w-6 h-6 text-gray-700 dark:text-cyan-400" />
+        </button>
+      )}
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 z-40 lg:hidden"
+          className="fixed inset-0 z-40 lg:hidden bg-black/40 backdrop-blur-sm"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
 <div
-  className={`fixed lg:relative inset-y-0 left-0 z-50 w-64 
+        className={`fixed lg:relative inset-y-0 left-0 z-50 w-64 md:w-56 sm:w-48 max-w-full
     bg-[#f8fafc] text-black 
     dark:bg-black/40 dark:backdrop-blur-md dark:text-white 
     transform transition-transform duration-300 ease-in-out 
-    ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+          flex flex-col
+        `}
 >
-
-
-        <div className="flex flex-col h-full ">
           {/* Logo */}
-          <div className="flex items-center justify-between p-6 border-b text-blue-700 border-[#00e0ff] dark:border-avengers-silver/20">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 dark:bg-gradient-to-br rounded-lg flex items-center justify-center">
-                <Shield className="w-6 h-6 text-blue-700 dark:text-white" />
+        <div className="flex items-center justify-between p-4 md:p-6 border-b text-blue-700 border-[#00e0ff] dark:border-avengers-silver/20">
+          <div className="flex items-center space-x-2 md:space-x-3">
+            <div className="w-8 h-8 md:w-10 md:h-10 dark:bg-gradient-to-br rounded-lg flex items-center justify-center">
+              <Shield className="w-5 h-5 md:w-6 md:h-6 text-blue-700 dark:text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-orbitron font-bold dark:text-cyan-400 dark:text-shadow-glow">Captain's</h1>
-                <p className="text-sm text-gray-500 dark:text-cyan-400 dark:text-shadow-glow">Ledger</p>
+              <h1 className="text-lg md:text-2xl font-orbitron font-bold dark:text-cyan-400 dark:text-shadow-glow">Captain's</h1>
+              <p className="text-xs md:text-sm text-gray-500 dark:text-cyan-400 dark:text-shadow-glow">Ledger</p>
               </div>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden p-2 rounded-lg text-gray-700 font-semibold
-  hover:bg-blue-50 hover:text-blue-600 
-  dark:hover:bg-avengers-blue/20 dark:hover:text-[#00e0ff]"
-
+            className="lg:hidden p-2 rounded-lg text-gray-700 font-semibold hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-avengers-blue/20 dark:hover:text-[#00e0ff]"
             >
               <X className="w-5 h-5 text-white" />
             </button>
           </div>
-
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-2">
+        <nav className="flex-1 p-2 md:p-4 space-y-1 md:space-y-2">
             {filteredNavItems.map((item) => {
               const Icon = item.icon;
               return (
                 <Link
                   key={item.name}
                   to={item.path}
-                  className="sidebar-item group"
+                className="sidebar-item group flex items-center gap-2 px-2 py-2 md:px-4 md:py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-avengers-blue/10 transition text-sm md:text-base"
                   onClick={() => setSidebarOpen(false)}
                 >
                   <Icon className="w-5 h-5" />
@@ -162,61 +167,31 @@ const Layout = ({ children }) => {
               );
             })}
           </nav>
-
           {/* User info */}
-          <div className="p-4 border-t border-[#00e0ff] dark:border-avengers-silver/20">
-            <Link to="/profile" className="flex items-center space-x-3 mb-4 hover:bg-gray-200 dark:hover:bg-gray-700 p-2 rounded transition cursor-pointer">
-              <div className="w-10 h-10 bg-gradient-to-br rounded-full flex items-center justify-center text-2xl">
+        <div className="p-2 md:p-4 border-t border-[#00e0ff] dark:border-avengers-silver/20">
+          <Link to="/profile" className="flex items-center space-x-2 md:space-x-3 mb-2 md:mb-4 hover:bg-gray-200 dark:hover:bg-gray-700 p-2 rounded transition cursor-pointer">
+            <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br rounded-full flex items-center justify-center text-xl md:text-2xl">
                 {user?.avatar}
               </div>
               <div className="flex-1">
-                <p className="text-sm font-semibold  dark:text-white">{user?.name}</p>
+              <p className="text-xs md:text-sm font-semibold dark:text-white">{user?.name}</p>
                 <p className="text-xs dark:text-avengers-silver font-medium text-gray-700">{user?.codename}</p>
               </div>
             </Link>
             <button
               onClick={logout}
-              className="w-full flex items-center space-x-3 px-4 py-3 dark:text-white hover:bg-avengers-red/20 hover:text-red-400 transition-all duration-200 rounded-lg font-semibold"
+            className="w-full flex items-center space-x-2 md:space-x-3 px-2 md:px-4 py-2 md:py-3 dark:text-white hover:bg-avengers-red/20 hover:text-red-400 transition-all duration-200 rounded-lg font-semibold text-xs md:text-base"
             >
               <LogOut className="w-5 h-5" />
               <span>Logout</span>
             </button>
-          </div>
         </div>
       </div>
 
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top bar */}
-        {/* <header className="bg-avengers-gray/50 backdrop-blur-md border-b border-avengers-silver/20">
-          <div className="flex items-center justify-between px-6 py-4">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-2 rounded-lg hover:bg-avengers-blue/20"
-            >
-              <Menu className="w-6 h-6 text-avengers-silver" />
-            </button>
-            
-            <div className="flex items-center space-x-4">
-              <div className="hidden md:flex items-center space-x-4">
-                <div className="flex items-center space-x-2 text-avengers-silver">
-                  <Bell className="w-5 h-5" />
-                  <span className="text-sm">3 new notifications</span>
-                </div>
-                <div className="w-px h-6 bg-avengers-silver/20" />
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm text-avengers-silver">Balance:</span>
-                  <span className="text-lg font-orbitron font-bold text-avengers-gold">
-                    ₹{user?.balance?.toLocaleString()}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </header> */}
-
         {/* Page content */}
-        <main className="flex-1 p-6 overflow-auto">
+        <main className="flex-1 p-2 sm:p-4 md:p-6 overflow-auto mt-2 sm:mt-0">
           {children}
         </main>
         <Chatbot />

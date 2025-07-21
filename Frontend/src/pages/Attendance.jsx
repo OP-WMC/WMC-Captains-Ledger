@@ -176,18 +176,18 @@ useEffect(() => {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-3 sm:p-6 space-y-4 sm:space-y-6 w-full max-w-full overflow-x-hidden">
       {/* HEADER */}
-      <h2 className="text-2xl font-bold text-blue-700 dark:text-white dark:text-shadow-glow flex items-center gap-2">
+      <h2 className="text-xl sm:text-2xl font-bold text-blue-700 dark:text-white dark:text-shadow-glow flex items-center gap-2 mt-10 sm:mt-0">
         <LucideCalendar /> Attendance System
       </h2>
 
-      {message && <div className="text-sm text-gray-700 dark:text-white font-medium">{message}</div>}
+      {message && <div className="text-xs sm:text-sm text-gray-700 dark:text-white font-medium">{message}</div>}
 
       {/* ATTENDANCE CODE POPUP */}
       {showCodePopup && currentActiveCode && !isAdmin && (
-        <div className="fixed inset-0  bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-blue-200 dark:bg-avengers-dark p-6 rounded-xl shadow-lg border border-blue-400 dark:border-gray-700 max-w-md w-full mx-4">
+        <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-blue-200 dark:bg-avengers-dark p-4 sm:p-6 rounded-xl shadow-lg border border-blue-400 dark:border-gray-700 max-w-md w-full mx-2 sm:mx-4">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold text-gray-700  dark:text-white">🎯 Active Attendance Code</h3>
               <button 
@@ -231,7 +231,7 @@ useEffect(() => {
       {/* DATE ATTENDANCE MODAL */}
       {showDateModal && selectedDate && isAdmin && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-blue-300 dark:bg-avengers-dark p-6 rounded-xl shadow-lg border border-blue-400 dark:border-gray-700 max-w-4xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+          <div className="bg-blue-300 dark:bg-avengers-dark p-4 sm:p-6 rounded-xl shadow-lg border border-blue-400 dark:border-gray-700 max-w-4xl w-full mx-2 sm:mx-4 max-h-[80vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold text-white dark:text-white flex items-center gap-2">
                 <Eye className="w-5 h-5" /> Attendance for {new Date(selectedDate).toLocaleDateString()}
@@ -349,11 +349,11 @@ useEffect(() => {
       )}
 
 {/* MAIN ACTIONS + CALENDAR in tighter single box */}
-<div className="bg-blue-300  glass-card dark:border-gray-700 p-6 rounded-xl shadow-lg">
-  <div className="flex flex-col md:flex-row items-start gap-6">
+<div className="bg-blue-300 glass-card dark:border-gray-700 p-3 sm:p-6 rounded-xl shadow-lg">
+  <div className="flex flex-col md:flex-row items-start gap-4 sm:gap-6">
     
     {/* LEFT: Attendance Control */}
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       {isAdmin ? (
         <>
           <div className="flex items-center gap-4 flex-wrap">
@@ -415,7 +415,7 @@ useEffect(() => {
     </div>
 
     {/* RIGHT: Calendar - now closer */}
-    <div className="w-fit md:w-72">
+    <div className="w-full max-w-xs scale-90 sm:scale-100 md:w-72 mx-auto">
       <Calendar
         tileClassName={({ date, view }) => {
           if (view === "month") {
