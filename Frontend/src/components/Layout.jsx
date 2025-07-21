@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { 
@@ -16,10 +16,30 @@ import {
   Bell,
   CheckCircle
 } from 'lucide-react';
+import Chatbot from './Chatbot';
 
 const Layout = ({ children }) => {
   const { user, logout, isAdmin } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Global dark mode logic
+  const [darkMode, setDarkMode] = useState(() => {
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme === 'dark') return true;
+    if (storedTheme === 'light') return false;
+    return true; // Default to dark
+  });
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('theme', darkMode ? 'dark' : 'light');
+  }, [darkMode]);
+
+  const toggleTheme = () => setDarkMode((prev) => !prev);
 
   const navigationItems = [
     {
@@ -199,6 +219,7 @@ const Layout = ({ children }) => {
         <main className="flex-1 p-6 overflow-auto">
           {children}
         </main>
+        <Chatbot />
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import Loader from '../components/Loader';
 
 const Profile = () => {
   const { user, loading } = useAuth();
@@ -11,6 +12,9 @@ const Profile = () => {
     weapons: [],
     pastAchievements: '',
     profilePhoto: '',
+    pastSuccessRate: '',
+    missionStyle: 'Tech',
+    availability: 'Always Available',
   });
   const [photoPreview, setPhotoPreview] = useState('');
   const [message, setMessage] = useState('');
@@ -26,6 +30,9 @@ const Profile = () => {
         weapons: user.weapons || [],
         pastAchievements: user.pastAchievements || '',
         profilePhoto: user.profilePhoto || '',
+        pastSuccessRate: user.pastSuccessRate || '',
+        missionStyle: user.missionStyle || 'Tech',
+        availability: user.availability || 'Always Available',
       });
       setPhotoPreview(user.profilePhoto || '');
     }
@@ -76,7 +83,11 @@ const Profile = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return (
+    <div className="flex items-center justify-center min-h-screen">
+      <Loader />
+    </div>
+  );
   if (!user) return <div>Please log in to view your profile.</div>;
 
   return (
@@ -120,6 +131,29 @@ const Profile = () => {
             <div className="flex-1">
               <label className="block font-semibold text-blue-700 dark:text-white mb-1">Past Achievements</label>
               <textarea name="pastAchievements" value={form.pastAchievements} onChange={handleChange} className="input input-bordered w-full bg-blue-50 dark:bg-white border-blue-200 dark:border-cyan-400 text-blue-700 dark:text-black" />
+            </div>
+          </div>
+          <div className="flex flex-col md:flex-row gap-8">
+            <div className="flex-1">
+              <label className="block font-semibold text-blue-700 dark:text-white mb-1">Past Success Rate (%)</label>
+              <input type="number" name="pastSuccessRate" min="0" max="100" value={form.pastSuccessRate} onChange={handleChange} className="input input-bordered w-full bg-blue-50 dark:bg-white border-blue-200 dark:border-cyan-400 text-blue-700 dark:text-black" placeholder="e.g. 85" />
+            </div>
+            <div className="flex-1">
+              <label className="block font-semibold text-blue-700 dark:text-white mb-1">Mission Style</label>
+              <select name="missionStyle" value={form.missionStyle} onChange={handleChange} className="input input-bordered w-full bg-blue-50 dark:bg-white border-blue-200 dark:border-cyan-400 text-blue-700 dark:text-black">
+                <option value="Tech">Tech</option>
+                <option value="Stealth">Stealth</option>
+                <option value="Bruteforce">Bruteforce</option>
+              </select>
+            </div>
+            <div className="flex-1">
+              <label className="block font-semibold text-blue-700 dark:text-white mb-1">Availability</label>
+              <select name="availability" value={form.availability} onChange={handleChange} className="input input-bordered w-full bg-blue-50 dark:bg-white border-blue-200 dark:border-cyan-400 text-blue-700 dark:text-black">
+                <option value="Always Available">Always Available</option>
+                <option value="Fixed time">Fixed time</option>
+                <option value="Daily">Daily</option>
+                <option value="Weekly">Weekly</option>
+              </select>
             </div>
           </div>
           <button type="submit" className="w-full btn btn-primary bg-blue-600 dark:bg-white text-white dark:text-blue-600 font-bold py-3 rounded-lg shadow-lg hover:bg-blue-700 dark:hover:bg-blue-700 dark:hover:text-white transition" disabled={saving}>{saving ? 'Saving...' : 'Save Changes'}</button>

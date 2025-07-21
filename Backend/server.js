@@ -34,6 +34,7 @@ app.use("/api/attendance", require("./routes/attendanceRoutes"));
 app.use("/api/feedback", require("./routes/feedbackRoute"));
 app.use("/api/payment", require("./routes/paymentRoutes"));
 app.use("/api/announcements", require("./routes/announcementRoutes"));
+app.use('/api', require("./routes/chatRoutes"));
 
 const transactionsRoute = require('./routes/transactionRoutes');
 app.use('/api/transactions', transactionsRoute);

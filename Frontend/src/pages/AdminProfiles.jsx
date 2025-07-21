@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { ChevronLeft, ChevronRight, Eye, EyeOff } from 'lucide-react';
+import Modal from 'react-modal';
+import axios from '../api/axios';
+import Loader from '../components/Loader';
 
 const PROFILES_PER_PAGE = 8;
 
@@ -13,6 +16,12 @@ const AdminProfiles = () => {
   const [page, setPage] = useState(1);
   const [roleFilter, setRoleFilter] = useState('all');
   const [search, setSearch] = useState('');
+  const [showAdminModal, setShowAdminModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [adminStart, setAdminStart] = useState('');
+  const [adminEnd, setAdminEnd] = useState('');
+  const [assigning, setAssigning] = useState(false);
+  const [modalMsg, setModalMsg] = useState('');
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -56,7 +65,50 @@ const AdminProfiles = () => {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  if (authLoading) return <div>Loading...</div>;
+  const openAdminModal = (profile) => {
+    setSelectedUser(profile);
+    setAdminStart('');
+    setAdminEnd('');
+    setModalMsg('');
+    setShowAdminModal(true);
+  };
+  const closeAdminModal = () => {
+    setShowAdminModal(false);
+    setSelectedUser(null);
+    setAdminStart('');
+    setAdminEnd('');
+    setModalMsg('');
+  };
+  const handleAssignAdmin = async () => {
+    if (!adminStart || !adminEnd) {
+      setModalMsg('Please select both start and end date/time.');
+      return;
+    }
+    setAssigning(true);
+    setModalMsg('');
+    try {
+      const res = await axios.post('/auth/make-temp-admin', {
+        userId: selectedUser._id,
+        adminStart,
+        adminEnd,
+      });
+      setModalMsg('Temporary admin assigned successfully!');
+      setTimeout(() => {
+        closeAdminModal();
+        setProfiles((prev) => prev.map(p => p._id === selectedUser._id ? res.data.user : p));
+      }, 1200);
+    } catch (err) {
+      setModalMsg(err.response?.data?.error || 'Failed to assign temporary admin.');
+    } finally {
+      setAssigning(false);
+    }
+  };
+
+  if (authLoading) return (
+    <div className="flex items-center justify-center min-h-screen">
+      <Loader />
+    </div>
+  );
   if (!isAdmin) return <div>Access denied. Admins only.</div>;
 
   return (
@@ -123,6 +175,29 @@ const AdminProfiles = () => {
                   {expanded[profile._id] ? <EyeOff size={16} className="inline mr-1" /> : <Eye size={16} className="inline mr-1" />}
                   {expanded[profile._id] ? 'Hide Details' : 'View Details'}
                 </button>
+                {/* Make Admin Button (not for self or existing admins) */}
+                {profile.role !== 'admin' && user._id !== profile._id && (
+                  (() => {
+                    const now = new Date();
+                    const isTempAdminActive = profile.tempAdmin && profile.adminStart && profile.adminEnd &&
+                      now >= new Date(profile.adminStart) && now <= new Date(profile.adminEnd);
+                    if (!isTempAdminActive) {
+                      return (
+                        <button
+                          className="mb-1 px-3 py-1 rounded-full bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-semibold shadow hover:bg-green-200 dark:hover:bg-green-800/70 transition ml-2"
+                          onClick={() => openAdminModal(profile)}
+                        >
+                          Make Admin
+                        </button>
+                      );
+                    }
+                    return null;
+                  })()
+                )}
+                {/* Show if user is a temporary admin */}
+                {profile.tempAdmin && profile.adminStart && profile.adminEnd && (
+                  <div className="text-xs text-green-700 dark:text-green-300 mt-1">Temp Admin<br/>({new Date(profile.adminStart).toLocaleString()}<br/>to<br/>{new Date(profile.adminEnd).toLocaleString()})</div>
+                )}
                 {expanded[profile._id] && (
                   <div className="w-full flex flex-col gap-1 mt-2 text-xs animate-fadeIn">
                     <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Email:</span> <span className="text-gray-900 dark:text-gray-100 font-medium">{profile.email}</span></div>
@@ -130,6 +205,9 @@ const AdminProfiles = () => {
                     <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Abilities:</span> <span className="text-gray-900 dark:text-gray-200 font-medium">{profile.abilities?.join(', ') || '-'}</span></div>
                     <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Weapons:</span> <span className="text-gray-900 dark:text-gray-200 font-medium">{profile.weapons?.join(', ') || '-'}</span></div>
                     <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Past Achievements:</span> <span className="text-gray-900 dark:text-gray-200 font-medium">{profile.pastAchievements || '-'}</span></div>
+                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Past Success Rate:</span> <span className="text-gray-900 dark:text-gray-200 font-medium">{profile.pastSuccessRate !== undefined && profile.pastSuccessRate !== '' ? `${profile.pastSuccessRate}%` : '-'}</span></div>
+                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Mission Style:</span> <span className="text-gray-900 dark:text-gray-200 font-medium">{profile.missionStyle || '-'}</span></div>
+                    <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Availability:</span> <span className="text-gray-900 dark:text-gray-200 font-medium">{profile.availability || '-'}</span></div>
                     <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Role:</span> <span className="text-gray-900 dark:text-gray-200 font-medium">{profile.role}</span></div>
                     <div><span className="font-semibold text-blue-600 dark:text-cyan-300">Balance:</span> <span className="text-blue-700 dark:text-gray-200 font-bold">₹{profile.balance?.toLocaleString()}</span></div>
                   </div>
@@ -163,6 +241,49 @@ const AdminProfiles = () => {
           </div>
              </>
       )}
+      {/* Make Admin Modal */}
+      <Modal
+        isOpen={showAdminModal}
+        onRequestClose={closeAdminModal}
+        ariaHideApp={false}
+        className="bg-white dark:bg-gray-900 rounded-xl p-8 max-w-md mx-auto mt-24 shadow-lg border border-blue-200 dark:border-cyan-700 outline-none"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+      >
+        <h2 className="text-xl font-bold mb-4 text-blue-700 dark:text-white">Assign Temporary Admin</h2>
+        <div className="mb-4">
+          <label className="block mb-1 text-blue-700 dark:text-cyan-300 font-semibold">Start Date & Time</label>
+          <input
+            type="datetime-local"
+            value={adminStart}
+            onChange={e => setAdminStart(e.target.value)}
+            className="w-full rounded border px-3 py-2"
+            min={new Date().toISOString().slice(0,16)}
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block mb-1 text-blue-700 dark:text-cyan-300 font-semibold">End Date & Time</label>
+          <input
+            type="datetime-local"
+            value={adminEnd}
+            onChange={e => setAdminEnd(e.target.value)}
+            className="w-full rounded border px-3 py-2"
+            min={adminStart || new Date().toISOString().slice(0,16)}
+          />
+        </div>
+        {modalMsg && <div className={`mb-3 text-sm ${modalMsg.includes('success') ? 'text-green-600' : 'text-red-600'}`}>{modalMsg}</div>}
+        <div className="flex gap-3 justify-end">
+          <button
+            className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white font-semibold"
+            onClick={closeAdminModal}
+            disabled={assigning}
+          >Cancel</button>
+          <button
+            className="px-4 py-2 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 disabled:opacity-50"
+            onClick={handleAssignAdmin}
+            disabled={assigning}
+          >{assigning ? 'Assigning...' : 'Assign'}</button>
+        </div>
+      </Modal>
     </div>
   );
 };

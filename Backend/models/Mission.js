@@ -11,7 +11,10 @@ const missionSchema = new mongoose.Schema({
   assignedMembers: [
     {
       name: String,
-      salary: { type: Number, default: 0 }
+      salary: { type: Number, default: 0 },
+      status: { type: String, enum: ['pending', 'accepted', 'declined'], default: 'pending' },
+      declineReason: { type: String },
+      declineFile: { type: String }, // store file path or URL
     }
   ],
   martyrs: [String],

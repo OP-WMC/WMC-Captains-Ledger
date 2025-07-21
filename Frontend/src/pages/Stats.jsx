@@ -15,12 +15,12 @@ import {
   TrendingUp, 
   BarChart3, 
   PieChart,
-  Loader2,
   AlertCircle,
   Target,
   Award,
   Activity
 } from 'lucide-react';
+import Loader from '../components/Loader';
 
 const Stats = () => {
   const { isAdmin } = useAuth();
@@ -113,13 +113,8 @@ const Stats = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center py-20">
-            <Loader2 className="w-12 h-12 text-blue-600 dark:text-yellow-400 animate-spin mx-auto mb-4" />
-            <p className="text-black dark:text-gray-400">Loading statistics...</p>
-          </div>
-        </div>
+      <div className="min-h-screen dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-6 flex items-center justify-center">
+        <Loader />
       </div>
     );
   }
@@ -298,7 +293,7 @@ const Stats = () => {
                 Payment Summary by User
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {paymentStats?.userPaymentStats?.sort((a, b) => b.netAmount - a.netAmount).slice(0, 9).map((user) => (
+                {paymentStats?.userPaymentStats?.sort((a, b) => b.netAmount - a.netAmount).slice(0, 6).map((user) => (
                   <div key={user.userId} className="bg-white p-4 rounded-lg border border-gray-600/30">
                     <div className="text-blue-600 font-semibold mb-2">{user.name}</div>
                     <div className="space-y-1 text-sm">

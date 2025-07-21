@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const announcementController = require('../controllers/announcementController');
-const verifyToken = require('../middleware/verifyToken');
+const authMiddleware = require('../middleware/authMiddleware');
 
 // Get all announcements (users & admin)
-router.get('/', verifyToken, announcementController.getAnnouncements);
+router.get('/', authMiddleware, announcementController.getAnnouncements);
 
 // Post new announcement (admin only)
-router.post('/', verifyToken, announcementController.postAnnouncement);
+router.post('/', authMiddleware, announcementController.postAnnouncement);
 
 module.exports = router; 

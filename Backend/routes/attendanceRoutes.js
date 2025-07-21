@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const verifyToken = require("../middleware/verifyToken");
+const authMiddleware = require("../middleware/authMiddleware");
 const {
   startAttendance,
   markAttendance,
@@ -14,27 +14,27 @@ const {
 } = require("../controllers/attendanceController");
 
 // ADMIN ONLY
-router.post("/start", verifyToken, startAttendance);
+router.post("/start", authMiddleware, startAttendance);
 
 // USER
-router.post("/mark", verifyToken, markAttendance);
-router.get("/current-code", verifyToken, getCurrentCode);
+router.post("/mark", authMiddleware, markAttendance);
+router.get("/current-code", authMiddleware, getCurrentCode);
 
 // Optional stats
-router.get("/stats", verifyToken, getAttendanceStats);
-router.get("/marked-today", verifyToken, hasMarkedToday);
-router.get("/dates", verifyToken, getAttendanceDates);
+router.get("/stats", authMiddleware, getAttendanceStats);
+router.get("/marked-today", authMiddleware, hasMarkedToday);
+router.get("/dates", authMiddleware, getAttendanceDates);
 
 // ADMIN ONLY - Get attendance by date
-router.get("/date/:date", verifyToken, getAttendanceByDate);
+router.get("/date/:date", authMiddleware, getAttendanceByDate);
 
 // Get attendance statistics (admin only)
-router.get("/stats", verifyToken, getAttendanceStats);
+router.get("/stats", authMiddleware, getAttendanceStats);
 
 // Get attendance trends (admin only)
-router.get("/trends", verifyToken, getAttendanceTrends);
+router.get("/trends", authMiddleware, getAttendanceTrends);
 
 // Add user-specific stats route
-router.get("/stats/user", verifyToken, getAttendanceStatsForUser);
+router.get("/stats/user", authMiddleware, getAttendanceStatsForUser);
 
 module.exports = router;

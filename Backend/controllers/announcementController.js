@@ -15,7 +15,7 @@ exports.getAnnouncements = async (req, res) => {
 // Post a new announcement (admin only)
 exports.postAnnouncement = async (req, res) => {
   try {
-    if (req.user.role !== 'admin') {
+    if (!req.user.isAdmin) {
       return res.status(403).json({ msg: 'Access denied' });
     }
     const { title, body, important } = req.body;

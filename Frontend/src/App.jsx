@@ -108,7 +108,11 @@ function App() {
                 <Footer />
               </ProtectedRoute>
             } />
-            <Route path="/feedback/:transactionId" element={<FeedbackForm />} />
+            <Route path="/feedback/:transactionId" element={
+              <ProtectedRoute>
+                <FeedbackForm />
+              </ProtectedRoute>
+            } />
             
             <Route path="/pending-approvals" element={
               <ProtectedRoute>

@@ -3,10 +3,10 @@ const AttendanceRecord = require("../models/AttendanceRecord");
 
 // Admin starts a new session
 exports.startAttendance = async (req, res) => {
-  if (req.user.role !== "admin") return res.status(403).json({ msg: "Access denied" });
+  if (!req.user.isAdmin) return res.status(403).json({ msg: "Access denied" });
 
   const code = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit
-  const expiresAt = new Date(Date.now() + 120 * 1000); // 2 minute later
+  const expiresAt = new Date(Date.now() + 60 * 1000); // 1 minute later
 
   const session = await AttendanceSession.create({
     code,
@@ -68,7 +68,7 @@ exports.markAttendance = async (req, res) => {
 // Optional: Admin sees stats
 exports.getAttendanceStats = async (req, res) => {
   try {
-    if (req.user.role !== "admin") {
+    if (!req.user.isAdmin) {
       return res.status(403).json({ msg: "Access denied" });
     }
 
@@ -173,7 +173,7 @@ exports.getAttendanceDates = async (req, res) => {
 // Get attendance data for a specific date (admin only)
 exports.getAttendanceByDate = async (req, res) => {
   try {
-    if (req.user.role !== "admin") {
+    if (!req.user.isAdmin) {
       return res.status(403).json({ msg: "Access denied" });
     }
 
@@ -219,7 +219,7 @@ exports.getAttendanceByDate = async (req, res) => {
 // Get attendance trends over time (admin only)
 exports.getAttendanceTrends = async (req, res) => {
   try {
-    if (req.user.role !== "admin") {
+    if (!req.user.isAdmin) {
       return res.status(403).json({ msg: "Access denied" });
     }
 

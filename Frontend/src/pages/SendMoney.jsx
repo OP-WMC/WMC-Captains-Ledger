@@ -4,7 +4,7 @@ import axios from "../api/axios";
 import { DollarSign, Send, ArrowRight, ChevronLeft, ChevronRight, Users, MessageSquare, Zap, Plus, X, Split } from "lucide-react";
 
 const SendMoney = () => {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [formData, setFormData] = useState({ 
     recipients: [], 
     amount: "", 
@@ -453,7 +453,7 @@ const SendMoney = () => {
             )}
 
             {/* Advanced Money Mode Toggle */}
-            {user?.role === 'admin' && (
+            {isAdmin && (
               <>
                 <div className="flex items-center bg-blue-300 space-x-3 p-3 dark:bg-blue-900/20 rounded-lg border border-blue-700/30">
                   <input

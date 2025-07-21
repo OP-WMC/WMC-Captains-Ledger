@@ -25,6 +25,15 @@ const Missions = () => {
   const [salaryMode, setSalaryMode] = useState('full');
   const [advancedAmount, setAdvancedAmount] = useState('');
   const [remainingAmount, setRemainingAmount] = useState('');
+  const [showReassignModal, setShowReassignModal] = useState(false);
+  const [declinedInfo, setDeclinedInfo] = useState(null);
+  const [reassignMission, setReassignMission] = useState(null);
+  const [selectedReplacement, setSelectedReplacement] = useState('');
+  const [replacementSalary, setReplacementSalary] = useState('');
+  const [reassignSubmitting, setReassignSubmitting] = useState(false);
+  const [showSendSalaryModal, setShowSendSalaryModal] = useState(false);
+  const [finalizedMissionId, setFinalizedMissionId] = useState(null);
+  const [sendingSalaryMissionId, setSendingSalaryMissionId] = useState(null);
 
   const defaultForm = {
     title: '',
@@ -79,6 +88,24 @@ const Missions = () => {
       }
     }
   }, [missions, isAdmin]);
+
+  // Check for declined members in missions (admin only)
+  useEffect(() => {
+    if (isAdmin && missions.length > 0) {
+      for (const mission of missions) {
+        const declined = mission.assignedMembers.find(m => m.status === 'declined');
+        if (declined) {
+          setDeclinedInfo({
+            member: declined,
+            mission
+          });
+          setReassignMission(mission);
+          setShowReassignModal(true);
+          break;
+        }
+      }
+    }
+  }, [isAdmin, missions]);
 
   const fetchMissions = async () => {
     try {
@@ -222,13 +249,78 @@ const fetchUsers = async () => {
         updatedBy: user?.name || 'admin',
       });
       setShowFinalizeModal(false);
-      setFinalizeMission(null);
       setSelectedMartyrs([]);
       setFinalizeStatus('completed');
-      fetchMissions();
+      setFinalizedMissionId(finalizeMission._id);
+      await fetchMissions();
     } catch (err) {
       alert('Failed to finalize mission.');
     }
+  };
+
+  const handleReassign = async (e) => {
+    e.preventDefault();
+    if (!reassignMission || !selectedReplacement) return;
+    setReassignSubmitting(true);
+    try {
+      await axios.post(`/missions/${reassignMission._id}/reassign`, {
+        oldMemberName: declinedInfo.member.name,
+        newMemberName: selectedReplacement,
+        newMemberSalary: replacementSalary
+      });
+      setShowReassignModal(false);
+      setDeclinedInfo(null);
+      setReassignMission(null);
+      setSelectedReplacement('');
+      setReplacementSalary('');
+      window.location.reload();
+    } catch (err) {
+      alert('Failed to reassign member.');
+    } finally {
+      setReassignSubmitting(false);
+    }
+  };
+
+  // Helper to check if there are accepted members
+  const hasAcceptedMembers = (mission) => {
+    return Array.isArray(mission?.assignedMembers) && mission.assignedMembers.some(m => m.status === 'accepted');
+  };
+
+  // Show Send Salary modal after missions are refreshed and finalizedMissionId is set
+  useEffect(() => {
+    if (finalizedMissionId && missions.length > 0) {
+      const updated = missions.find(m => m._id === finalizedMissionId);
+      if (updated && updated.status !== 'ongoing' && hasAcceptedMembers(updated) && !updated.salariesPaid && (updated.status === 'completed' || updated.status === 'failed' || updated.status === 'martyred')) {
+        setFinalizeMission(updated);
+        setShowSendSalaryModal(true);
+      } else {
+        setFinalizeMission(null);
+        setShowSendSalaryModal(false);
+      }
+      setFinalizedMissionId(null); // Reset after handling
+    }
+  }, [missions, finalizedMissionId]);
+
+  // Helper to check if a mission is eligible for salary payment
+  const isSalaryEligible = (mission) => {
+    // Only show if there are accepted members (not auto-failed with zero members)
+    return (
+      mission &&
+      Array.isArray(mission.assignedMembers) &&
+      mission.assignedMembers.length > 0 &&
+      mission.salariesPaid === false &&
+      (mission.status === 'completed' || mission.status === 'martyred' || mission.status === 'failed')
+    );
+  };
+
+  // When opening Send Salary modal, reset mode/amounts
+  const openSendSalaryModal = (mission) => {
+    setFinalizeMission(mission);
+    setSalaryMode('full');
+    setAdvancedAmount('');
+    setRemainingAmount('');
+    setShowSendSalaryModal(true);
+    setSendingSalaryMissionId(null);
   };
 
   return (
@@ -290,6 +382,15 @@ const fetchUsers = async () => {
                   <button onClick={() => handleDelete(mission._id)}>
                     <Trash2 className="w-5 h-5 text-red-400" />
                   </button>
+                  {/* Send Salary Button on eligible missions */}
+                  {isSalaryEligible(mission) && sendingSalaryMissionId !== mission._id && (
+                    <button
+                      className="avengers-button bg-gradient-to-r from-green-500 to-green-700 text-white ml-2"
+                      onClick={() => openSendSalaryModal(mission)}
+                    >
+                      Send Salary
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -555,99 +656,14 @@ const fetchUsers = async () => {
                 onChange={e => setSelectedMartyrs(Array.from(e.target.selectedOptions, option => option.value))}
                 className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200"
               >
-                {finalizeMission.assignedMembers.map(member => (
-                  <option key={typeof member === 'string' ? member : member.name} value={typeof member === 'string' ? member : member.name}>
-                    {typeof member === 'string' ? member : `${member.name} (₹${member.salary || 0})`}
-                  </option>
-                ))}
+                {finalizeMission.assignedMembers
+                  .filter(member => member.status === 'accepted')
+                  .map(member => (
+                    <option key={typeof member === 'string' ? member : member.name} value={typeof member === 'string' ? member : member.name}>
+                      {typeof member === 'string' ? member : `${member.name} (₹${member.salary || 0})`}
+                    </option>
+                  ))}
               </select>
-            </div>
-          )}
-          {/* Salary Payment Mode Selection (admin only) */}
-          {isAdmin && (
-            <div className="mb-4">
-              <label className="block text-sm font-semibold mb-2 dark:text-gray-300">Salary Payment Mode</label>
-              <div className="flex gap-4 items-center">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name="salaryMode"
-                    value="full"
-                    checked={salaryMode === 'full'}
-                    onChange={() => setSalaryMode('full')}
-                  />
-                  <span>Full Salary</span>
-                </label>
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name="salaryMode"
-                    value="advance"
-                    checked={salaryMode === 'advance'}
-                    onChange={() => setSalaryMode('advance')}
-                  />
-                  <span className="flex items-center gap-1"><Zap className="w-4 h-4 text-yellow-400" />Advance Money</span>
-                </label>
-              </div>
-            </div>
-          )}
-          {/* If Advance Money, show input fields */}
-          {isAdmin && salaryMode === 'advance' && (
-            <div className="mb-4 p-4 bg-blue-300 dark:bg-yellow-900/20 rounded-lg border dark:border-yellow-700/30">
-              <p className="text-sm dark:text-yellow-300 font-medium mb-2">
-                💡 Advanced Mode: Pay part of the salary now, and the rest after approval.
-              </p>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-white dark:text-avengers-silver mb-2">
-                    Advanced Amount (₹) - Immediate
-                  </label>
-                  <input
-                    type="number"
-                    value={advancedAmount}
-                    onChange={e => {
-                      setAdvancedAmount(e.target.value);
-                      // Auto-calculate remaining
-                      const total = finalizeMission.assignedMembers.reduce((sum, m) => sum + (m.salary || 0), 0);
-                      setRemainingAmount(Math.max(0, total - (parseInt(e.target.value) || 0)).toString());
-                    }}
-                    className="input-field w-full bg-white text-blue-500 placeholder:text-blue-500 font-bold"
-                    placeholder="Immediate amount"
-                    min="1"
-                    max={finalizeMission.assignedMembers.reduce((sum, m) => sum + (m.salary || 0), 0)}
-                    required={salaryMode === 'advance'}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-white dark:text-avengers-silver mb-2">
-                    Remaining Amount (₹) - After Approval
-                  </label>
-                  <input
-                    type="number"
-                    value={remainingAmount}
-                    onChange={e => {
-                      setRemainingAmount(e.target.value);
-                      // Auto-calculate advanced
-                      const total = finalizeMission.assignedMembers.reduce((sum, m) => sum + (m.salary || 0), 0);
-                      setAdvancedAmount(Math.max(0, total - (parseInt(e.target.value) || 0)).toString());
-                    }}
-                    className="input-field w-full bg-white text-blue-500 placeholder:text-blue-500 font-bold"
-                    placeholder="Remaining amount"
-                    min="1"
-                    max={finalizeMission.assignedMembers.reduce((sum, m) => sum + (m.salary || 0), 0)}
-                    required={salaryMode === 'advance'}
-                  />
-                </div>
-              </div>
-              {advancedAmount && remainingAmount && (
-                <div className="text-left p-2 text-white dark:bg-blue-900/30 rounded mt-2">
-                  <p className="text-sm text-white dark:text-blue-300">
-                    Total: ₹{parseInt(advancedAmount) + parseInt(remainingAmount)}
-                    {parseInt(advancedAmount) + parseInt(remainingAmount) === finalizeMission.assignedMembers.reduce((sum, m) => sum + (m.salary || 0), 0)
-                      ? " ✅" : " ❌ (Must equal total salary)"}
-                  </p>
-                </div>
-              )}
             </div>
           )}
           <div className="flex justify-end gap-2 pt-4">
@@ -663,18 +679,192 @@ const fetchUsers = async () => {
             >
               Finalize
             </button>
-            {/* Send Salary Button */}
-            {(finalizeStatus === 'completed' || finalizeStatus === 'failed' || finalizeStatus === 'martyred') && (
-              <SendSalaryButton missionId={finalizeMission._id} salaryMode={salaryMode} advancedAmount={salaryMode === 'advance' ? advancedAmount : undefined} remainingAmount={salaryMode === 'advance' ? remainingAmount : undefined} totalSalary={finalizeMission.assignedMembers.reduce((sum, m) => sum + (m.salary || 0), 0)} />
-            )}
           </div>
         </Modal>
       )}
+
+      {/* Send Salary Modal (reused) */}
+      {showSendSalaryModal && finalizeMission && (
+        <Modal
+          isOpen={showSendSalaryModal}
+          onRequestClose={() => setShowSendSalaryModal(false)}
+          className="bg-[#f8fafc] dark:bg-gray-900 p-8 rounded-2xl shadow-2xl w-full max-w-lg mx-auto mt-24 relative"
+          overlayClassName="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center"
+          ariaHideApp={false}
+        >
+          <h2 className="text-2xl font-bold text-blue-700 dark:text-white mb-6 text-center">Send Salary for Mission: {finalizeMission.title}</h2>
+          {/* Salary Payment Mode Selection */}
+          <div className="mb-4">
+            <label className="block text-sm font-semibold mb-2 dark:text-gray-300">Salary Payment Mode</label>
+            <div className="flex gap-4 items-center">
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="salaryMode"
+                  value="full"
+                  checked={salaryMode === 'full'}
+                  onChange={() => { setSalaryMode('full'); setAdvancedAmount(''); setRemainingAmount(''); }}
+                />
+                <span>Full Salary</span>
+              </label>
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="salaryMode"
+                  value="advance"
+                  checked={salaryMode === 'advance'}
+                  onChange={() => setSalaryMode('advance')}
+                />
+                <span className="flex items-center gap-1">Advance Money</span>
+              </label>
+            </div>
+          </div>
+          {/* If Advance Money, show input fields */}
+          {salaryMode === 'advance' && (
+            <div className="mb-4 p-4 bg-blue-300 dark:bg-yellow-900/20 rounded-lg border dark:border-yellow-700/30">
+              <p className="text-sm dark:text-yellow-300 font-medium mb-2">
+                💡 Advanced Mode: Pay part of the salary now, and the rest after approval.
+              </p>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-white dark:text-avengers-silver mb-2">
+                    Advanced Amount (₹) - Immediate
+                  </label>
+                  <input
+                    type="number"
+                    value={advancedAmount}
+                    onChange={e => {
+                      setAdvancedAmount(e.target.value);
+                      const total = finalizeMission.assignedMembers.filter(m => m.status === 'accepted').reduce((sum, m) => sum + (m.salary || 0), 0);
+                      setRemainingAmount(Math.max(0, total - (parseInt(e.target.value) || 0)).toString());
+                    }}
+                    className="input-field w-full bg-white text-blue-500 placeholder:text-blue-500 font-bold"
+                    placeholder="Immediate amount"
+                    min="1"
+                    max={finalizeMission.assignedMembers.filter(m => m.status === 'accepted').reduce((sum, m) => sum + (m.salary || 0), 0)}
+                    required={salaryMode === 'advance'}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-white dark:text-avengers-silver mb-2">
+                    Remaining Amount (₹) - After Approval
+                  </label>
+                  <input
+                    type="number"
+                    value={remainingAmount}
+                    onChange={e => {
+                      setRemainingAmount(e.target.value);
+                      const total = finalizeMission.assignedMembers.filter(m => m.status === 'accepted').reduce((sum, m) => sum + (m.salary || 0), 0);
+                      setAdvancedAmount(Math.max(0, total - (parseInt(e.target.value) || 0)).toString());
+                    }}
+                    className="input-field w-full bg-white text-blue-500 placeholder:text-blue-500 font-bold"
+                    placeholder="Remaining amount"
+                    min="1"
+                    max={finalizeMission.assignedMembers.filter(m => m.status === 'accepted').reduce((sum, m) => sum + (m.salary || 0), 0)}
+                    required={salaryMode === 'advance'}
+                  />
+                </div>
+              </div>
+              {advancedAmount && remainingAmount && (
+                <div className="text-left p-2 text-white dark:bg-blue-900/30 rounded mt-2">
+                  <p className="text-sm text-white dark:text-blue-300">
+                    Total: ₹{parseInt(advancedAmount) + parseInt(remainingAmount)}
+                    {parseInt(advancedAmount) + parseInt(remainingAmount) === finalizeMission.assignedMembers.filter(m => m.status === 'accepted').reduce((sum, m) => sum + (m.salary || 0), 0)
+                      ? " ✅" : " ❌ (Must equal total salary)"}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+          <div className="flex justify-end gap-2 pt-4">
+            <SendSalaryButton
+              missionId={finalizeMission._id}
+              salaryMode={salaryMode}
+              advancedAmount={salaryMode === 'advance' ? advancedAmount : undefined}
+              remainingAmount={salaryMode === 'advance' ? remainingAmount : undefined}
+              totalSalary={finalizeMission.assignedMembers.filter(m => m.status === 'accepted').reduce((sum, m) => sum + (m.salary || 0), 0)}
+              setSendingSalaryMissionId={setSendingSalaryMissionId}
+              disabled={salaryMode === 'advance' && (!advancedAmount || !remainingAmount || (parseInt(advancedAmount) + parseInt(remainingAmount) !== finalizeMission.assignedMembers.filter(m => m.status === 'accepted').reduce((sum, m) => sum + (m.salary || 0), 0)))}
+            />
+            <button
+              onClick={() => setShowSendSalaryModal(false)}
+              className="avengers-button-secondary ml-2"
+            >
+              Close
+            </button>
+          </div>
+        </Modal>
+      )}
+
+      {/* Reassign Member Modal (Admin) */}
+      <Modal
+        isOpen={showReassignModal}
+        onRequestClose={() => setShowReassignModal(false)}
+        className="bg-blue-100 dark:bg-gray-900 p-8 rounded-2xl shadow-2xl w-full max-w-lg mx-auto mt-24 relative"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center"
+        ariaHideApp={false}
+      >
+        {declinedInfo && (
+          <div>
+            <h2 className="text-2xl font-bold text-blue-700 dark:text-white mb-6 text-center">Member Declined Mission</h2>
+            <div className="mb-4">
+              <div className="font-semibold text-lg text-blue-700 dark:text-white">Mission: {reassignMission?.title}</div>
+              <div className="text-gray-700 dark:text-cyan-200">Declined by: {declinedInfo.member.name}</div>
+              <div className="text-gray-700 dark:text-cyan-200">Reason: {declinedInfo.member.declineReason}</div>
+              {declinedInfo.member.declineFile && (
+                <div className="text-gray-700 dark:text-cyan-200 mt-2">
+                  <a href={declinedInfo.member.declineFile} target="_blank" rel="noopener noreferrer" className="underline text-blue-600">View Attachment</a>
+                </div>
+              )}
+            </div>
+            <form onSubmit={handleReassign} className="mt-6">
+              <label className="block text-gray-700 dark:text-cyan-200 font-semibold mb-2">Select Replacement Member</label>
+              <select
+                className="w-full p-2 rounded border border-gray-400 dark:bg-gray-800 dark:text-white"
+                value={selectedReplacement}
+                onChange={e => setSelectedReplacement(e.target.value)}
+                required
+              >
+                <option value="">Select member...</option>
+                {users.filter(u => u.name !== declinedInfo.member.name && !reassignMission.assignedMembers.some(m => m.name === u.name)).map(u => (
+                  <option key={u._id} value={u.name}>{u.name} ({u.email})</option>
+                ))}
+              </select>
+              <label className="block mt-4 text-gray-700 dark:text-cyan-200 font-semibold mb-2">Assign Salary</label>
+              <input
+                type="number"
+                className="w-full p-2 rounded border border-gray-400 dark:bg-gray-800 dark:text-white"
+                value={replacementSalary}
+                onChange={e => setReplacementSalary(e.target.value)}
+                min="0"
+                required
+              />
+              <div className="flex justify-end gap-2 mt-4">
+                <button
+                  type="button"
+                  className="avengers-button-secondary border-2 border-blue-500 text-gray-700 dark:border-blue-500 dark:text-avengers-silver hover:bg-gray-100 dark:hover:bg-blue-900/10 font-semibold"
+                  onClick={() => setShowReassignModal(false)}
+                  disabled={reassignSubmitting}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="avengers-button bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                  disabled={reassignSubmitting}
+                >
+                  Reassign
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };
 
-function SendSalaryButton({ missionId, salaryMode, advancedAmount, remainingAmount, totalSalary }) {
+function SendSalaryButton({ missionId, salaryMode, advancedAmount, remainingAmount, totalSalary, setSendingSalaryMissionId, disabled }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -692,9 +882,11 @@ function SendSalaryButton({ missionId, salaryMode, advancedAmount, remainingAmou
         window.location.href = res.data.url;
       } else {
         setError('Stripe session could not be created.');
+        setSendingSalaryMissionId(null);
       }
     } catch (err) {
       setError(err.response?.data?.msg || 'Error creating Stripe session.');
+      setSendingSalaryMissionId(null);
     } finally {
       setLoading(false);
     }
@@ -704,7 +896,7 @@ function SendSalaryButton({ missionId, salaryMode, advancedAmount, remainingAmou
     <button
       onClick={handleSendSalary}
       className="avengers-button bg-gradient-to-r from-green-500 to-green-700 text-white"
-      disabled={loading}
+      disabled={loading || disabled}
       style={{ minWidth: 120 }}
     >
       {loading ? 'Redirecting...' : 'Send Salary'}

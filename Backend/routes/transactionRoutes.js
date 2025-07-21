@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const verifyToken = require('../middleware/verifyToken');
+const authMiddleware = require('../middleware/authMiddleware');
 
 const transactionController = require("../controllers/transactionController");
 const {
@@ -16,26 +16,26 @@ const {
 
 const { getUserTransactions } = require("../controllers/getUserTransactions");
 
-router.post("/stripe-checkout", verifyToken, createStripeCheckout);
-router.get("/my-transactions", verifyToken, getUserTransactions);
+router.post("/stripe-checkout", authMiddleware, createStripeCheckout);
+router.get("/my-transactions", authMiddleware, getUserTransactions);
 
 // ✅ Add new feedback mail route
-router.post("/send-feedback-mail", verifyToken, sendFeedbackMail);
+router.post("/send-feedback-mail", authMiddleware, sendFeedbackMail);
 
 // Get payment statistics (admin only)
-router.get("/stats", verifyToken, getPaymentStats);
+router.get("/stats", authMiddleware, getPaymentStats);
 
 // Get payment trends (admin only)
-router.get("/trends", verifyToken, getPaymentTrends);
+router.get("/trends", authMiddleware, getPaymentTrends);
 
 // Advanced Money Mode routes (admin only)
-router.get("/pending-advanced", verifyToken, getPendingAdvancedTransactions);
-router.post("/approve-remaining/:transactionId", verifyToken, approveRemainingAmount);
+router.get("/pending-advanced", authMiddleware, getPendingAdvancedTransactions);
+router.post("/approve-remaining/:transactionId", authMiddleware, approveRemainingAmount);
 
 // Add user-specific stats route
-router.get("/stats/user", verifyToken, getPaymentStatsForUser);
+router.get("/stats/user", authMiddleware, getPaymentStatsForUser);
 
 // Add user-specific self payment stats route
-router.get("/stats/user/self", verifyToken, getUserPaymentStats);
+router.get("/stats/user/self", authMiddleware, getUserPaymentStats);
 
 module.exports = router;

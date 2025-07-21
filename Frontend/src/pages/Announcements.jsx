@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import AnnouncementCard from "../components/AnnouncementCard";
 import { fetchAnnouncements, submitAnnouncement } from "../api/announcementApi";
 import { useAuth } from "../context/AuthContext";
-import { Megaphone, Plus, Loader2, AlertCircle } from "lucide-react";
+import { Megaphone, Plus, AlertCircle } from "lucide-react";
+import Loader from '../components/Loader';
 
 const Announcements = () => {
   const { isAdmin } = useAuth();
@@ -76,6 +77,14 @@ const Announcements = () => {
   // Handle page navigation
   const handlePrevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
   const handleNextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-blue-300 dark:bg-[#0f172a] p-6">
+        <Loader />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-blue-300 dark:bg-[#0f172a]  p-6">
@@ -157,10 +166,9 @@ const Announcements = () => {
                 className="w-full bg-blue-500 dark:bg-blue-900/20 dark:hover:bg-blue-600 disabled:from-gray-500 disabled:to-gray-600 text-white font-semibold px-6 py-4 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-500/25 disabled:transform-none disabled:shadow-none flex items-center justify-center"
               >
                 {submitting ? (
-                  <>
-                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    Posting...
-                  </>
+                  <div className="flex items-center justify-center my-4">
+                    <Loader />
+                  </div>
                 ) : (
                   <>
                     <Megaphone className="w-5 h-5 mr-2" />
@@ -197,7 +205,7 @@ const Announcements = () => {
         <div className="space-y-6">
           {loading ? (
             <div className="text-center py-12">
-              <Loader2 className="w-8 h-8 text-yellow-400 animate-spin mx-auto mb-4" />
+              <Loader />
               <p className="text-white dark:text-gray-400">Loading announcements...</p>
             </div>
           ) : filteredAnnouncements.length === 0 ? (

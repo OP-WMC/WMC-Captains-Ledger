@@ -1,32 +1,32 @@
 const express = require('express');
 const router = express.Router();
 const Mission = require('../models/Mission');
-const verifyToken = require('../middleware/verifyToken');
+const authMiddleware = require('../middleware/authMiddleware');
 const User = require('../models/User');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const transactionController = require('../controllers/transactionController');
 
 // GET all missions
-router.get('/', verifyToken, async (req, res) => {
+router.get('/', authMiddleware, async (req, res) => {
   const missions = await Mission.find();
   res.json(missions);
 });
 
 // POST create mission
-router.post('/', verifyToken, async (req, res) => {
+router.post('/', authMiddleware, async (req, res) => {
   const mission = new Mission(req.body);
   await mission.save();
   res.status(201).json(mission);
 });
 
 // PUT update mission
-router.put('/:id', verifyToken, async (req, res) => {
+router.put('/:id', authMiddleware, async (req, res) => {
   const updated = await Mission.findByIdAndUpdate(req.params.id, req.body, { new: true });
   res.json(updated);
 });
 
 // DELETE mission
-router.delete('/:id', verifyToken, async (req, res) => {
+router.delete('/:id', authMiddleware, async (req, res) => {
   await Mission.findByIdAndDelete(req.params.id);
   res.json({ message: 'Deleted' });
 });
@@ -50,40 +50,27 @@ router.post('/finalize/:id', async (req, res) => {
       updatedBy: updatedBy || 'admin',
     });
 
-    // Pay salaries if not already paid and status is completed/martyred/failed
-    const logs = [];
-    if ((status === 'completed' || status === 'martyred' || status === 'failed') && !mission.salariesPaid) {
-      logs.push('Assigned members: ' + JSON.stringify(mission.assignedMembers));
-      let errors = [];
-      for (const member of mission.assignedMembers) {
-        try {
-          logs.push(`Looking for user: ${member.name}`);
-          const user = await User.findOne({ name: member.name });
-          if (user) {
-            logs.push(`User found: ${user.name}, current balance: ${user.balance}`);
-            user.balance += member.salary || 0;
-            await user.save();
-            logs.push(`Salary of ${member.salary || 0} added to ${user.name}. New balance: ${user.balance}`);
-          } else {
-            const errMsg = `User not found: ${member.name}`;
-            errors.push(errMsg);
-            logs.push(errMsg);
-          }
-        } catch (e) {
-          const errMsg = `Error paying ${member.name}: ${e.message}`;
-          errors.push(errMsg);
-          logs.push(errMsg);
-        }
+    // Auto-reject pending members
+    mission.assignedMembers.forEach(member => {
+      if (member.status === 'pending') {
+        member.status = 'auto-rejected';
       }
+    });
+
+    // Remove all non-accepted members
+    mission.assignedMembers = mission.assignedMembers.filter(member => member.status === 'accepted');
+
+    // If no accepted members remain, mark as failed and do not pay
+    if (mission.assignedMembers.length === 0) {
+      mission.status = 'failed';
       mission.salariesPaid = true;
       await mission.save();
-      if (errors.length > 0) {
-        return res.status(200).json({ msg: 'Mission finalized, but some salaries failed', errors, logs, mission });
-      }
-    } else {
-      await mission.save();
+      return res.json({ msg: 'Mission failed (no accepted members)', mission });
     }
-    res.json({ msg: 'Mission finalized', mission, logs });
+
+    // Do NOT pay salaries or set salariesPaid to true here. Allow manual payment after finalization.
+    await mission.save();
+    res.json({ msg: 'Mission finalized', mission });
   } catch (err) {
     res.status(500).json({ msg: 'Server error', error: err.message });
   }
@@ -134,13 +121,17 @@ router.post('/:id/send-salary-stripe', async (req, res) => {
 });
 
 // Endpoint to send mission salary using the same logic as Send Money
-router.post('/:id/send-salary', verifyToken, async (req, res) => {
+router.post('/:id/send-salary', authMiddleware, async (req, res) => {
   try {
     const mission = await Mission.findById(req.params.id);
     if (!mission) return res.status(404).json({ msg: 'Mission not found' });
+    if (mission.salariesPaid) return res.status(400).json({ msg: 'Salaries already paid for this mission' });
     if (!mission.assignedMembers || mission.assignedMembers.length === 0) {
       return res.status(400).json({ msg: 'No assigned members for this mission' });
     }
+    // Set salariesPaid to true immediately to prevent race conditions
+    mission.salariesPaid = true;
+    await mission.save();
     // Find users by name
     const users = await User.find({ name: { $in: mission.assignedMembers.map(m => m.name) } });
     if (!users || users.length === 0) {
@@ -177,6 +168,83 @@ router.post('/:id/send-salary', verifyToken, async (req, res) => {
     };
     // Use the same controller as /transactions/stripe-checkout
     return transactionController.createStripeCheckout(req, res);
+  } catch (err) {
+    res.status(500).json({ msg: 'Server error', error: err.message });
+  }
+});
+
+// Accept a mission assignment (user)
+router.post('/:id/accept', authMiddleware, async (req, res) => {
+  try {
+    const mission = await Mission.findById(req.params.id);
+    if (!mission) return res.status(404).json({ msg: 'Mission not found' });
+
+    // Prevent accepting after mission end time
+    if (new Date() > new Date(mission.endDate)) {
+      return res.status(403).json({ msg: 'Mission has already ended.' });
+    }
+
+    // Fetch user from DB to get the name
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(403).json({ msg: 'User not found' });
+
+    const userName = user.name;
+    const member = mission.assignedMembers.find(m => m.name === userName);
+    if (!member) return res.status(403).json({ msg: 'You are not assigned to this mission' });
+
+    member.status = 'accepted';
+    member.declineReason = undefined;
+    member.declineFile = undefined;
+    await mission.save();
+    res.json({ msg: 'Mission accepted' });
+  } catch (err) {
+    res.status(500).json({ msg: 'Server error', error: err.message });
+  }
+});
+
+// Decline a mission assignment (user)
+router.post('/:id/decline', authMiddleware, async (req, res) => {
+  try {
+    const { declineReason, declineFile } = req.body; // declineFile: file path or URL
+    const mission = await Mission.findById(req.params.id);
+    if (!mission) return res.status(404).json({ msg: 'Mission not found' });
+
+    // Prevent declining after mission end time
+    if (new Date() > new Date(mission.endDate)) {
+      return res.status(403).json({ msg: 'Mission has already ended.' });
+    }
+
+    // Fetch user from DB to get the name
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(403).json({ msg: 'User not found' });
+
+    const userName = user.name;
+    const member = mission.assignedMembers.find(m => m.name === userName);
+    if (!member) return res.status(403).json({ msg: 'You are not assigned to this mission' });
+
+    member.status = 'declined';
+    member.declineReason = declineReason;
+    member.declineFile = declineFile;
+    await mission.save();
+    res.json({ msg: 'Mission declined' });
+  } catch (err) {
+    res.status(500).json({ msg: 'Server error', error: err.message });
+  }
+});
+
+// Admin: reassign a member to a mission
+router.post('/:id/reassign', authMiddleware, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') return res.status(403).json({ msg: 'Only admin can reassign members' });
+    const { oldMemberName, newMemberName, newMemberSalary } = req.body;
+    const mission = await Mission.findById(req.params.id);
+    if (!mission) return res.status(404).json({ msg: 'Mission not found' });
+    // Remove old member
+    mission.assignedMembers = mission.assignedMembers.filter(m => m.name !== oldMemberName);
+    // Add new member
+    mission.assignedMembers.push({ name: newMemberName, salary: newMemberSalary, status: 'pending' });
+    await mission.save();
+    res.json({ msg: 'Member reassigned', mission });
   } catch (err) {
     res.status(500).json({ msg: 'Server error', error: err.message });
   }

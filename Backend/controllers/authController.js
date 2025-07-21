@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 
 exports.register = async (req, res) => {
   try {
-    const { name, email, password, power, abilities, weapons, experience, profilePhoto, pastAchievements } = req.body;
+    const { name, email, password, power, abilities, weapons, experience, profilePhoto, pastAchievements, pastSuccessRate, missionStyle, availability } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -28,6 +28,9 @@ exports.register = async (req, res) => {
       weapons,
       pastAchievements: pastAchievements || experience,
       profilePhoto,
+      pastSuccessRate,
+      missionStyle,
+      availability,
     });
 
     // ✅ Create token with plain user data
@@ -82,6 +85,10 @@ const isProduction = process.env.NODE_ENV === "production";
       email: user.email,
       role: user.role,
       balance: user.balance,
+      tempAdmin: user.tempAdmin,
+      adminStart: user.adminStart,
+      adminEnd: user.adminEnd,
+      isAdmin: (user.role === 'admin') || (user.tempAdmin && user.adminStart && user.adminEnd && new Date() >= user.adminStart && new Date() <= user.adminEnd)
     },
   });
 
@@ -113,7 +120,7 @@ exports.updateProfile = async (req, res) => {
   try {
     const userId = req.user._id;
     const updateFields = {};
-    const allowedFields = ["name", "codename", "power", "abilities", "weapons", "pastAchievements", "profilePhoto"];
+    const allowedFields = ["name", "codename", "power", "abilities", "weapons", "pastAchievements", "profilePhoto", "pastSuccessRate", "missionStyle", "availability"];
     allowedFields.forEach(field => {
       if (req.body[field] !== undefined) {
         updateFields[field] = req.body[field];
@@ -123,5 +130,39 @@ exports.updateProfile = async (req, res) => {
     res.json({ message: "Profile updated successfully", user: updatedUser });
   } catch (err) {
     res.status(400).json({ error: err.message });
+  }
+};
+
+// Assign temporary admin rights
+exports.assignTempAdmin = async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Only admins can assign temporary admin rights.' });
+    }
+    const { userId, adminStart, adminEnd } = req.body;
+    if (!userId || !adminStart || !adminEnd) {
+      return res.status(400).json({ error: 'userId, adminStart, and adminEnd are required.' });
+    }
+    if (req.user._id.toString() === userId) {
+      return res.status(400).json({ error: 'You cannot assign yourself as a temporary admin.' });
+    }
+    const start = new Date(adminStart);
+    const end = new Date(adminEnd);
+    const now = new Date();
+    if (isNaN(start) || isNaN(end) || end <= start || start < now) {
+      return res.status(400).json({ error: 'Invalid date range.' });
+    }
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+    user.tempAdmin = true;
+    user.adminStart = start;
+    user.adminEnd = end;
+    await user.save();
+    const updatedUser = await User.findById(userId).select('-password');
+    res.json({ message: 'Temporary admin assigned.', user: updatedUser });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };

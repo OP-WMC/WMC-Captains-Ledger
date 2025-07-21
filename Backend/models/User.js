@@ -12,6 +12,12 @@ const userSchema = new mongoose.Schema({
   weapons: [{ type: String }],
   pastAchievements: { type: String },
   profilePhoto: { type: String }, // URL or base64
+  pastSuccessRate: { type: Number },
+  missionStyle: { type: String },
+  availability: { type: String },
+  tempAdmin: { type: Boolean, default: false },
+  adminStart: { type: Date },
+  adminEnd: { type: Date },
 });
 
 module.exports = mongoose.model("User", userSchema);

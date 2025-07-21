@@ -11,6 +11,8 @@ import {
   Clock,
   XCircle,
 } from 'lucide-react';
+import Modal from 'react-modal';
+import Loader from '../components/Loader';
 
 import { mockAnnouncements } from '../services/mockData';
 import { fetchAnnouncements } from '../api/announcementApi';
@@ -39,6 +41,12 @@ const Dashboard = () => {
   const [attendanceStats, setAttendanceStats] = useState(null);
   const [userPaymentStats, setUserPaymentStats] = useState(null);
   const [announcementsLoading, setAnnouncementsLoading] = useState(true);
+  const [showMissionModal, setShowMissionModal] = useState(false);
+  const [pendingMission, setPendingMission] = useState(null);
+  const [declineReason, setDeclineReason] = useState('');
+  const [declineFile, setDeclineFile] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [showDeclineForm, setShowDeclineForm] = useState(false);
 
   // Fetch user, missions, users, announcements, stats
   useEffect(() => {
@@ -163,6 +171,76 @@ const Dashboard = () => {
       attendanceRate = attendanceStats.attendancePercentage !== undefined ? `${attendanceStats.attendancePercentage}%` : '0%';
     }
   }
+
+  // Check for pending mission assignments for this user
+  useEffect(() => {
+    if (!isAdmin && user && userMissions.length > 0) {
+      const now = new Date();
+      const pending = userMissions.find(m => {
+        const member = m.assignedMembers.find(mem => mem.name === user.name);
+        // Only show if still pending and mission endDate is in the future
+        return member && member.status === 'pending' && new Date(m.endDate) > now;
+      });
+      if (pending) {
+        setPendingMission(pending);
+        setShowMissionModal(true);
+      } else {
+        setPendingMission(null);
+        setShowMissionModal(false);
+      }
+    }
+  }, [user, userMissions, isAdmin]);
+
+  const handleAcceptMission = async () => {
+    if (!pendingMission) return;
+    setSubmitting(true);
+    try {
+      await axios.post(`/missions/${pendingMission._id}/accept`, {}, { withCredentials: true });
+      setShowMissionModal(false);
+      setPendingMission(null);
+      window.location.reload();
+    } catch (err) {
+      alert('Failed to accept mission.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDeclineMission = async (e) => {
+    e.preventDefault();
+    if (!pendingMission) return;
+    setSubmitting(true);
+    try {
+      let fileUrl = '';
+      if (declineFile) {
+        // Upload file to server (implement endpoint as needed)
+        const formData = new FormData();
+        formData.append('file', declineFile);
+        const uploadRes = await axios.post('/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' }, withCredentials: true });
+        fileUrl = uploadRes.data.url;
+      }
+      await axios.post(`/missions/${pendingMission._id}/decline`, {
+        declineReason,
+        declineFile: fileUrl
+      }, { withCredentials: true });
+      setShowMissionModal(false);
+      setPendingMission(null);
+      window.location.reload();
+    } catch (err) {
+      alert('Failed to decline mission.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // When modal opens, reset decline form state
+  useEffect(() => {
+    if (!showMissionModal) {
+      setShowDeclineForm(false);
+      setDeclineReason('');
+      setDeclineFile(null);
+    }
+  }, [showMissionModal]);
 
   return (
     <div className="space-y-6">
@@ -356,9 +434,81 @@ const Dashboard = () => {
           </a>
         </div>
       </div>
+
+      {/* Mission Assignment Modal */}
+      <Modal
+        isOpen={showMissionModal}
+        onRequestClose={() => setShowMissionModal(false)}
+        className="bg-blue-100 dark:bg-gray-900 p-8 rounded-2xl shadow-2xl w-full max-w-lg mx-auto mt-24 relative"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center"
+        ariaHideApp={false}
+      >
+        {pendingMission && (
+          <div>
+            <h2 className="text-2xl font-bold text-blue-700 dark:text-white mb-6 text-center">New Mission Assigned</h2>
+            <div className="mb-4">
+              <div className="font-semibold text-lg text-blue-700 dark:text-white">{pendingMission.title}</div>
+              <div className="text-gray-700 dark:text-cyan-200">{pendingMission.description}</div>
+              <div className="text-gray-700 dark:text-cyan-200">📍 {pendingMission.location}</div>
+              <div className="text-gray-700 dark:text-cyan-200">📆 {pendingMission.startDate} - {pendingMission.endDate}</div>
+            </div>
+            {!showDeclineForm ? (
+              <div className="flex gap-4 mt-6">
+                <button
+                  className="avengers-button bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                  onClick={handleAcceptMission}
+                  disabled={submitting}
+                >
+                  Accept
+                </button>
+                <button
+                  className="avengers-button bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                  onClick={() => setShowDeclineForm(true)}
+                  disabled={submitting}
+                >
+                  Decline
+                </button>
+              </div>
+            ) : (
+              <form className="mt-6" onSubmit={handleDeclineMission}>
+                <label className="block text-gray-700 dark:text-cyan-200 font-semibold mb-2">Reason for Absence</label>
+                <textarea
+                  className="w-full p-2 rounded border border-gray-400 dark:bg-gray-800 dark:text-white"
+                  value={declineReason}
+                  onChange={e => setDeclineReason(e.target.value)}
+                  required
+                />
+                <label className="block mt-4 text-gray-700 dark:text-cyan-200 font-semibold mb-2">Attach Medical Certificate (optional)</label>
+                <input
+                  type="file"
+                  className="w-full"
+                  onChange={e => setDeclineFile(e.target.files[0])}
+                  accept=".pdf,.jpg,.jpeg,.png"
+                />
+                <div className="flex justify-end gap-2 mt-4">
+                  <button
+                    type="button"
+                    className="avengers-button-secondary border-2 border-blue-500 text-gray-700 dark:border-blue-500 dark:text-avengers-silver hover:bg-gray-100 dark:hover:bg-blue-900/10 font-semibold"
+                    onClick={() => setShowDeclineForm(false)}
+                    disabled={submitting}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="avengers-button bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                    disabled={submitting}
+                  >
+                    Submit Reason
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        )}
+      </Modal>
     </div>
   );
-};
-// };
+}
 
 export default Dashboard; 

@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import axios from '../api/axios';
 
 const AuthContext = createContext();
 
@@ -14,16 +15,8 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
   const fetchUser = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/auth/me', {
-        credentials: 'include',
-      });
-
-      if (res.ok) {
-        const userData = await res.json();
-        setUser(userData);
-      } else {
-        setUser(null);
-      }
+      const res = await axios.get('/auth/me');
+      setUser(res.data);
     } catch (err) {
       console.error("Auth fetch error", err);
       setUser(null);
@@ -41,10 +34,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
   try {
-    await fetch('http://localhost:5000/api/auth/logout', {
-      method: 'POST',
-      credentials: 'include',
-    });
+    await axios.post('/auth/logout');
   } catch (err) {
     console.error("Logout error", err);
   }
@@ -61,7 +51,11 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     user,
-    isAdmin: user?.role === 'admin',
+    isAdmin:
+      user?.role === 'admin' ||
+      (user?.tempAdmin && user?.adminStart && user?.adminEnd &&
+        new Date() >= new Date(user.adminStart) &&
+        new Date() <= new Date(user.adminEnd)),
     loading,
     login,
     logout,

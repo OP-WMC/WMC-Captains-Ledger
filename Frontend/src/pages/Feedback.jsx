@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import FeedbackCard from "../components/FeedbackCard";
 import { fetchFeedback } from "../api/feedbackAPI";
+import Loader from '../components/Loader';
 
 const FEEDBACKS_PER_PAGE = 9;
 
@@ -127,7 +128,7 @@ const Feedback = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         {loading && (
           <div className="col-span-full text-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+            <Loader />
             <p className="mt-4 text-white dark:text-gray-400">Loading feedbacks...</p>
           </div>
         )}

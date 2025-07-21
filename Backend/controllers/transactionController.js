@@ -26,7 +26,7 @@ exports.createStripeCheckout = async (req, res) => {
     }
 
     // Restrict advanced money mode to admin only
-    if (isAdvancedMode && req.user.role !== 'admin') {
+    if (isAdvancedMode && !req.user.isAdmin) {
       return res.status(403).json({ message: "Only admins can use Advanced Money Mode." });
     }
 
@@ -115,7 +115,7 @@ exports.sendFeedbackMail = async (req, res) => {
 // Get payment statistics (admin only)
 exports.getPaymentStats = async (req, res) => {
   try {
-    if (req.user.role !== "admin") {
+    if (!req.user.isAdmin) {
       return res.status(403).json({ msg: "Access denied" });
     }
 
@@ -172,7 +172,7 @@ exports.getPaymentStats = async (req, res) => {
 // Get payment trends over time (admin only)
 exports.getPaymentTrends = async (req, res) => {
   try {
-    if (req.user.role !== "admin") {
+    if (!req.user.isAdmin) {
       return res.status(403).json({ msg: "Access denied" });
     }
 
@@ -230,7 +230,7 @@ exports.getPaymentTrends = async (req, res) => {
 // Approve remaining amount for advanced money mode (admin only)
 exports.approveRemainingAmount = async (req, res) => {
   try {
-    if (req.user.role !== "admin") {
+    if (!req.user.isAdmin) {
       return res.status(403).json({ message: "Access denied. Admin only." });
     }
 
@@ -394,7 +394,7 @@ exports.approveRemainingAmount = async (req, res) => {
 // Get pending advanced transactions (admin only)
 exports.getPendingAdvancedTransactions = async (req, res) => {
   try {
-    if (req.user.role !== "admin") {
+    if (!req.user.isAdmin) {
       return res.status(403).json({ message: "Access denied. Admin only." });
     }
 

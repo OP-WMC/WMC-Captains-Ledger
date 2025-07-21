@@ -30,7 +30,7 @@ exports.getFeedbacks = async (req, res) => {
   try {
     const user = req.user;
     let filter = {};
-    if (user.role !== "admin") {
+    if (!user.isAdmin) {
       const txns = await Transaction.find({
         $or: [{ sender: user._id }, { receiver: user._id }],
       });

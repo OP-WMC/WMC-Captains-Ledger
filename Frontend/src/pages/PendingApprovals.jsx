@@ -3,9 +3,10 @@ import { useAuth } from "../context/AuthContext";
 import axios from "../api/axios";
 import { CheckCircle, Clock, DollarSign, User, Mail, Calendar } from "lucide-react";
 import Modal from "react-modal";
+import Loader from '../components/Loader';
 
 const PendingApprovals = () => {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [pendingTransactions, setPendingTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [approving, setApproving] = useState(null);
@@ -13,12 +14,13 @@ const PendingApprovals = () => {
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [selectedTransactionId, setSelectedTransactionId] = useState(null);
+  const [resultModal, setResultModal] = useState({ open: false, message: "", type: "success" });
 
   useEffect(() => {
-    if (user?.role === "admin") {
+    if (isAdmin) {
       fetchPendingTransactions();
     }
-  }, [user]);
+  }, [isAdmin]);
 
   const fetchPendingTransactions = async () => {
     try {
@@ -51,7 +53,7 @@ const PendingApprovals = () => {
         email: user.email,
         password,
       });
-      if (res.data && res.data.user && res.data.user.role === "admin") {
+      if (res.data && res.data.user && res.data.user.isAdmin) {
         await handleApprove(selectedTransactionId, true);
         setShowPasswordModal(false);
       } else {
@@ -73,16 +75,16 @@ const PendingApprovals = () => {
       setApproving(transactionId);
       await axios.post(`/transactions/approve-remaining/${transactionId}`);
       setPendingTransactions(prev => prev.filter(txn => txn._id !== transactionId));
-      alert("Remaining amount approved successfully!");
+      setResultModal({ open: true, message: "Remaining amount approved successfully!", type: "success" });
     } catch (error) {
       console.error("Error approving transaction:", error);
-      alert("Failed to approve transaction: " + (error.response?.data?.message || "Unknown error"));
+      setResultModal({ open: true, message: "Failed to approve transaction: " + (error.response?.data?.message || "Unknown error"), type: "error" });
     } finally {
       setApproving(null);
     }
   };
 
-  if (user?.role !== "admin") {
+  if (!isAdmin) {
     return (
       <div className="space-y-6">
         <div>
@@ -125,7 +127,7 @@ const PendingApprovals = () => {
 
         {loading ? (
           <div className="text-center py-8">
-            <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4" />
+            <Loader />
             <p className="dark:text-avengers-silver">Loading pending transactions...</p>
           </div>
         ) : pendingTransactions.length === 0 ? (
@@ -253,6 +255,30 @@ const PendingApprovals = () => {
               disabled={approving}
             >
               {approving ? "Verifying..." : "Confirm & Approve"}
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Result Modal */}
+      <Modal
+        isOpen={resultModal.open}
+        onRequestClose={() => setResultModal({ ...resultModal, open: false })}
+        className="fixed inset-0 flex items-center justify-center z-50"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-40"
+        ariaHideApp={false}
+      >
+        <div className="bg-blue-300 dark:bg-blue-900/90 p-8 rounded-xl shadow-lg border border-blue-400 max-w-sm w-full mx-4">
+          <h2 className="text-xl font-bold text-blue-700 dark:text-white mb-4">
+            {resultModal.type === "success" ? "Success" : "Error"}
+          </h2>
+          <p className="mb-4 text-blue-900 dark:text-avengers-silver">{resultModal.message}</p>
+          <div className="flex justify-end">
+            <button
+              className="avengers-button px-4 py-2 text-sm"
+              onClick={() => setResultModal({ ...resultModal, open: false })}
+            >
+              Close
             </button>
           </div>
         </div>
