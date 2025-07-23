@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Link as ScrollLink } from 'react-scroll';
-import { Link as RouterLink } from 'react-router-dom';
-import { Link } from 'react-router-dom'; // <-- Important for routing
+import { Link } from 'react-router-dom';
+import Loader from '../components/Loader'; // <-- Important for routing
 
 const LandingPage = () => {
   const [navOpen, setNavOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1500);
     const hero = document.querySelector('.shake-on-load');
     if (hero) {
       hero.classList.add('animate-shake');
@@ -15,7 +17,7 @@ const LandingPage = () => {
       }, 10000);
     }
   }, []);
-
+if (loading) return <Loader />;
   return (
     <div className="relative font-rajdhani">
       {/* Background Video */}

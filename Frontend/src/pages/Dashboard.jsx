@@ -14,7 +14,6 @@ import {
 import Modal from 'react-modal';
 import Loader from '../components/Loader';
 
-import { mockAnnouncements } from '../services/mockData';
 import { fetchAnnouncements } from '../api/announcementApi';
 import { fetchAttendanceStats, fetchPaymentStats, fetchAttendanceStatsForUser, fetchPaymentStatsForUser, fetchUserPaymentStats } from '../api/statsApi';
 
@@ -140,9 +139,7 @@ const Dashboard = () => {
   let recentAnnouncements = [];
   if (!announcementsLoading && announcements && announcements.length > 0) {
     recentAnnouncements = announcements.slice(0, 3);
-  } else {
-    recentAnnouncements = mockAnnouncements.slice(0, 3);
-  }
+  } 
 
   // Stats logic
   const totalMissions = missions.length;
@@ -248,7 +245,7 @@ const Dashboard = () => {
       <div className="glass-card">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-0">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-orbitron font-bold text-blue-700 dark:text-white dark:text-shadow-glow mb-1 sm:mb-2">
+            <h1 className="text-2xl sm:text-3xl font-orbitron font-bold text-blue-700 dark:text-white  mb-1 sm:mb-2">
               Welcome back, {user?.codename}
             </h1>
             <p className="text-slate-600 dark:text-cyan-100 text-sm sm:text-base">

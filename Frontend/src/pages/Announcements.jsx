@@ -98,7 +98,7 @@ const Announcements = () => {
         <div className="text-center mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row items-center justify-center mb-2 sm:mb-4 gap-2 sm:gap-4">
             <Megaphone className="w-8 h-8 sm:w-12 sm:h-12 text-blue-500 dark:text-white mr-0 sm:mr-4" />
-            <h1 className="text-2xl sm:text-5xl font-bold font-orbitron text-blue-700 dark:text-white dark:text-shadow-glow dark:bg-clip-text dark:text-transparent">
+            <h1 className="text-2xl sm:text-5xl font-bold font-orbitron text-blue-700 dark:text-white  dark:bg-clip-text dark:text-transparent">
               Announcements
             </h1>
           </div>

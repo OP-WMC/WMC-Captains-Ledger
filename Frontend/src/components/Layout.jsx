@@ -17,9 +17,10 @@ import {
   CheckCircle
 } from 'lucide-react';
 import Chatbot from './Chatbot';
+import Loader from '../components/Loader';
 
 const Layout = ({ children }) => {
-  const { user, logout, isAdmin } = useAuth();
+  const { user, logout, isAdmin, loading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Global dark mode logic
@@ -169,6 +170,9 @@ const Layout = ({ children }) => {
           </nav>
           {/* User info */}
         <div className="p-2 md:p-4 border-t border-[#00e0ff] dark:border-avengers-silver/20">
+        {loading ? (
+    <Loader />
+  ) : user?.name && user?.codename ? (
           <Link to="/profile" className="flex items-center space-x-2 md:space-x-3 mb-2 md:mb-4 hover:bg-gray-200 dark:hover:bg-gray-700 p-2 rounded transition cursor-pointer">
             <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br rounded-full flex items-center justify-center text-xl md:text-2xl">
                 {user?.avatar}
@@ -178,6 +182,11 @@ const Layout = ({ children }) => {
                 <p className="text-xs dark:text-avengers-silver font-medium text-gray-700">{user?.codename}</p>
               </div>
             </Link>
+             ) : (
+    <p className="text-gray-500 text-sm italic">User info unavailable</p>
+  )}
+
+
             <button
               onClick={logout}
             className="w-full flex items-center space-x-2 md:space-x-3 px-2 md:px-4 py-2 md:py-3 dark:text-white hover:bg-avengers-red/20 hover:text-red-400 transition-all duration-200 rounded-lg font-semibold text-xs md:text-base"

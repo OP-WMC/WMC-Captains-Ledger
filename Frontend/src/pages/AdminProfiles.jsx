@@ -114,7 +114,7 @@ const AdminProfiles = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br  dark:bg-[#0f172a] p-6">
-      <h2 className="text-3xl font-bold mb-8 text-center text-blue-700 dark:text-white dark:text-shadow-glow  drop-shadow-lg">All User Profiles</h2>
+      <h2 className="text-3xl font-bold mb-8 text-center text-blue-700 dark:text-white  drop-shadow-lg">All User Profiles</h2>
       {/* Filter and search controls */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8 max-w-6xl mx-auto">
         <div className="flex items-center gap-2 w-full md:w-1/2 order-1 md:order-none">

@@ -178,7 +178,7 @@ useEffect(() => {
   return (
     <div className="p-3 sm:p-6 space-y-4 sm:space-y-6 w-full max-w-full overflow-visible">
       {/* HEADER */}
-      <h2 className="text-xl sm:text-2xl font-bold text-blue-700 dark:text-white dark:text-shadow-glow flex items-center gap-2 mt-10 sm:mt-0">
+      <h2 className="text-xl sm:text-2xl font-bold text-blue-700 dark:text-white flex items-center gap-2 mt-10 sm:mt-0">
         <LucideCalendar /> Attendance System
       </h2>
 
@@ -390,7 +390,7 @@ useEffect(() => {
               </div>
             ) : (
               <>
-                <label className="block text-m text-white font-bold dark:text-avengers-silver ">
+                <label className="block text-m text-blue-600 font-bold dark:text-avengers-silver  ">
                   Enter Attendance Code
                 </label>
                 <input
@@ -398,12 +398,12 @@ useEffect(() => {
                   value={userCode}
                   onChange={(e) => setUserCode(e.target.value)}
                   maxLength={6}
-                  className="px-3 py-2 rounded-lg  bg-white font-semibold dark:bg-gray-800 text-blue-500 dark:text-white focus:outline-none w-40"
+                  className="px-3 py-2 rounded-lg  bg-blue-200 font-semibold dark:bg-gray-800 text-blue-500 dark:text-white focus:outline-none w-40"
                 />
                 <button
                   onClick={markAttendance}
                   disabled={loading}
-                  className=" bg-blue-500 hover:bg-green-400 dark:bg-blue-500 dark:text-white text-black px-4 py-2 rounded-xl font-semibold dark:hover:bg-blue-700"
+                  className=" bg-blue-500 hover:bg-green-400 dark:bg-blue-500  dark:text-white text-black px-4 py-2 rounded-xl font-semibold dark:hover:bg-blue-700"
                 >
                   {loading ? 'Marking...' : 'Mark Attendance'}
                 </button>

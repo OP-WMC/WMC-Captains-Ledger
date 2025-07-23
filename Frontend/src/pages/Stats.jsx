@@ -124,7 +124,7 @@ const Stats = () => {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-6 sm:mb-8">
-          <h1 className="text-3xl sm:text-5xl font-bold font-orbitron bg-blue-700 dark:text-white dark:text-shadow-glow bg-clip-text text-transparent mb-2 sm:mb-4 mt-10 sm:mt-0">
+          <h1 className="text-3xl sm:text-5xl font-bold font-orbitron bg-blue-700 dark:text-white  bg-clip-text text-transparent mb-2 sm:mb-4 mt-10 sm:mt-0">
             Analytics Dashboard
           </h1>
           <p className="text-white dark:text-gray-400 text-base sm:text-lg">

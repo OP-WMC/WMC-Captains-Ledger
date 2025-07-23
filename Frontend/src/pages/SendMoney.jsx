@@ -412,7 +412,7 @@ const SendMoney = () => {
                   }
                   className="input-field  w-full dark:bg-blue-900/20 bg-blue-300 border-blue-500 text-white placeholder-white"
                   placeholder="Enter total amount (max ₹10,000)"
-                  min="1"
+                  min="50"
                   max="10000"
                   required
                 />
@@ -545,7 +545,7 @@ const SendMoney = () => {
                             type="number"
                             value={formData.advancedAmount}
                             onChange={handleAdvancedAmountChange}
-                            className="input-field w-full bg-white dark:bg-blue-900/20 dark:border-blue-700/30 text-white placeholder:text-gray-400 font-semibold"
+                            className="input-field w-full bg-white dark:bg-blue-900/20 dark:border-blue-700/30 text-black dark:text-white placeholder:text-gray-400 font-semibold"
                             placeholder="Immediate amount"
                             min="1"
                             max={parseInt(formData.amount) || 10000}
@@ -565,7 +565,7 @@ const SendMoney = () => {
                             type="number"
                             value={formData.remainingAmount}
                             onChange={handleRemainingAmountChange}
-                            className="input-field w-full bg-white dark:bg-blue-900/20 dark:border-blue-700/30 text-white placeholder:text-gray-400 font-semibold"
+                            className="input-field w-full bg-white dark:bg-blue-900/20 dark:border-blue-700/30 text-black dark:text-white placeholder:text-gray-400 font-semibold"
                             placeholder="Remaining amount"
                             min="1"
                             max={parseInt(formData.amount) || 10000}

@@ -28,7 +28,9 @@ const Profile = () => {
         codename: user.codename || '',
         power: user.power || '',
         abilities: user.abilities || [],
+        abilitiesRaw: (user.abilities || []).join(', '),
         weapons: user.weapons || [],
+        weaponsRaw: (user.weapons || []).join(', '),
         pastAchievements: user.pastAchievements || '',
         profilePhoto: user.profilePhoto || '',
         pastSuccessRate: user.pastSuccessRate || '',
@@ -44,8 +46,8 @@ const Profile = () => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleArrayChange = (name, value) => {
-    setForm((prev) => ({ ...prev, [name]: value.split(',').map((v) => v.trim()).filter(Boolean) }));
+   const handleArrayChange = (name, value) => {
+    setForm((prev) => ({ ...prev, [name + 'Raw']: value }));
   };
 
   const handlePhotoChange = (e) => {
@@ -61,28 +63,51 @@ const Profile = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    setMessage('');
-    try {
-      const res = await fetch('http://localhost:5000/api/auth/me', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(form),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setMessage('Profile updated successfully!');
-      } else {
-        setMessage(data.error || 'Failed to update profile.');
-      }
-    } catch (err) {
-      setMessage('Error updating profile.');
-    } finally {
-      setSaving(false);
+  e.preventDefault();
+  setSaving(true);
+  setMessage('');
+
+  try {
+    // Convert weaponsRaw → weapons array
+    const processedWeapons = form.weaponsRaw
+      .split(',')
+      .map((v) => v.trim())
+      .filter(Boolean);
+
+         const processedAbilities = form.abilitiesRaw
+      .split(',')
+      .map((v) => v.trim())
+      .filter(Boolean);
+    // Build final payload excluding weaponsRaw
+    const finalFormData = {
+      ...form,
+      weapons: processedWeapons,
+      abilities: processedAbilities,
+    };
+    delete finalFormData.weaponsRaw;
+    delete finalFormData.abilitiesRaw;
+
+    const res = await fetch('http://localhost:5000/api/auth/me', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(finalFormData),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      setMessage('Profile updated successfully!');
+    } else {
+      setMessage(data.error || 'Failed to update profile.');
     }
-  };
+  } catch (err) {
+    setMessage('Error updating profile.');
+  } finally {
+    setSaving(false);
+  }
+};
+
 
   if (loading) return (
     <div className="flex items-center justify-center min-h-screen">
@@ -92,15 +117,15 @@ const Profile = () => {
   if (!user) return <div>Please log in to view your profile.</div>;
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-2 sm:p-6 w-full max-w-full overflow-x-hidden">
-      <div className="w-full max-w-md sm:max-w-3xl glass-card bg-white/80 dark:bg-blue-500/80 rounded-2xl shadow-2xl p-4 sm:p-12">
-        <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-8 text-center text-blue-700 dark:text-white dark:text-shadow-glow drop-shadow-lg">Edit Profile</h2>
+    <div className="min-h-screen flex items-center justify-center p-2 sm:p-6 w-full max-w-full overflow-visible ">
+      <div className="w-full max-w-md sm:max-w-3xl glass-card bg-white/80  rounded-2xl shadow-2xl p-4 sm:p-12 glass-card">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-8 text-center text-blue-700 dark:text-white  drop-shadow-lg">Edit Profile</h2>
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-7 mt-2">
           <div className="flex flex-col items-center mb-4 sm:mb-6">
             {photoPreview ? (
-              <img src={photoPreview} alt="Profile" className="w-24 h-24 sm:w-36 sm:h-36 rounded-full object-cover border-4 border-blue-300 dark:border-cyan-400 shadow-lg bg-white dark:bg-blue-900 mx-auto" />
+              <img src={photoPreview} alt="Profile" className="w-24 h-24 sm:w-36 sm:h-36 rounded-full object-cover border-4 border-blue-300 dark:border-gray-300 shadow-lg bg-white dark:bg-[#0f172a] mx-auto" />
             ) : (
-              <div className="w-24 h-24 sm:w-36 sm:h-36 rounded-full bg-blue-200 dark:bg-blue-800 flex items-center justify-center border-4 border-blue-300 dark:border-cyan-400 text-lg sm:text-2xl font-bold text-blue-500 dark:text-cyan-300 shadow-lg mx-auto">No Photo</div>
+              <div className="w-24 h-24 sm:w-36 sm:h-36 rounded-full bg-blue-200 dark:bg-[#0f172a] flex items-center justify-center border-4 border-blue-300 dark:border-gray-200 text-lg sm:text-2xl font-bold text-blue-500 dark:text-white shadow-lg mx-auto">No Photo</div>
             )}
             <input type="file" accept="image/*" onChange={handlePhotoChange} className="mt-2 sm:mt-3 text-xs mx-auto" />
           </div>
@@ -115,20 +140,38 @@ const Profile = () => {
             </div>
           </div>
           <div className="flex flex-col md:flex-row gap-4 sm:gap-8">
-            <div className="flex-1">
+<div className="flex-1">
               <label className="block font-semibold text-blue-700 dark:text-white mb-1 text-xs sm:text-base">Power</label>
               <input type="text" name="power" value={form.power} onChange={handleChange} className="input input-bordered w-full bg-blue-50 dark:bg-white border-blue-200 dark:border-cyan-400 text-blue-700 dark:text-black text-xs sm:text-base" />
             </div>
             <div className="flex-1">
-              <label className="block font-semibold text-blue-700 dark:text-white mb-1 text-xs sm:text-base">Abilities (comma separated)</label>
-              <input type="text" name="abilities" value={form.abilities.join(', ')} onChange={e => handleArrayChange('abilities', e.target.value)} className="input input-bordered w-full bg-blue-50 dark:bg-white border-blue-200 dark:border-cyan-400 text-blue-700 dark:text-black text-xs sm:text-base" />
-            </div>
-          </div>
+  <label className="block font-semibold text-blue-700 dark:text-white mb-1 text-xs sm:text-base">
+    Abilities (comma separated)
+  </label>
+  <input
+    type="text"
+    name="abilities"
+    value={form.abilitiesRaw}
+    onChange={(e) => handleArrayChange('abilities', e.target.value)}
+    className="input input-bordered w-full bg-blue-50 dark:bg-white border-blue-200 dark:border-cyan-400 text-blue-700 dark:text-black text-xs sm:text-base"
+  />
+</div>
+</div>
           <div className="flex flex-col md:flex-row gap-4 sm:gap-8">
-            <div className="flex-1">
-              <label className="block font-semibold text-blue-700 dark:text-white mb-1 text-xs sm:text-base">Weapons (comma separated)</label>
-              <input type="text" name="weapons" value={form.weapons.join(', ')} onChange={e => handleArrayChange('weapons', e.target.value)} className="input input-bordered w-full bg-blue-50 dark:bg-white border-blue-200 dark:border-cyan-400 text-blue-700 dark:text-black text-xs sm:text-base" />
-            </div>
+  <div className="flex-1">
+    <label className="block font-semibold text-blue-700 dark:text-white mb-1 text-xs sm:text-base">
+      Weapons (comma separated)
+    </label>
+    <input
+      type="text"
+      name="weapons"
+      value={form.weaponsRaw}
+      onChange={(e) => handleArrayChange('weapons', e.target.value)}
+      className="w-full bg-blue-50 dark:bg-white border-blue-200 dark:border-cyan-400 text-blue-700 dark:text-black text-xs sm:text-base"
+    />
+  </div>
+
+
             <div className="flex-1">
               <label className="block font-semibold text-blue-700 dark:text-white mb-1 text-xs sm:text-base">Past Achievements</label>
               <textarea name="pastAchievements" value={form.pastAchievements} onChange={handleChange} className="input input-bordered w-full bg-blue-50 dark:bg-white border-blue-200 dark:border-cyan-400 text-blue-700 dark:text-black text-xs sm:text-base" />
