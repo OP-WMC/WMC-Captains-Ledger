@@ -1,6 +1,8 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
+const sendEmail = require("../utils/sendEmail");
 
 exports.register = async (req, res) => {
   try {
@@ -12,6 +14,14 @@ exports.register = async (req, res) => {
     }
 
     const hashed = await bcrypt.hash(password, 10);
+
+     // 🔢 Generate 6-digit OTP
+    const rawOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    const hashedOtp = await bcrypt.hash(rawOtp, 10);
+
+    // ⏳ Set expiry to 10 minutes
+    const otpExpires = Date.now() + 10 * 60 * 1000;
+
 
     const role = "user"; // Force role to user
     const startingBalance = role === "admin" ? 100000 : 40000;
@@ -31,18 +41,38 @@ exports.register = async (req, res) => {
       pastSuccessRate,
       missionStyle,
       availability,
+      otp: hashedOtp,
+      otpExpires,
+      isVerified: false,
     });
 
-    // ✅ Create token with plain user data
-    const token = jwt.sign(
-      { _id: newUser._id, email: newUser.email, role: newUser.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "1d" }
-    );
+   
+// 📧 Send OTP to user's email
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
 
+    await transporter.sendMail({
+      from: `"Avengers HQ" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "🛡️ Verify Your Avengers Account",
+      html: `
+        <h2>Welcome to the Avengers Initiative, ${name}!</h2>
+        <p>Your one-time verification code is:</p>
+        <h1>${rawOtp}</h1>
+        <p>This code will expire in 10 minutes.</p>
+      `,
+    });
 
-    res.status(201).json({ message: "User created successfully" });
+    res.status(201).json({
+      message: "User registered. Please check your email to verify your account.",
+    });
   } catch (err) {
+    console.error(err);
     res.status(400).json({ error: err.message });
   }
 };
@@ -51,49 +81,76 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
+
+    // Input validation
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required" });
+    }
+
+    console.log("🔐 Login attempt:", email);
+
+    // Case-insensitive search
+    const user = await User.findOne({ email: new RegExp(`^${email}$`, 'i') });
     if (!user) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      console.warn("❌ Login failed: User not found");
+      return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) {
-      return res.status(401).json({ message: "Invalid credentials" });
+    // Check if email is verified
+    if (!user.isVerified) {
+      console.warn("❌ Login blocked: Email not verified");
+      return res.status(401).json({ error: "Please verify your email before logging in" });
     }
 
-    // ✅ Create token with plain user data
+    // Compare password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      console.warn("❌ Login failed: Incorrect password");
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    // Generate JWT token
     const token = jwt.sign(
       { _id: user._id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
-const isProduction = process.env.NODE_ENV === "production";
-    res
-  .cookie("token", token, {
-    httpOnly: true,
-    secure: isProduction, // ✅ false on localhost
-    sameSite: isProduction ? "None" : "Lax",
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-  })
-  .status(200)
-  .json({
-    message: "Login successful",
-    user: {
-      _id: user._id,
-      name: user.name,
-      codename: user.name, // Add codename for frontend compatibility
-      email: user.email,
-      role: user.role,
-      balance: user.balance,
-      tempAdmin: user.tempAdmin,
-      adminStart: user.adminStart,
-      adminEnd: user.adminEnd,
-      isAdmin: (user.role === 'admin') || (user.tempAdmin && user.adminStart && user.adminEnd && new Date() >= user.adminStart && new Date() <= user.adminEnd)
-    },
-  });
 
+    const isProduction = process.env.NODE_ENV === "production";
+
+    // Set HTTP-only cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: isProduction, // use HTTPS in production
+      sameSite: isProduction ? "None" : "Lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    // Send user response
+    res.status(200).json({
+      message: "Login successful",
+      user: {
+        _id: user._id,
+        name: user.name,
+        codename: user.name, // frontend usage
+        email: user.email,
+        role: user.role,
+        balance: user.balance,
+        tempAdmin: user.tempAdmin,
+        adminStart: user.adminStart,
+        adminEnd: user.adminEnd,
+        isAdmin:
+          user.role === "admin" ||
+          (user.tempAdmin &&
+            user.adminStart &&
+            user.adminEnd &&
+            new Date() >= user.adminStart &&
+            new Date() <= user.adminEnd),
+        isVerified: user.isVerified,
+      },
+    });
   } catch (err) {
-    console.error("❌ Login error:", err.message);
+    console.error("❌ Login error:", err);
     res.status(500).json({ error: "Server error during login" });
   }
 };
@@ -164,5 +221,137 @@ exports.assignTempAdmin = async (req, res) => {
     res.json({ message: 'Temporary admin assigned.', user: updatedUser });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+
+exports.verifyOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      return res.status(400).json({ error: "Email and OTP are required" });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    console.log("🧾 Raw User Data:", user);
+    console.log("🕒 Current Time:", Date.now());
+    console.log("📅 OTP Expires At:", user.otpExpires);
+    console.log("🔢 Entered OTP:", otp);
+    console.log("🔐 Stored Hashed OTP:", user.otp);
+
+    if (user.isVerified) {
+      return res.status(400).json({ error: "User already verified" });
+    }
+
+   const isExpired = new Date(user.otpExpiry).getTime() < Date.now();
+
+if (isExpired) {
+  return res.status(400).json({ error: "OTP expired. Please request a new one." });
+}
+
+
+    const isMatch = await bcrypt.compare(otp, user.otp);
+    console.log("✅ OTP match result:", isMatch);
+
+    if (!isMatch) {
+      return res.status(400).json({ error: "Invalid OTP" });
+    }
+
+    // ✅ Mark user as verified and clear OTP fields
+    user.isVerified = true;
+    user.otp = undefined;
+    user.otpExpires = undefined;
+    await user.save();
+
+    // ✅ Generate JWT token
+    const token = jwt.sign(
+      { _id: user._id, email: user.email, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    res
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
+      })
+      .status(200)
+      .json({
+        message: "Email verified successfully",
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+      });
+  } catch (err) {
+    console.error("❌ Verify OTP Error:", err);
+    res.status(500).json({ error: "Server error during OTP verification" });
+  }
+};
+
+
+
+exports.resendOtp = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    if (!email) return res.status(400).json({ error: "Email is required" });
+console.log("Email received for resend:", req.body.email);
+const trimmedEmail = email.trim();
+console.log("Email received for resend:", trimmedEmail);
+const user = await User.findOne({ email: new RegExp(`^${trimmedEmail}$`, 'i') });
+
+    if (!user) return res.status(404).json({ error: "User not found" });
+    if (user.isVerified) return res.status(400).json({ error: "User already verified" });
+
+    // ✅ Respond immediately to frontend
+    res.status(200).json({ message: "OTP is being resent. Please check your email shortly." });
+
+
+    // ✅ Process OTP and email in background
+    (async () => {
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      const hashedOtp = await bcrypt.hash(otp, 10);
+
+      user.otp = hashedOtp;
+      user.otpExpiry = Date.now() + 2 * 60 * 1000; // 10 mins
+      await user.save();
+
+      const emailHtml = `
+  <p style="font-family:sans-serif">
+    <strong>Captain's Ledger</strong><br />
+    <br />
+    Dear Hero,<br /><br />
+    Your new OTP is: <strong>${otp}</strong><br />
+    <br />
+    This OTP is valid for 10 minutes.<br />
+    <br />
+    🛡️ Assemble,<br />
+    The Captain's Ledger Team
+  </p>
+`;
+
+      try {
+        await sendEmail({
+          to: user.email,
+          subject: "Captain Ledger OTP (Resend)",
+          html: emailHtml,
+        });
+        console.log(`OTP email sent successfully to ${user.email}`);
+      } catch (emailErr) {
+        console.error("Email sending failed (resendOtp):", emailErr);
+      }
+    })();
+  } catch (err) {
+    console.error("Resend OTP Error:", err);
+    res.status(500).json({ error: "Something went wrong" });
   }
 };

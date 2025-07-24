@@ -19,17 +19,21 @@ import PendingApprovals from './pages/PendingApprovals';
 import Footer from './components/Footer';
 import Profile from './pages/Profile';
 import AdminProfiles from './pages/AdminProfiles';
+import VerifyOtp from "./pages/VerifyOtp";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
     <AuthProvider>
       <Router>
+        <Toaster />
         <div className="App">
           <Routes>
             <Route path="/" element={<Landing />} />
             {/* Public Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/verify-otp" element={<VerifyOtp />} />
             
             {/* Protected Routes
             <Route path="/" element={

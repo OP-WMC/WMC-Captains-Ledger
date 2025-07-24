@@ -100,8 +100,10 @@ const Register = () => {
         role: 'user',
       });
 
-      alert('Registered successfully. Please log in.');
-      navigate('/login');
+      // 🔁 Redirect to OTP page after successful registration
+  navigate("/verify-otp", { state: { email: formData.email } });
+      // alert('Registered successfully. Please log in.');
+      // navigate('/login');
     } catch (err) {
       setError(err?.response?.data?.error || 'Registration failed');
     } finally {

@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, Shield } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,Link } from 'react-router-dom';
 import axios from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import { useLocation } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
+
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +18,10 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
+  const location = useLocation();
+const queryParams = new URLSearchParams(location.search);
+const emailFromQuery = queryParams.get('email');
+
 
   useEffect(() => {
     const canvas = document.getElementById('particles');
@@ -73,21 +80,59 @@ const Login = () => {
     });
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+  useEffect(() => {
+  if (emailFromQuery) {
+    resendOtp(emailFromQuery);
+  }
+}, [emailFromQuery]);
 
-    try {
-      const res = await axios.post('/auth/login', formData);
-      login(res.data.user);
-      navigate('/dashboard');
-    } catch (err) {
-      setError(err?.response?.data?.message || err?.response?.data?.error || 'Login failed');
-    } finally {
-      setLoading(false);
+const resendOtp = async (email) => {
+  try {
+    await axios.post('/auth/resend-otp', { email });
+    toast.success('OTP resent to your email');
+  } catch (err) {
+    console.error(err);
+    toast.error('Failed to resend OTP');
+  }
+};
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError('');
+  setLoading(true);
+
+  try {
+    const res = await axios.post('/auth/login', formData);
+    const user = res.data.user;
+
+    login(user);
+    navigate('/dashboard');
+  } catch (err) {
+    console.error("Login error:", err.response); // ✅ Shows backend response
+
+    const backendMessage =
+      err?.response?.data?.message ||
+      err?.response?.data?.error ||
+      'Login failed';
+
+    setError(backendMessage);
+
+    // ✅ Optional: auto-redirect to verify if email unverified
+    if (
+      backendMessage.toLowerCase().includes("verify your email") &&
+      formData.email
+    ) {
+      setTimeout(() => {
+        navigate(`/verify-otp?email=${formData.email}`);
+      }, 2000);
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -110,6 +155,18 @@ const Login = () => {
               {error}
             </div>
           )}
+
+         {error && typeof error === 'string' && error.toLowerCase().includes("verify your email") && (
+  <div className="mb-4 text-center text-xs sm:text-sm">
+    <Link
+      to={`/verify-otp?email=${encodeURIComponent(formData.email)}`}
+      className="text-cyan-200 hover:underline"
+    >
+      🔐 Click here to verify your email
+    </Link>
+  </div>
+)}
+
 
           <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
             <div>
