@@ -263,12 +263,12 @@ const Dashboard = () => {
                 checked={darkMode}
                 onChange={toggleTheme}
               />
-              <div className={`w-8 sm:w-12 h-5 sm:h-6 rounded-full bg-blue-700 relative transition-all duration-300 ring-1 ring-violet-400/30 shadow-md
+              <div className={`w-10 sm:w-12 h-5 sm:h-6 rounded-full bg-blue-700 relative transition-all duration-300 ring-1 ring-violet-400/30 shadow-md
                 ${darkMode ? "bg-blue-800 dark:bg-cyan-300 shadow-[0_0_15px_#a78bfa]" : ""}
               `}>
                 <div
                   className={`w-4 sm:w-5 h-4 sm:h-5 bg-white rounded-full absolute top-0.5 transition-all duration-300
-                    ${darkMode ? "left-6 sm:left-6" : "left-0.5"}
+                    ${darkMode ? "left-5 sm:left-6" : "left-0.5"}
                   `}
                 ></div>
               </div>
@@ -310,34 +310,41 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
 
         {/* Missions Section */}
-        <div className="glass-card">
+        <div className="glass-card flex flex-col h-full">
           <h2 className="text-xl font-orbitron font-semibold text-blue-700 dark:text-white mb-4">
             {isAdmin ? '🗺️ All Missions' : '🗺️ Your Missions'}
           </h2>
           <div className="space-y-3">
-            {(isAdmin ? missions : userMissions).slice(0, 4).map((mission) => (
-              <div key={mission._id} className="flex items-center justify-between p-4 dark:bg-avengers-gray/30 rounded-lg">
-                <div className="flex-1 p-4 bg-blue-100 dark:bg-blue-900/20 rounded-lg transition-transform hover:scale-105">
-                  <h3 className="text-gray-700 font-semibold dark:text-white  text-lg">{mission.title}</h3>
-                  <p className="text-sm text-gray-700 dark:text-cyan-300">{mission.location}</p>
-                </div>
-                <div className="px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                  {/* {getStatusIcon(mission.status)} */}
-                  {/* <span className="capitalize">{mission.status}</span> */}
-                </div>
-              </div>
-            ))}
-          </div>
+  {(isAdmin ? missions : userMissions).length === 0 ? (
+    <div className=" flex justify-center items-center h-72 text-gray-500 dark:text-white py-6">
+      No missions assigned yet
+    </div>
+  ) : (
+    (isAdmin ? missions : userMissions).slice(0, 4).map((mission) => (
+      <div key={mission._id} className="flex items-center justify-between p-4 dark:bg-avengers-gray/30 rounded-lg">
+        <div className="flex-1 p-4 bg-blue-100 dark:bg-blue-900/20 rounded-lg transition-transform hover:scale-105">
+          <h3 className="text-gray-700 font-semibold dark:text-white  text-lg">{mission.title}</h3>
+          <p className="text-sm text-gray-700 dark:text-cyan-300">{mission.location}</p>
+        </div>
+        <div className="px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+          {/* {getStatusIcon(mission.status)} */}
+          {/* <span className="capitalize">{mission.status}</span> */}
+        </div>
+      </div>
+    ))
+  )}
+</div>
 
-          <div className="mt-4">
-            <a href="/missions" className="text-blue-700 dark:text-white text-shadow-glow font-medium">
+
+          <div className="mt-auto">
+            <a href="/missions" className="text-blue-700 dark:text-white text-shadow-glow font-medium self-start">
               View all missions →
             </a>
           </div>
         </div>
 
         {/* Announcements Section */}
-        <div className="glass-card">
+        <div className="glass-card flex flex-col h-full">
           <h2 className="text-xl font-orbitron font-semibold text-blue-700 dark:text-white mb-4">
             Recent Announcements
           </h2>
@@ -359,8 +366,8 @@ const Dashboard = () => {
               </div>
             ))}
           </div>
-          <div className="mt-4">
-            <a href="/announcements" className="text-blue-700 dark:text-white text-shadow-glow font-medium">
+          <div className="mt-auto">
+            <a href="/announcements" className="text-blue-700 dark:text-white text-shadow-glow font-medium self-start">
               View all announcements →
             </a>
           </div>

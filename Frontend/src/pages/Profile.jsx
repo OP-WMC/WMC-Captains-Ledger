@@ -20,6 +20,7 @@ const Profile = () => {
   const [message, setMessage] = useState('');
   const [saving, setSaving] = useState(false);
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(null);
+  // const [initialLoading, setInitialLoading] = useState(true);
 
   useEffect(() => {
     if (user) {
@@ -118,7 +119,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-2 sm:p-6 w-full max-w-full overflow-visible ">
-      <div className="w-full max-w-md sm:max-w-3xl glass-card bg-white/80  rounded-2xl shadow-2xl p-4 sm:p-12 glass-card">
+      <div className="w-full max-w-md sm:max-w-3xl bg-white/80  rounded-2xl shadow-2xl p-4 sm:p-12 glass-card">
         <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-8 text-center text-blue-700 dark:text-white  drop-shadow-lg">Edit Profile</h2>
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-7 mt-2">
           <div className="flex flex-col items-center mb-4 sm:mb-6">
