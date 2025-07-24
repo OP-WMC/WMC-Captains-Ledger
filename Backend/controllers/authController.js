@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const sendEmail = require("../utils/sendEmail");
+const crypto = require("crypto");
 
 exports.register = async (req, res) => {
   try {
@@ -353,5 +354,81 @@ const user = await User.findOne({ email: new RegExp(`^${trimmedEmail}$`, 'i') })
   } catch (err) {
     console.error("Resend OTP Error:", err);
     res.status(500).json({ error: "Something went wrong" });
+  }
+};
+
+// 🌐 POST /api/auth/forgot-password
+exports.forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ error: "Email not found" });
+
+    // 🔐 Generate secure token
+    const token = crypto.randomBytes(32).toString("hex");
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+
+    // ⏳ Set token & expiration
+    user.resetPasswordToken = tokenHash;
+    user.resetPasswordExpires = Date.now() + 10 * 60 * 1000; // 10 min
+    await user.save();
+
+    // 📧 Email link
+    const resetUrl = `http://localhost:5173/reset-password/${token}?email=${email}`;
+
+    await sendEmail({
+      to: email,
+      subject: "Reset your password",
+      html: `
+        <p>Hello ${user.name || ""},</p>
+        <p>You requested to reset your password. Click the link below:</p>
+        <a href="${resetUrl}" target="_blank">${resetUrl}</a>
+        <p>This link will expire in 10 minutes.</p>
+      `
+    });
+
+    res.json({ message: "Reset password email sent" });
+  } catch (err) {
+    console.error("Forgot password error:", err);
+    res.status(500).json({ error: "Failed to send reset email" });
+  }
+};
+
+// 🌐 POST /api/auth/reset-password/:token
+exports.resetPassword = async (req, res) => {
+  const { token } = req.params;
+  const { email } = req.query;
+  const { newPassword } = req.body;
+
+  try {
+    if (!token || !email) {
+      return res.status(400).json({ error: "Invalid reset request" });
+    }
+
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+
+    const user = await User.findOne({
+      email,
+      resetPasswordToken: tokenHash,
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: "Reset link invalid or expired" });
+    }
+
+    // 🔐 Update password
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+
+    await user.save();
+
+    res.json({ message: "Password reset successful. You can now login." });
+  } catch (err) {
+    console.error("Reset password error:", err);
+    res.status(500).json({ error: "Failed to reset password" });
   }
 };

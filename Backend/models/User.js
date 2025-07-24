@@ -21,6 +21,8 @@ otpExpires: { type: Date },
   tempAdmin: { type: Boolean, default: false },
   adminStart: { type: Date },
   adminEnd: { type: Date },
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
 });
 
 module.exports = mongoose.model("User", userSchema);

@@ -203,6 +203,13 @@ const handleSubmit = async (e) => {
                 </button>
               </div>
             </div>
+            
+{/* 🔗 Forgot Password link */}
+<div className="text-left mt-auto sm:text-sm">
+  <a href="/forgot-password" className="text-cyan-400 text-s hover:underline">
+  Forgot Password?
+</a>
+</div>
 
             <button
               type="submit"

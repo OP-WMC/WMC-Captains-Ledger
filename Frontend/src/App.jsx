@@ -21,6 +21,9 @@ import Profile from './pages/Profile';
 import AdminProfiles from './pages/AdminProfiles';
 import VerifyOtp from "./pages/VerifyOtp";
 import { Toaster } from "react-hot-toast";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+
 
 function App() {
   return (
@@ -34,6 +37,8 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/verify-otp" element={<VerifyOtp />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
             
             {/* Protected Routes
             <Route path="/" element={
