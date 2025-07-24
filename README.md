@@ -6,13 +6,13 @@ A full-stack web application prototype for managing an Avengers command center l
 
 ### Authentication & User Management
 - **Login/Register System** - Secure authentication with role-based access
-- **User Roles** - Admin (Captain America) and regular agents
+- **User Roles** - Admin (Captain America)
 - **Profile Management** - User profiles with codenames and avatars
 
 ### Dashboard & Navigation
 - **Responsive Design** - Modern glass-morphism UI with dark theme
 - **Sidebar Navigation** - Intuitive navigation with role-based menu items
-- **Real-time Stats** - Live mission, attendance, and payment statistics
+- **Real-time Stats** - Live attendance, and payment statistics
 
 ### Mission Management
 - **Mission Assignment** - Admins can assign missions to agents
@@ -30,7 +30,6 @@ A full-stack web application prototype for managing an Avengers command center l
 - **Attendance Marking** - Agents enter codes to mark attendance
 - **Attendance History** - Track attendance patterns and statistics
 - **Date-wise Attendance View** - Admin can click on any calendar date to see all users present/absent on that day
-- **Attendance Toggle** - Switch between present and absent user lists with dropdown buttons
 
 ### Communication
 - **Announcements** - Post important updates and notifications
@@ -38,9 +37,8 @@ A full-stack web application prototype for managing an Avengers command center l
 - **Important Alerts** - Visual emphasis for critical announcements
 
 ### Analytics & Reporting
-- **Statistics Dashboard** - Charts and graphs for attendance, missions, and payments
-- **Performance Metrics** - Individual and team performance tracking
-- **Data Visualization** - Interactive charts using Recharts
+- **Statistics Dashboard** - Charts and graphs for attendance, and payments
+- **Performance Metrics** - Individual performance tracking
 
 ## 🚀 Technology Stack
 
@@ -49,13 +47,7 @@ A full-stack web application prototype for managing an Avengers command center l
 - **Vite** - Fast build tool and development server
 - **Tailwind CSS** - Utility-first CSS framework
 - **React Router DOM** - Client-side routing
-- **Recharts** - Data visualization library
 - **Lucide React** - Beautiful icon library
-
-### State Management
-- **React Context** - Global state management for authentication
-- **Local Storage** - Persistent user sessions
-- **Mock Data** - Simulated backend data for prototyping
 
 ## 📦 Installation & Setup
 
@@ -90,7 +82,8 @@ EMAIL_USER=
 EMAIL_PASS=
 STRIPE_SECRET_KEY=
 STRIPE_WEBHOOK_SECRET=
-
+GROQ_API_KEY=
+NODE_ENV=
 
 3. **Start development server**
    ```bash
@@ -138,24 +131,10 @@ cd Frontend
 - Collapsible sidebar for mobile devices
 - Touch-friendly interface elements
 
-## 🔮 Future Enhancements
-
 ### Backend Integration
 - **MongoDB** - Database for user and mission data
 - **Node.js/Express** - RESTful API backend
 - **JWT Authentication** - Secure token-based auth
-- **Real-time Updates** - WebSocket integration
-
-### Advanced Features
-- **Email Notifications** - Automated email system
-- **Calendar Integration** - Mission scheduling
-- **Push Notifications** - Real-time alerts
-
-### Security Enhancements
-- **Two-Factor Authentication** - Enhanced security
-- **Role Permissions** - Granular access control
-- **Audit Logs** - Activity tracking
-- **Data Encryption** - End-to-end encryption
 
 ## 🤝 Contributing
 
@@ -163,7 +142,7 @@ This is a prototype project showcasing modern React development practices. Feel 
 
 ## 📄 License
 
-This project is created for educational and demonstration purposes.
+This project is created for competing in WMC(By Programming Club at Ahmedabad University)
 
 ---
 
