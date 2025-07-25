@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import Modal from 'react-modal';
 import Loader from '../components/Loader';
+import ParticlesBackground from "../components/ParticlesBackground";
 
 import { fetchAnnouncements } from '../api/announcementApi';
 import { fetchAttendanceStats, fetchPaymentStats, fetchAttendanceStatsForUser, fetchPaymentStatsForUser, fetchUserPaymentStats } from '../api/statsApi';
@@ -22,6 +23,9 @@ const Dashboard = () => {
     // document.documentElement.classList.add("dark");
   const [user, setUser] = useState(null);
   const [missions, setMissions] = useState([]);
+
+  const [dashboardLoading, setDashboardLoading] = useState(true);
+
   const [feedbacks, setFeedbacks] = useState([]);
   const [darkMode, setDarkMode] = useState(() => {
   const storedTheme = localStorage.getItem("theme");
@@ -40,6 +44,7 @@ const Dashboard = () => {
   const [attendanceStats, setAttendanceStats] = useState(null);
   const [userPaymentStats, setUserPaymentStats] = useState(null);
   const [announcementsLoading, setAnnouncementsLoading] = useState(true);
+
   const [showMissionModal, setShowMissionModal] = useState(false);
   const [pendingMission, setPendingMission] = useState(null);
   const [declineReason, setDeclineReason] = useState('');
@@ -47,32 +52,94 @@ const Dashboard = () => {
   const [submitting, setSubmitting] = useState(false);
   const [showDeclineForm, setShowDeclineForm] = useState(false);
 
-  // Fetch user, missions, users, announcements, stats
-  useEffect(() => {
-    axios.get("/auth/me", { withCredentials: true })
-      .then(res => setUser(res.data))
-      .catch(err => console.error("❌ Error fetching user:", err));
-
-    axios.get("/missions")
-      .then(res => setMissions(res.data))
-      .catch(err => console.error("❌ Error fetching missions:", err));
-
-    // Fetch all users for Active Agents
-    axios.get("/auth/users")
-      .then(res => setUsers(res.data))
-      .catch(err => console.error("❌ Error fetching users:", err));
-
-    // Fetch announcements (real)
-    fetchAnnouncements()
-      .then(data => {
-        setAnnouncements(data);
-        setAnnouncementsLoading(false);
-      })
-      .catch(err => {
-        console.error("❌ Error fetching announcements:", err);
-        setAnnouncementsLoading(false);
+  
+    useEffect(() => {
+      const canvas = document.getElementById('particles');
+      if (!canvas) return; // avoid error if null
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+  
+      const particles = [];
+  
+      class Particle {
+        constructor() {
+          this.x = Math.random() * canvas.width;
+          this.y = Math.random() * canvas.height;
+          this.size = Math.random() *7 + 1;
+          this.speedY = Math.random() * 5 + 0.5;
+          this.alpha = Math.random() * 0.5 + 0.1;
+        }
+  
+        update() {
+          this.y += this.speedY;
+          if (this.y > canvas.height) {
+            this.y = 0;
+            this.x = Math.random() * canvas.width;
+          }
+        }
+  
+        draw() {
+          ctx.fillStyle = `rgba(0, 224, 255, ${this.alpha})`;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+  
+      function initParticles() {
+        for (let i = 0; i < 100; i++) {
+          particles.push(new Particle());
+        }
+      }
+  
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.update();
+          p.draw();
+        });
+        requestAnimationFrame(animate);
+      }
+  
+      initParticles();
+      animate();
+  
+      window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
       });
-  }, []);
+    }, []);
+
+useEffect(() => {
+  const fetchDashboardData = async () => {
+    try {
+      const [userRes, missionsRes, usersRes, announcementsRes, feedbackRes] = await Promise.all([
+        axios.get("/auth/me", { withCredentials: true }),
+        axios.get("/missions"),
+        axios.get("/auth/users"),
+        fetchAnnouncements(),
+        axios.get("/feedback", { withCredentials: true })
+      ]);
+
+      setUser(userRes.data);
+      setMissions(missionsRes.data);
+      setUsers(usersRes.data);
+      setAnnouncements(announcementsRes);
+      setFeedbacks(feedbackRes.data);
+    } catch (err) {
+      console.error("❌ Error fetching dashboard data:", err);
+    } finally {
+      setAnnouncementsLoading(false);
+      setDashboardLoading(false); // hide the loader
+    }
+  };
+
+  fetchDashboardData();
+}, []);
+
+
+
 
   // Fetch stats (admin vs user)
   useEffect(() => {
@@ -96,19 +163,6 @@ const Dashboard = () => {
         .catch(err => console.error("❌ Error fetching user payment stats:", err));
     }
   }, [user]);
-
-  // Fetch feedbacks
-  useEffect(() => {
-    const fetchFeedbacks = async () => {
-      try {
-        const res = await axios.get("/feedback", { withCredentials: true });
-        setFeedbacks(res.data);
-      } catch (err) {
-        console.error("❌ Error fetching feedbacks:", err);
-      }
-    };
-    fetchFeedbacks();
-  }, []);
 
   // Theme logic
   useEffect(() => {
@@ -239,10 +293,37 @@ const Dashboard = () => {
     }
   }, [showMissionModal]);
 
-  return (
-    <div className="space-y-4 sm:space-y-6 w-full max-w-full  overflow-visible">
+
+return (
+  <>
+    {/* ✅ Background Particles: always render */}
+    {/* ☀️ Light Mode Canvas */}
+  {!darkMode && (
+    <canvas
+      id="particles"
+      className="fixed top-0 left-0 w-full h-full pointer-events-none z-0"
+      style={{
+        background: "linear-gradient(to right, #e0f7fa, #f1f8e9)", // optional
+        opacity: 0.5, // optional
+      }}
+    ></canvas>
+   )} 
+    
+    <div className="relative min-h-screen">
+     {darkMode &&
+      <ParticlesBackground />
+      }
+
+    {/* ✅ Conditional Loader or Dashboard Content */}
+    {dashboardLoading ? (
+      <div className="flex items-center justify-center min-h-screen z-10 relative">
+        <Loader />
+      </div>
+    ) : (
+    <div className="space-y-4 sm:space-y-6 w-full max-w-full  overflow-visible relative ">
+      
       {/* Welcome Header */}
-      <div className="glass-card">
+      <div className="glass-card ">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-0">
           <div>
             <h1 className="text-2xl sm:text-3xl font-orbitron font-bold text-blue-700 dark:text-white  mb-1 sm:mb-2">
@@ -499,13 +580,21 @@ const Dashboard = () => {
                     Submit Reason
                   </button>
                 </div>
+                 
               </form>
+              
             )}
           </div>
         )}
+         
       </Modal>
+       
     </div>
+    )}
+    </div>
+  </>
   );
+   
 }
 
 export default Dashboard; 

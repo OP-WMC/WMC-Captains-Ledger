@@ -36,6 +36,70 @@ const Missions = () => {
   const [finalizedMissionId, setFinalizedMissionId] = useState(null);
   const [sendingSalaryMissionId, setSendingSalaryMissionId] = useState(null);
 
+
+
+    useEffect(() => {
+      const canvas = document.getElementById('particles');
+      if (!canvas) return; // avoid error if null
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+  
+      const particles = [];
+  
+      class Particle {
+        constructor() {
+          this.x = Math.random() * canvas.width;
+          this.y = Math.random() * canvas.height;
+          this.size = Math.random() *7 + 1;
+          this.speedY = Math.random() * 5 + 0.5;
+          this.alpha = Math.random() * 0.5 + 0.1;
+        }
+  
+        update() {
+          this.y += this.speedY;
+          if (this.y > canvas.height) {
+            this.y = 0;
+            this.x = Math.random() * canvas.width;
+          }
+        }
+  
+        draw() {
+          ctx.fillStyle = `rgba(0, 224, 255, ${this.alpha})`;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+  
+      function initParticles() {
+        for (let i = 0; i < 100; i++) {
+          particles.push(new Particle());
+        }
+      }
+  
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.update();
+          p.draw();
+        });
+        requestAnimationFrame(animate);
+      }
+  
+      initParticles();
+      animate();
+  
+      window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+    }, []);
+
+
+
+
+
   const defaultForm = {
     title: '',
     description: '',
@@ -325,7 +389,10 @@ const fetchUsers = async () => {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6 px-2 sm:px-4 md:px-10 pt-4 sm:pt-6 w-full max-w-full overflow-x-hidden">
+    <div className="space-y-4 sm:space-y-6 px-2 sm:px-4 md:px-10 pt-4 sm:pt-6 w-full max-w-full overflow-visible"> 
+
+       <canvas id="particles" className="fixed top-0 left-0 w-full h-full pointer-events-none z-0"></canvas>
+
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
         <div>
           <h1 className="text-2xl sm:text-3xl font-orbitron font-bold text-blue-700 dark:text-white mb-1 sm:mb-2 mt-10 sm:mt-0">🛰️ Mission Control</h1>
@@ -596,7 +663,7 @@ const fetchUsers = async () => {
                   setFormData(defaultForm);
                   setValidationError("");
                 }}
-                className="avengers-button  font-semibold text-xs sm:text-base w-full sm:w-auto py-1 sm:py-3 h-9"
+                className="avengers-button  font-semibold text-xs sm:text-base w-full sm:w-auto py-1 sm:py-3 h-9 text-center flex justify-center items-center"
                 type="button"
               >
                 Clear Fields
@@ -607,12 +674,12 @@ const fetchUsers = async () => {
                   setShowEditModal(false);
                   setShowMemberDropdown(false);
                 }}
-                className="avengers-button  font-semibold text-xs sm:text-base w-full sm:w-auto py-1 sm:py-3 h-9"
+                className="avengers-button  font-semibold text-xs sm:text-base w-full sm:w-auto py-1 sm:py-3 h-9 text-center flex justify-center items-center"
                 type="button"
               >
                 Cancel
               </button>
-              <button onClick={handleSubmit} className="avengers-button w-full sm:w-auto py-1 sm:py-3 text-xs sm:text-base h-9">
+              <button onClick={handleSubmit} className="avengers-button w-full sm:w-auto py-1 sm:py-3 text-xs sm:text-base h-9 text-center flex justify-center items-center">
                 {showEditModal ? 'Save' : 'Create'}
               </button>
             </div>
