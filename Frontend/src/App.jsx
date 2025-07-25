@@ -31,7 +31,7 @@ function App() {
     <AuthProvider>
       <Router>
         <Toaster />
-        <ParticlesBackground />
+        {/* <ParticlesBackground /> */}
         <div className="relative min-h-screen  App">
           <Routes>
             <Route path="/" element={<Landing />} />

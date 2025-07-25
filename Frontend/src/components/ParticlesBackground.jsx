@@ -21,6 +21,7 @@ const ParticlesBackground = () => {
             density: { enable: true, area: 800 },
           },
           color: { value: "#00e0ff" },
+          // color: { value: "#1D4ED8" },
           shape: { type: "circle" },
           opacity: { value: 0.4 },
           size: { value: 3, random: true },
@@ -34,6 +35,7 @@ const ParticlesBackground = () => {
             enable: true,
             distance: 150,
             color: "#00e0ff",
+            // color: { value: "#1D4ED8" },
             opacity: 0.5,   // 💡 More visible
             width: 1.8,     // 💪 Thicker lines
           },

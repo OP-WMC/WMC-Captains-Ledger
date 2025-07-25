@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import axios from '../api/axios';
 import {
@@ -13,30 +14,22 @@ import {
 } from 'lucide-react';
 import Modal from 'react-modal';
 import Loader from '../components/Loader';
-import ParticlesBackground from "../components/ParticlesBackground";
 
 import { fetchAnnouncements } from '../api/announcementApi';
 import { fetchAttendanceStats, fetchPaymentStats, fetchAttendanceStatsForUser, fetchPaymentStatsForUser, fetchUserPaymentStats } from '../api/statsApi';
 
 const Dashboard = () => {
-  // On first load of dashboard, ensure dark mode is ON
-    // document.documentElement.classList.add("dark");
+  // ...existing code...
   const [user, setUser] = useState(null);
   const [missions, setMissions] = useState([]);
-
-  const [dashboardLoading, setDashboardLoading] = useState(true);
-
   const [feedbacks, setFeedbacks] = useState([]);
+  const [dashboardLoading, setDashboardLoading] = useState(true);
   const [darkMode, setDarkMode] = useState(() => {
-  const storedTheme = localStorage.getItem("theme");
-
-  // If user has a stored preference, respect it.
-  if (storedTheme === "dark") return true;
-  if (storedTheme === "light") return false;
-
-  // 🆕 If no preference stored, default to dark
-  return true;
-});
+    const storedTheme = localStorage.getItem("theme");
+    if (storedTheme === "dark") return true;
+    if (storedTheme === "light") return false;
+    return true;
+  });
 
   const [announcements, setAnnouncements] = useState([]);
   const [users, setUsers] = useState([]);
@@ -45,13 +38,7 @@ const Dashboard = () => {
   const [userPaymentStats, setUserPaymentStats] = useState(null);
   const [announcementsLoading, setAnnouncementsLoading] = useState(true);
 
-  const [showMissionModal, setShowMissionModal] = useState(false);
-  const [pendingMission, setPendingMission] = useState(null);
-  const [declineReason, setDeclineReason] = useState('');
-  const [declineFile, setDeclineFile] = useState(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [showDeclineForm, setShowDeclineForm] = useState(false);
-
+  
   
     useEffect(() => {
       const canvas = document.getElementById('particles');
@@ -111,6 +98,11 @@ const Dashboard = () => {
       });
     }, []);
 
+    
+  // ...existing code...
+
+  // Fetch user, missions, users, announcements, stats
+  
 useEffect(() => {
   const fetchDashboardData = async () => {
     try {
@@ -139,8 +131,9 @@ useEffect(() => {
 }, []);
 
 
+  
 
-
+  
   // Fetch stats (admin vs user)
   useEffect(() => {
     if (user === null) return;
@@ -163,6 +156,7 @@ useEffect(() => {
         .catch(err => console.error("❌ Error fetching user payment stats:", err));
     }
   }, [user]);
+
 
   // Theme logic
   useEffect(() => {
@@ -209,7 +203,6 @@ useEffect(() => {
   let attendanceRate = '...';
   if (attendanceStats && user) {
     if (user.role === 'admin') {
-      // Show average attendance percentage for admin
       if (attendanceStats.userStats && attendanceStats.userStats.length > 0) {
         const avg = Math.round(
           attendanceStats.userStats.reduce((sum, u) => sum + (u.attendancePercentage || 0), 0) / attendanceStats.userStats.length
@@ -223,96 +216,21 @@ useEffect(() => {
     }
   }
 
-  // Check for pending mission assignments for this user
-  useEffect(() => {
-    if (!isAdmin && user && userMissions.length > 0) {
-      const now = new Date();
-      const pending = userMissions.find(m => {
-        const member = m.assignedMembers.find(mem => mem.name === user.name);
-        // Only show if still pending and mission endDate is in the future
-        return member && member.status === 'pending' && new Date(m.endDate) > now;
-      });
-      if (pending) {
-        setPendingMission(pending);
-        setShowMissionModal(true);
-      } else {
-        setPendingMission(null);
-        setShowMissionModal(false);
-      }
-    }
-  }, [user, userMissions, isAdmin]);
+  // if (dashboardLoading) {
+  //   return (
+  //     <div className="flex items-center justify-center min-h-screen">
+  //       <Loader />
+  //     </div>
+  //   );
+  // }
 
-  const handleAcceptMission = async () => {
-    if (!pendingMission) return;
-    setSubmitting(true);
-    try {
-      await axios.post(`/missions/${pendingMission._id}/accept`, {}, { withCredentials: true });
-      setShowMissionModal(false);
-      setPendingMission(null);
-      window.location.reload();
-    } catch (err) {
-      alert('Failed to accept mission.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleDeclineMission = async (e) => {
-    e.preventDefault();
-    if (!pendingMission) return;
-    setSubmitting(true);
-    try {
-      let fileUrl = '';
-      if (declineFile) {
-        // Upload file to server (implement endpoint as needed)
-        const formData = new FormData();
-        formData.append('file', declineFile);
-        const uploadRes = await axios.post('/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' }, withCredentials: true });
-        fileUrl = uploadRes.data.url;
-      }
-      await axios.post(`/missions/${pendingMission._id}/decline`, {
-        declineReason,
-        declineFile: fileUrl
-      }, { withCredentials: true });
-      setShowMissionModal(false);
-      setPendingMission(null);
-      window.location.reload();
-    } catch (err) {
-      alert('Failed to decline mission.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  // When modal opens, reset decline form state
-  useEffect(() => {
-    if (!showMissionModal) {
-      setShowDeclineForm(false);
-      setDeclineReason('');
-      setDeclineFile(null);
-    }
-  }, [showMissionModal]);
-
-
-return (
+  return (
   <>
     {/* ✅ Background Particles: always render */}
-    {/* ☀️ Light Mode Canvas */}
-  {!darkMode && (
     <canvas
       id="particles"
       className="fixed top-0 left-0 w-full h-full pointer-events-none z-0"
-      style={{
-        background: "linear-gradient(to right, #e0f7fa, #f1f8e9)", // optional
-        opacity: 0.5, // optional
-      }}
     ></canvas>
-   )} 
-    
-    <div className="relative min-h-screen">
-     {darkMode &&
-      <ParticlesBackground />
-      }
 
     {/* ✅ Conditional Loader or Dashboard Content */}
     {dashboardLoading ? (
@@ -320,13 +238,12 @@ return (
         <Loader />
       </div>
     ) : (
-    <div className="space-y-4 sm:space-y-6 w-full max-w-full  overflow-visible relative ">
-      
+    <div className="space-y-4 sm:space-y-6 w-full max-w-full  overflow-visible relative">
       {/* Welcome Header */}
-      <div className="glass-card ">
+      <div className="glass-card">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-0">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-orbitron font-bold text-blue-700 dark:text-white  mb-1 sm:mb-2">
+            <h1 className="text-2xl sm:text-3xl font-orbitron font-bold text-blue-700  dark:text-white text-shadow-glow   mb-1 sm:mb-2">
               Welcome back, {user?.codename}
             </h1>
             <p className="text-slate-600 dark:text-cyan-100 text-sm sm:text-base">
@@ -385,19 +302,18 @@ return (
           <p className="text-gray-700 font-bold dark:text-cyan-300 mb-1">📊 {isAdmin ? 'Avg Attendance Rate' : 'Attendance Rate'}</p>
           <h3 className="text-2xl text-blue-700 dark:text-white font-semibold">{attendanceRate}</h3>
         </div>
-        
       </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
 
         {/* Missions Section */}
-        <div className="glass-card flex flex-col h-full">
+        <div className="glass-card  flex flex-col h-full">
           <h2 className="text-xl font-orbitron font-semibold text-blue-700 dark:text-white mb-4">
             {isAdmin ? '🗺️ All Missions' : '🗺️ Your Missions'}
           </h2>
           <div className="space-y-3">
   {(isAdmin ? missions : userMissions).length === 0 ? (
-    <div className=" flex justify-center items-center h-72 text-gray-500 dark:text-white py-6">
+    <div className="flex justify-center items-center h-72 text-gray-500 dark:text-white py-6">
       No missions assigned yet
     </div>
   ) : (
@@ -416,7 +332,6 @@ return (
   )}
 </div>
 
-
           <div className="mt-auto">
             <a href="/missions" className="text-blue-700 dark:text-white text-shadow-glow font-medium self-start">
               View all missions →
@@ -425,7 +340,7 @@ return (
         </div>
 
         {/* Announcements Section */}
-        <div className="glass-card flex flex-col h-full">
+        <div className="glass-card">
           <h2 className="text-xl font-orbitron font-semibold text-blue-700 dark:text-white mb-4">
             Recent Announcements
           </h2>
@@ -447,8 +362,8 @@ return (
               </div>
             ))}
           </div>
-          <div className="mt-auto">
-            <a href="/announcements" className="text-blue-700 dark:text-white text-shadow-glow font-medium self-start">
+          <div className="mt-4">
+            <a href="/announcements" className="text-blue-700 dark:text-white text-shadow-glow font-medium">
               View all announcements →
             </a>
           </div>
@@ -512,89 +427,11 @@ return (
           </a>
         </div>
       </div>
-
-      {/* Mission Assignment Modal */}
-      <Modal
-        isOpen={showMissionModal}
-        onRequestClose={() => setShowMissionModal(false)}
-        className="bg-blue-100 dark:bg-gray-900 p-4 sm:p-8 rounded-2xl shadow-2xl w-full max-w-lg mx-auto mt-12 sm:mt-24 relative"
-        overlayClassName="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center"
-        ariaHideApp={false}
-      >
-        {pendingMission && (
-          <div>
-            <h2 className="text-2xl font-bold text-blue-700 dark:text-white mb-6 text-center">New Mission Assigned</h2>
-            <div className="mb-4">
-              <div className="font-semibold text-lg text-blue-700 dark:text-white">{pendingMission.title}</div>
-              <div className="text-gray-700 dark:text-cyan-200">{pendingMission.description}</div>
-              <div className="text-gray-700 dark:text-cyan-200">📍 {pendingMission.location}</div>
-              <div className="text-gray-700 dark:text-cyan-200">📆 {pendingMission.startDate} - {pendingMission.endDate}</div>
-            </div>
-            {!showDeclineForm ? (
-              <div className="flex gap-4 mt-6">
-                <button
-                  className="avengers-button bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                  onClick={handleAcceptMission}
-                  disabled={submitting}
-                >
-                  Accept
-                </button>
-                <button
-                  className="avengers-button bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                  onClick={() => setShowDeclineForm(true)}
-                  disabled={submitting}
-                >
-                  Decline
-                </button>
-              </div>
-            ) : (
-              <form className="mt-6" onSubmit={handleDeclineMission}>
-                <label className="block text-gray-700 dark:text-cyan-200 font-semibold mb-2">Reason for Absence</label>
-                <textarea
-                  className="w-full p-2 rounded border border-gray-400 dark:bg-gray-800 dark:text-white"
-                  value={declineReason}
-                  onChange={e => setDeclineReason(e.target.value)}
-                  required
-                />
-                <label className="block mt-4 text-gray-700 dark:text-cyan-200 font-semibold mb-2">Attach Medical Certificate (optional)</label>
-                <input
-                  type="file"
-                  className="w-full"
-                  onChange={e => setDeclineFile(e.target.files[0])}
-                  accept=".pdf,.jpg,.jpeg,.png"
-                />
-                <div className="flex justify-end gap-2 mt-4">
-                  <button
-                    type="button"
-                    className="avengers-button-secondary border-2 border-blue-500 text-gray-700 dark:border-blue-500 dark:text-avengers-silver hover:bg-gray-100 dark:hover:bg-blue-900/10 font-semibold"
-                    onClick={() => setShowDeclineForm(false)}
-                    disabled={submitting}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="avengers-button bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                    disabled={submitting}
-                  >
-                    Submit Reason
-                  </button>
-                </div>
-                 
-              </form>
-              
-            )}
-          </div>
-        )}
-         
-      </Modal>
-       
     </div>
+    
     )}
-    </div>
   </>
-  );
-   
+    );
 }
 
-export default Dashboard; 
+export default Dashboard;
