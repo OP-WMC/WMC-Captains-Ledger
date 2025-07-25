@@ -1,25 +1,35 @@
+// backend/controllers/announcementController.js
 const Announcement = require('../models/Announcement');
-const User = require('../models/User');
-const sendEmail = require('../utils/sendEmail');
+const User = require('../models/User'); // Assuming User model is used for emails
+const sendEmail = require('../utils/sendEmail'); // Assuming sendEmail utility exists
 
-// Get all announcements
+// @desc    Get all announcements
+// @route   GET /api/announcements
+// @access  Private (authMiddleware) - Accessible by all authenticated users
 exports.getAnnouncements = async (req, res) => {
   try {
     const announcements = await Announcement.find().sort({ date: -1 });
     res.json(announcements);
   } catch (err) {
+    console.error(err.message); // Log the actual error for debugging
     res.status(500).json({ msg: 'Server error' });
   }
 };
 
-// Post a new announcement (admin only)
+// @desc    Post a new announcement
+// @route   POST /api/announcements
+// @access  Private/Admin
 exports.postAnnouncement = async (req, res) => {
   try {
-    if (!req.user.isAdmin) {
-      return res.status(403).json({ msg: 'Access denied' });
+    // Check if the authenticated user is an admin using req.user.isAdmin from authMiddleware
+    if (!req.user || !req.user.isAdmin) {
+      return res.status(403).json({ msg: 'Access denied: Not an administrator' });
     }
+
     const { title, body, important } = req.body;
-    const author = req.user.name || req.user.email;
+    // Use authenticated user's name or email as the author
+    const author = req.user.name || req.user.email; 
+
     const announcement = await Announcement.create({
       title,
       body,
@@ -29,9 +39,11 @@ exports.postAnnouncement = async (req, res) => {
 
     // If important, send email to all users
     if (important) {
-      const users = await User.find({}, 'email');
-      const emails = users.map(u => u.email).filter(Boolean);
+      const users = await User.find({}, 'email'); // Fetch only email addresses from all users
+      const emails = users.map(u => u.email).filter(Boolean); // Filter out any users without an email
+
       if (emails.length > 0) {
+        // Construct the HTML for the email
         const emailHtml = `
           <!DOCTYPE html>
           <html>
@@ -153,6 +165,39 @@ exports.postAnnouncement = async (req, res) => {
     }
     res.status(201).json(announcement);
   } catch (err) {
+    console.error(err.message);
     res.status(500).json({ msg: 'Server error' });
   }
-}; 
+};
+
+// @desc    Delete an announcement
+// @route   DELETE /api/announcements/:id
+// @access  Private/Admin
+exports.deleteAnnouncement = async (req, res) => {
+  try {
+    // Check if the authenticated user is an admin
+    if (!req.user || !req.user.isAdmin) {
+      return res.status(403).json({ msg: 'Access denied: Not an administrator' });
+    }
+
+    // Find the announcement by ID
+    const announcement = await Announcement.findById(req.params.id);
+
+    // If announcement not found
+    if (!announcement) {
+      return res.status(404).json({ msg: 'Announcement not found' });
+    }
+
+    // Delete the announcement from the database
+    await announcement.deleteOne(); // Use deleteOne() for Mongoose 6.x and later
+
+    res.json({ msg: 'Announcement removed successfully' }); // Send a success message
+  } catch (err) {
+    console.error(err.message);
+    // Handle CastError if the provided ID is not a valid MongoDB ObjectId format
+    if (err.name === 'CastError') {
+      return res.status(400).json({ msg: 'Invalid announcement ID format' });
+    }
+    res.status(500).json({ msg: 'Server error' });
+  }
+};

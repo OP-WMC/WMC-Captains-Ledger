@@ -11,3 +11,7 @@ export const submitAnnouncement = async (announcement) => {
   const res = await axios.post(API_URL, announcement, { withCredentials: true });
   return res.data;
 };
+export const deleteAnnouncement = async (id) => {
+  const res = await axios.delete(`${API_URL}/${id}`, { withCredentials: true });
+  return res.data; 
+};

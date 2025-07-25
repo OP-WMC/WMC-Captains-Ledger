@@ -1,7 +1,8 @@
+// src/components/AnnouncementCard.jsx
 import React from "react";
-import { Megaphone, User, Calendar, AlertTriangle } from "lucide-react";
+import { Megaphone, User, Calendar, AlertTriangle, Trash2 } from "lucide-react"; // Import Trash2
 
-const AnnouncementCard = ({ title, body, important, author, date }) => {
+const AnnouncementCard = ({ title, body, important, author, date, id, isAdmin, onDelete }) => {
   const formatDate = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -12,6 +13,14 @@ const AnnouncementCard = ({ title, body, important, author, date }) => {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  // Handler for the delete button click
+  const handleDeleteClick = (e) => {
+    e.stopPropagation(); // Prevent any parent click handlers from firing (e.g., if the card itself was clickable)
+    if (onDelete) {
+      onDelete(id); // Call the onDelete function passed from parent with the announcement's ID
+    }
   };
 
   return (
@@ -29,6 +38,24 @@ const AnnouncementCard = ({ title, body, important, author, date }) => {
             Important
           </div>
         </div>
+      )}
+
+      {/* NEW: Delete Button - Only rendered if isAdmin is true and onDelete function is provided */}
+      {isAdmin && onDelete && (
+        <button
+          onClick={handleDeleteClick}
+          // Adjusted 'top-' classes to push it below the 'Important' badge
+          // top-2 for small screens (8px), sm:top-4 for larger screens (16px) for the badge
+          // This positions the delete icon roughly below the badge.
+          // Using top-8 for mobile (32px) and sm:top-12 for desktop (48px)
+          className="absolute top-8 right-2 sm:top-12 sm:right-4 z-20 // Adjust z-index if needed to be above important badge
+                     text-gray-400 hover:text-red-600 dark:hover:text-red-400 
+                     transition-colors duration-200 p-1 rounded-full bg-white/50 dark:bg-gray-700/50"
+          aria-label="Delete announcement"
+          title="Delete Announcement" // Add a tooltip for better UX
+        >
+          <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
+        </button>
       )}
 
       {/* Content */}
