@@ -191,3 +191,20 @@ body,
 .glass-card-r {
   @apply bg-white dark:bg-[rgba(31,41,55,0.6)] rounded-xl p-6 shadow-md;
 }
+/* Force react-calendar to be responsive */
+.responsive-calendar {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden;
+  font-size: 0.8rem; /* optional: shrink font on small screens */
+}
+
+@media (max-width: 400px) {
+  .responsive-calendar {
+    font-size: 0.7rem; /* scale down further if needed */
+  }
+}
+/* Optional but helps with tight layouts */
+.grid-cols-2 > div {
+  min-width: 0;
+}

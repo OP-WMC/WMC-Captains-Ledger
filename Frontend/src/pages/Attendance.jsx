@@ -1248,8 +1248,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axios from '../api/axios';
-import { Calendar as LucideCalendar, CheckCircle, Key, Users, Copy, RefreshCw, X, Eye, UserCheck, UserX } from 'lucide-react';
-import Calendar from 'react-calendar';
+import { Calendar as LucideCalendar, CheckCircle, Key, Users, Copy, RefreshCw, X, Eye, UserCheck, UserX } from 'lucide-react'; // attendance calendar icon it is
+import Calendar from 'react-calendar'; //montly stats calendar for attendance real-one
 import 'react-calendar/dist/Calendar.css';
 import Loader from '../components/Loader';
 
@@ -1705,7 +1705,7 @@ const Attendance = () => {
           )}
 
           {/* MAIN ACTIONS + CALENDAR & MONTHLY STATS */}
-          <div className="bg-blue-300 glass-card dark:border-gray-700 p-3 sm:p-6 rounded-xl shadow-lg">
+          <div className="bg-blue-300 glass-card dark:border-gray-700 p-3 sm:p-6 rounded-xl shadow-lg max-w-full overflow-hidden">
             <div className="flex flex-col md:flex-row items-start gap-4 ">
 
               {/* LEFT: Attendance Control (Admin or User) */}
@@ -1732,7 +1732,7 @@ const Attendance = () => {
                     </div>
 
                     {codeExpiry && (
-                      <div className="text-m text-white dark:text-white">
+                      <div className="text-m text-black dark:text-white">
                         Code expires at: {new Date(codeExpiry).toLocaleTimeString()}
                       </div>
                     )}
@@ -1771,10 +1771,10 @@ const Attendance = () => {
               </div>
 
               {/* Combined Calendar and Monthly Stats Section (Flexible Layout) */}
-              <div className="flex flex-col md:flex-row gap-4 flex-wrap flex-grow">
+              <div className="flex flex-col lg:flex-row gap-6  flex-grow px-2 sm:px-4 justify-center items-center lg:items-start w-full max-w-full">
                 {/* Calendar Section (Always Visible) */}
-                <div className="w-full md:w-auto md:flex-1">
-                  <Calendar
+                <div className="w-full max-w-[100%] sm:max-w-[90vw] lg:max-w-[450px] overflow-hidden">
+                  <Calendar 
                     tileClassName={({ date, view }) => {
                       if (view === "month") {
                         const localDate = date.toLocaleDateString("en-CA");
@@ -1782,7 +1782,7 @@ const Attendance = () => {
                       }
                     }}
                     onClickDay={handleDateClick}
-                    className={isAdmin ? "cursor-pointer" : ""}
+                   className={`${isAdmin ? "cursor-pointer" : ""} responsive-calendar w-full `}
                     value={monthView}
                     onActiveStartDateChange={({ activeStartDate }) => setMonthView(activeStartDate)}
                   />
@@ -1790,26 +1790,26 @@ const Attendance = () => {
 
                 {/* Monthly Stats Section (Only for non-admins) */}
                 {!isAdmin && monthStats && (
-                  <div className="w-full md:w-auto md:flex-1 bg-blue-100 dark:bg-gray-800 p-4 rounded-xl shadow border dark:border-gray-600">
+                  <div className="w-full max-w-[100%] sm:max-w-[90vw] lg:max-w-[450px] dark:bg-gray-800 p-4 rounded-xl shadow border dark:border-gray-600" style={{ backgroundColor: 'rgba(96, 165, 250, 1)' }}>
                     <div className="flex justify-between items-center mb-3">
                       <button
                         onClick={() => changeMonth(-1)}
-                        className="text-sm px-2 py-1 bg-blue-200 dark:bg-gray-700 rounded hover:bg-blue-300 dark:hover:bg-gray-600 text-blue-900 dark:text-white"
+                        className="text-sm px-2 py-1 bg-blue-200 dark:bg-gray-700 rounded hover:bg-blue-300 dark:hover:bg-gray-600 text-white dark:text-white"
                       >
                         ◀ Prev
                       </button>
-                      <div className="text-md font-bold text-blue-800 dark:text-blue-300">
+                      <div className="text-md font-bold text-white dark:text-blue-300">
                         {monthView.toLocaleString("default", { month: "long", year: "numeric" })}
                       </div>
                       <button
                         onClick={() => changeMonth(1)}
-                        className="text-sm px-2 py-1 bg-blue-200 dark:bg-gray-700 rounded hover:bg-blue-300 dark:hover:bg-gray-600 text-blue-900 dark:text-white"
+                        className="text-sm px-2 py-1 bg-blue-200 dark:bg-gray-700 rounded hover:bg-blue-300 dark:hover:bg-gray-600 text-white dark:text-white"
                       >
                         Next ▶
                       </button>
                     </div>
 
-                    <div className="text-sm text-gray-800 dark:text-gray-300 mb-2">
+                    <div className="text-sm text-white dark:text-gray-300 mb-2">
                       Attendance this month:{" "}
                       <span className="font-bold text-blue-600 dark:text-green-400">
                         {monthStats.percentage}%
@@ -1823,7 +1823,9 @@ const Attendance = () => {
                           day: "numeric",
                         });
 
-                        const commonClasses = "px-3 py-1 rounded text-sm font-medium flex justify-between items-center";
+                        const commonClasses =
+  "px-3 py-1 rounded text-sm font-medium flex items-center justify-between min-w-0 overflow-hidden whitespace-nowrap";
+
 
                         let statusClass = "";
                         let statusText = "";
@@ -1837,16 +1839,16 @@ const Attendance = () => {
                         // Logic for status text and class:
                         // 1. If date is in the future relative to today
                         if (dayDate > today) {
-                          statusClass = "bg-gray-300/50 dark:bg-gray-600/30 text-gray-700 dark:text-gray-200";
+                          statusClass = "bg-gray-300/50 dark:bg-gray-600/30 text-white dark:text-gray-200";
                           statusText = "NOT TAKEN";
                         }
                         // 2. Otherwise, use the status provided by the backend (present/absent)
                         //    or default to "NOT TAKEN" if status is missing/unknown for past/today's date
                         else if (d.status === "present") {
-                          statusClass = "bg-green-300/40 dark:bg-green-600/20 text-green-900 dark:text-green-300";
+                          statusClass = "bg-green-300/40 dark:bg-green-600/20 text-white dark:text-green-300";
                           statusText = "PRESENT";
                         } else if (d.status === "absent") {
-                          statusClass = "bg-red-300/40 dark:bg-red-600/20 text-red-900 dark:text-red-300";
+                          statusClass = "bg-red-300/40 dark:bg-red-600/20 text-white dark:text-red-300";
                           statusText = "ABSENT";
                         } else {
                           // This 'else' block catches any other status (e.g., 'not_taken' from backend for past day, or undefined)
@@ -1856,8 +1858,8 @@ const Attendance = () => {
 
                         return (
                           <div key={i} className={`${commonClasses} ${statusClass}`}>
-                            {dayLabel}
-                            <span className="uppercase">{statusText}</span>
+                            <span className="truncate">{dayLabel}</span>
+                            <span className="uppercase truncate ml-2">{statusText}</span>
                           </div>
                         );
                       })}
