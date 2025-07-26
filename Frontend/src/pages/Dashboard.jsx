@@ -243,7 +243,7 @@ useEffect(() => {
       <div className="glass-card">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-0">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-orbitron font-bold text-blue-700  dark:text-white text-shadow-glow   mb-1 sm:mb-2">
+            <h1 className="text-2xl sm:text-3xl font-orbitron font-bold text-blue-700  dark:text-white dark:text-shadow-glow   mb-1 sm:mb-2">
               Welcome back, {user?.codename}
             </h1>
             <p className="text-slate-600 dark:text-cyan-100 text-sm sm:text-base">

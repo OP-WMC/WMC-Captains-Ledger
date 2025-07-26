@@ -164,20 +164,28 @@ const AdminProfiles = () => {
     }
   };
 
-  if (authLoading) return (
-    <div className="flex items-center justify-center min-h-screen">
-      <Loader />
-    </div>
-  );
+  // if (authLoading) return (
+  //   <div className="flex items-center justify-center min-h-screen">
+  //     <Loader />
+  //   </div>
+  // );
   if (!isAdmin) return <div>Access denied. Admins only.</div>;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br  dark:bg-[#0f172a] p-6">
-       <canvas
+    <>
+    <canvas
       id="particles"
       className="fixed top-0 left-0 w-full h-full pointer-events-none z-0"
     ></canvas>
+    <div className="min-h-screen bg-gradient-to-br  dark:bg-[#0f172a] p-6">
+       
       <h2 className="text-3xl font-bold mb-8 text-center text-blue-700 dark:text-white  drop-shadow-lg">All User Profiles</h2>
+       {loading ? (
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Loader />
+        </div>
+      ) : (
+        <>
       {/* Filter and search controls */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8 max-w-6xl mx-auto">
         <div className="flex items-center gap-2 w-full md:w-1/2 order-1 md:order-none">
@@ -375,7 +383,10 @@ const AdminProfiles = () => {
           >{assigning ? 'Assigning...' : 'Assign'}</button>
         </div>
       </Modal>
+      </>
+      )}
     </div>
+    </>
   );
 };
 

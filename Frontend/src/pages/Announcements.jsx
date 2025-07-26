@@ -21,6 +21,67 @@ const Announcements = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
 
+  
+  
+    useEffect(() => {
+      const canvas = document.getElementById('particles');
+      if (!canvas) return; // avoid error if null
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+  
+      const particles = [];
+  
+      class Particle {
+        constructor() {
+          this.x = Math.random() * canvas.width;
+          this.y = Math.random() * canvas.height;
+          this.size = Math.random() *7 + 1;
+          this.speedY = Math.random() * 5 + 0.5;
+          this.alpha = Math.random() * 0.5 + 0.1;
+        }
+  
+        update() {
+          this.y += this.speedY;
+          if (this.y > canvas.height) {
+            this.y = 0;
+            this.x = Math.random() * canvas.width;
+          }
+        }
+  
+        draw() {
+          ctx.fillStyle = `rgba(0, 224, 255, ${this.alpha})`;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+  
+      function initParticles() {
+        for (let i = 0; i < 100; i++) {
+          particles.push(new Particle());
+        }
+      }
+  
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.update();
+          p.draw();
+        });
+        requestAnimationFrame(animate);
+      }
+  
+      initParticles();
+      animate();
+  
+      window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+    }, []);
+
+
   useEffect(() => {
     const loadAnnouncements = async () => {
       try {
@@ -118,17 +179,31 @@ const Announcements = () => {
   const handlePrevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
   const handleNextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-blue-300 dark:bg-[#0f172a] p-6">
-        <Loader />
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center bg-blue-300 dark:bg-[#0f172a] p-6">
+  //       <Loader />
+  //     </div>
+  //   );
+  // }
+
+
 
   return (
-    <div className="min-h-screen bg-blue-300 dark:bg-[rgb(15,23,42)] p-3 sm:p-6 w-full max-w-full overflow-x-hidden">
+    <>
+    <canvas
+      id="particles"
+      className="fixed top-0 left-0 w-full h-full pointer-events-none z-0"
+    ></canvas>
+    <div className="min-h-screen  dark:bg-[rgb(15,23,42)] p-3 sm:p-6 w-full max-w-full overflow-visible">
       <div className="max-w-6xl mx-auto">
+        {/* 🌐 Loader while data is fetching */}
+      {loading ? (
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Loader />
+        </div>
+      ) : (
+        <>
         {/* Header Section */}
         <div className="text-center mb-6 sm:mb-8">
           <div className="flex flex-col sm:flex-row items-center justify-center mb-2 sm:mb-4 gap-2 sm:gap-4">
@@ -428,9 +503,11 @@ const Announcements = () => {
             </div>
           </div>
         )}
-
+</>
+      )}
       </div>
     </div>
+    </>
   );
 };
 

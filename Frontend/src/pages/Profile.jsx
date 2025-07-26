@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+// import { useAuth } from '../context/AuthContext';
 import Loader from '../components/Loader';
+import axios from '../api/axios';
 
 const Profile = () => {
-  const { user, loading } = useAuth();
+  const [user, setUser] = useState(null);
   const [form, setForm] = useState({
     name: '',
     codename: '',
@@ -20,6 +21,11 @@ const Profile = () => {
   const [message, setMessage] = useState('');
   const [saving, setSaving] = useState(false);
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(null);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [loading, setLoading] = useState(true); 
+  const [initialLoading, setInitialLoading] = useState(true);
+
+
   // const [initialLoading, setInitialLoading] = useState(true);
 
   
@@ -81,8 +87,30 @@ const Profile = () => {
       });
     }, []);
 
+   useEffect(() => {
+  const fetchUser = async () => {
+    try {
+      const { data } = await axios.get('/auth/me', { withCredentials: true });
+
+      setUser(data);        // ✅ Update user state
+      setLoading(false);    // ✅ Trigger next effect
+    } catch (err) {
+      console.error(
+        'User fetch error:',
+        err.response?.data?.error || err.message || 'Unknown error'
+      );
+      setLoading(false);
+      setInitialLoading(false);
+    }
+  };
+
+  fetchUser();
+}, []);
+
+
   useEffect(() => {
-    if (user) {
+    if (!loading && user) {
+    
       setForm({
         name: user.name || '',
         codename: user.codename || '',
@@ -98,8 +126,11 @@ const Profile = () => {
         availability: user.availability || 'Always Available',
       });
       setPhotoPreview(user.profilePhoto || '');
+       setLoadingProfile(false);
+       setInitialLoading(false);
+      //  setLoading(false);
     }
-  }, [user]);
+  }, [loading,user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -122,7 +153,8 @@ const Profile = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
+
+const handleSubmit = async (e) => {
   e.preventDefault();
   setSaving(true);
   setMessage('');
@@ -134,11 +166,12 @@ const Profile = () => {
       .map((v) => v.trim())
       .filter(Boolean);
 
-         const processedAbilities = form.abilitiesRaw
+    const processedAbilities = form.abilitiesRaw
       .split(',')
       .map((v) => v.trim())
       .filter(Boolean);
-    // Build final payload excluding weaponsRaw
+
+    // Build final payload excluding weaponsRaw and abilitiesRaw
     const finalFormData = {
       ...form,
       weapons: processedWeapons,
@@ -147,42 +180,41 @@ const Profile = () => {
     delete finalFormData.weaponsRaw;
     delete finalFormData.abilitiesRaw;
 
-    const res = await fetch('http://localhost:5000/api/auth/me', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify(finalFormData),
-    });
+    // Make PUT request with axios
+    const { data } = await axios.put(
+      '/auth/me',
+      finalFormData,
+      { withCredentials: true } // send cookies
+    );
 
-    const data = await res.json();
-
-    if (res.ok) {
-      setMessage('Profile updated successfully!');
-    } else {
-      setMessage(data.error || 'Failed to update profile.');
-    }
+    setMessage('Profile updated successfully!');
   } catch (err) {
-    setMessage('Error updating profile.');
+    const errorMsg = err.response?.data?.error || 'Error updating profile.';
+    setMessage(errorMsg);
   } finally {
     setSaving(false);
   }
 };
 
 
-  if (loading) return (
-    <div className="flex items-center justify-center min-h-screen">
-      <Loader />
-    </div>
-  );
-  if (!user) return <div>Please log in to view your profile.</div>;
+
+  
+  // if (!user) return <div>Please log in to view your profile.</div>;
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-2 sm:p-6 w-full max-w-full overflow-visible ">
-       <canvas
+    <>
+     <canvas
       id="particles"
       className="fixed top-0 left-0 w-full h-full pointer-events-none z-0"
     ></canvas>
-      <div className="w-full max-w-md sm:max-w-3xl bg-white/80  rounded-2xl shadow-2xl p-4 sm:p-12 glass-card">
+    <div className="min-h-screen flex items-center justify-center p-2 sm:p-6 w-full max-w-full overflow-visible ">
+      {initialLoading || loadingProfile ?  (
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Loader />
+        </div>
+      ) : (
+        <>
+      <div className="w-full max-w-md sm:max-w-3xl bg-white/80  rounded-2xl shadow-2xl p-4 sm:p-12 glass-card relative">
         <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-8 text-center text-blue-700 dark:text-white  drop-shadow-lg">Edit Profile</h2>
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-7 mt-2">
           <div className="flex flex-col items-center mb-4 sm:mb-6">
@@ -318,7 +350,11 @@ const Profile = () => {
           {message && <div className="mt-2 text-center text-green-600 dark:text-green-400 text-xs sm:text-base">{message}</div>}
         </form>
       </div>
+      </>
+      )}
     </div>
+    
+    </>
   );
 };
 

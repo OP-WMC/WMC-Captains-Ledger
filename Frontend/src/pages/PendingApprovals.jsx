@@ -160,11 +160,13 @@ const PendingApprovals = () => {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6 w-full max-w-full overflow-visible">
-      <canvas
+    <>
+    <canvas
       id="particles"
       className="fixed top-0 left-0 w-full h-full pointer-events-none z-0"
     ></canvas>
+    <div className="space-y-4 sm:space-y-6 w-full max-w-full overflow-visible">
+      
     
       <div>
         <h1 className="text-2xl sm:text-3xl font-orbitron font-bold text-blue-700 dark:text-white mb-1 sm:mb-2  mt-10 sm:mt-0">
@@ -350,6 +352,7 @@ const PendingApprovals = () => {
         </div>
       </Modal>
     </div>
+    </>
   );
 };
 

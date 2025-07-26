@@ -173,11 +173,13 @@ const Stats = () => {
  
 
   return (
-    <div className="min-h-screen   p-3 sm:p-6 w-full max-w-full overflow-visible">
-      <canvas
+    <>
+    <canvas
       id="particles"
       className="fixed top-0 left-0 w-full h-full pointer-events-none z-0"
     ></canvas>
+    <div className="min-h-screen  p-3 sm:p-6 w-full max-w-full overflow-visible">
+      
       <div className="max-w-6xl mx-auto">
 
         {/* 🌐 Loader while data is fetching */}
@@ -391,6 +393,7 @@ const Stats = () => {
       )}
       </div>
     </div>
+    </>
   );
 };
 

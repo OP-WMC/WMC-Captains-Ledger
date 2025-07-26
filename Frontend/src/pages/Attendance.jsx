@@ -4,7 +4,7 @@ import axios from '../api/axios';
 import { Calendar as LucideCalendar, CheckCircle, Key, Users, Copy, RefreshCw, X, Eye, UserCheck, UserX } from 'lucide-react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css'; 
-
+import Loader from '../components/Loader';
 const Attendance = () => {
   const { isAdmin } = useAuth();
 
@@ -18,6 +18,7 @@ const Attendance = () => {
   const [message, setMessage] = useState('');
   const [currentActiveCode, setCurrentActiveCode] = useState(null);
   const [showCodePopup, setShowCodePopup] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   
   // New state for date attendance modal
   const [selectedDate, setSelectedDate] = useState(null);
@@ -27,6 +28,7 @@ const Attendance = () => {
   const [attendanceView, setAttendanceView] = useState('present'); // 'present' or 'absent'
   // const [calendarValue, setCalendarValue] = useState(new Date());
 
+    
     useEffect(() => {
       const canvas = document.getElementById('particles');
       if (!canvas) return; // avoid error if null
@@ -85,7 +87,10 @@ const Attendance = () => {
       });
     }, []);
 
-
+  
+  useEffect(() => {
+    setInitialLoading(true);
+  }, []);
   useEffect(() => {
     if (codeExpiry) {
       const timer = setTimeout(() => {
@@ -129,6 +134,7 @@ const Attendance = () => {
       } catch (err) {
         console.error("Failed to fetch marked-today status:", err);
       } finally {
+        setInitialLoading(false);
         setLoadingTodayStatus(false);
       }
     };
@@ -142,11 +148,15 @@ const Attendance = () => {
       setMarkedDates(res.data); 
     } catch (err) {
       console.error("Error fetching marked dates", err);
+    } finally {
+      setInitialLoading(false); // <-- Set to false after fetch
     }
   };
 
   if (!isAdmin) {
     fetchMarkedDates();
+  } else {
+    setInitialLoading(false); // <-- For admin, no need to wait
   }
 }, [isAdmin]);
 
@@ -233,15 +243,38 @@ useEffect(() => {
       setLoadingDateData(false);
     }
   };
-
-  return (
-    <div className="p-3 sm:p-6 space-y-4 sm:space-y-6 w-full max-w-full overflow-visible">
-      <canvas
+  
+  return (<>
+     <canvas
       id="particles"
       className="fixed top-0 left-0 w-full h-full pointer-events-none z-0"
     ></canvas>
+
+ {/* 🔄 Loader for non-admin while checking today status */}
+    {!isAdmin && loadingTodayStatus && (
+      <div className="flex items-center justify-center min-h-screen z-10 relative">
+        <Loader />
+      </div>
+    )}
+
+
+    {/* 🔄 Loader for admin while generating code or data */}
+    {isAdmin && (loading || loadingDateData) && (
+      <div className="flex items-center justify-center min-h-screen z-10 relative">
+        <Loader />
+      </div>
+    )}
+
+    {initialLoading  ? (
+      <div className="min-h-screen flex items-center justify-center z-10 relative">
+        <Loader />
+      </div>
+    ) : (
+    <div className="p-3 sm:p-6 space-y-4 sm:space-y-6 w-full max-w-full overflow-visible">
+     
+      
       {/* HEADER */}
-      <h2 className="text-xl sm:text-2xl font-bold text-blue-700 dark:text-white flex items-center gap-2 mt-10 sm:mt-0">
+      <h2 className="text-xl sm:text-2xl font-bold text-blue-700 dark:text-white dark:text-shadow-glow flex items-center gap-2 mt-10 sm:mt-0">
         <LucideCalendar /> Attendance System
       </h2>
 
@@ -453,7 +486,7 @@ useEffect(() => {
               </div>
             ) : (
               <>
-                <label className="block text-m text-blue-600 font-bold dark:text-avengers-silver  ">
+                <label className="block text-m text-blue-600 font-bold dark:text-avengers-silver ">
                   Enter Attendance Code
                 </label>
                 <input
@@ -466,7 +499,7 @@ useEffect(() => {
                 <button
                   onClick={markAttendance}
                   disabled={loading}
-                  className=" bg-blue-500 hover:bg-green-400 dark:bg-blue-500  dark:text-white text-black px-4 py-2 rounded-xl font-semibold dark:hover:bg-blue-700"
+                  className=" bg-blue-500 hover:bg-green-400 dark:bg-blue-500 dark:text-white text-black px-4 py-2 rounded-xl font-semibold dark:hover:bg-blue-700"
                 >
                   {loading ? 'Marking...' : 'Mark Attendance'}
                 </button>
@@ -493,6 +526,8 @@ useEffect(() => {
   </div>
 </div>
     </div>
+    )}
+    </>
   );
 };
 
