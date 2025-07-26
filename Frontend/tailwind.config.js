@@ -7,11 +7,17 @@ export default {
     './index.html',
     './src/**/*.{js,ts,jsx,tsx}',
   ],
+  safelist: [
+    'present-day',
+    'absent-day',
+    'dark:present-day',
+    'dark:absent-day'
+  ],
   theme: {
     extend: {
       textShadow: {
-      glow: '0 0 10px #00e0ff',
-    },
+        glow: '0 0 10px #00e0ff',
+      },
       colors: {
         'avengers-blue': '#1e3a8a',
         'avengers-red': '#dc2626',
@@ -38,15 +44,15 @@ export default {
       },
       keyframes: {
         'glow-border': {
-      '0%, 100%': {
-        boxShadow: '0 0 20px #00e0ff44',
-        borderColor: '#00e0ff',
-      },
-      '50%': {
-        boxShadow: '0 0 35px #00bcd4',
-        borderColor: '#00bcd4',
-      },
-    },
+          '0%, 100%': {
+            boxShadow: '0 0 20px #00e0ff44',
+            borderColor: '#00e0ff',
+          },
+          '50%': {
+            boxShadow: '0 0 35px #00bcd4',
+            borderColor: '#00bcd4',
+          },
+        },
         typewriter: {
           '0%': { width: '0' },
           '100%': { width: '100%' }
@@ -74,7 +80,6 @@ export default {
           '70%': { transform: 'translateX(1px)' },
           '80%': { transform: 'translateX(0)' },
         },
-        
       },
       animation: {
         typewriter: 'typewriter 3s steps(30, end) infinite, blink 0.75s step-end infinite',
@@ -84,7 +89,7 @@ export default {
         shake: 'shake 0.5s ease-in-out 1',
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'glow-border': 'glow-border 4s ease-in-out infinite',
-    'spin-slow': 'spin 20s linear infinite',
+        'spin-slow': 'spin 20s linear infinite',
       },
     },
   },

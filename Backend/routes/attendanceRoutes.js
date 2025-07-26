@@ -10,7 +10,8 @@ const {
   getCurrentCode,
   getAttendanceByDate,
   getAttendanceTrends,
-  getAttendanceStatsForUser
+  getAttendanceStatsForUser,
+  getUserMonthlyAttendance,
 } = require("../controllers/attendanceController");
 
 // ADMIN ONLY
@@ -36,5 +37,7 @@ router.get("/trends", authMiddleware, getAttendanceTrends);
 
 // Add user-specific stats route
 router.get("/stats/user", authMiddleware, getAttendanceStatsForUser);
+
+router.get("/monthly/:year/:month", authMiddleware, getUserMonthlyAttendance);
 
 module.exports = router;

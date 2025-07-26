@@ -340,4 +340,42 @@ exports.getAttendanceStatsForUser = async (req, res) => {
   }
 };
 
+exports.getUserMonthlyAttendance = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { year, month } = req.params;
+
+    const start = new Date(`${year}-${month}-01`);
+    const end = new Date(start);
+    end.setMonth(end.getMonth() + 1);
+
+    const records = await AttendanceRecord.find({
+      user: userId,
+      markedAt: { $gte: start, $lt: end }
+    });
+
+    const presentDays = new Set(records.map(r => new Date(r.markedAt).toLocaleDateString("en-CA")));
+
+    const daysInMonth = new Date(year, month, 0).getDate(); // days in month
+    const allDays = Array.from({ length: daysInMonth }, (_, i) =>
+      new Date(year, month - 1, i + 1).toLocaleDateString("en-CA")
+    );
+
+    const dayWise = allDays.map(date => ({
+      date,
+      status: presentDays.has(date) ? "present" : "absent"
+    }));
+
+    res.json({
+      totalDays: allDays.length,
+      presentDays: presentDays.size,
+      absentDays: allDays.length - presentDays.size,
+      percentage: Math.round((presentDays.size / allDays.length) * 100),
+      dayWise
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
 
