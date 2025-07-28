@@ -18,10 +18,31 @@ import {
 } from 'lucide-react';
 import Chatbot from './Chatbot';
 import Loader from '../components/Loader';
+import axios from "../api/axios";
 
 const Layout = ({ children }) => {
-  const { user, logout, isAdmin, loading } = useAuth();
+  const { user, setUser, logout, isAdmin, loading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+   const [loadingProfile, setLoadingProfile] = useState(true);
+
+   useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get("/auth/me", { withCredentials: true });
+        setUser(res.data); // Full user data
+      } catch (err) {
+        console.error("User fetch failed", err);
+      } finally {
+        setLoadingProfile(false);
+      }
+    };
+
+    if (!user?.codename || !user?.profilePhoto) {
+      fetchUser();
+    } else {
+      setLoadingProfile(false);
+    }
+  }, [user?.codename, user?.profilePhoto]);
 
   // Global dark mode logic
   const [darkMode, setDarkMode] = useState(() => {
@@ -104,12 +125,13 @@ const Layout = ({ children }) => {
   );
 
   return (
-    <div className="min-h-screen flex overflow-x-hidden">
+    <div className="min-h-screen flex overflow-hidden relative">
+      {/* <Loader /> */}
       {/* Mobile Hamburger Button (floating, only on mobile) */}
       {!sidebarOpen && (
         <button
           onClick={() => setSidebarOpen(true)}
-          className="fixed top-1 left-2 z-50 lg:hidden bg-white dark:bg-black/80 border border-gray-300 dark:border-gray-700 shadow-lg rounded-full p-2 flex items-center justify-center focus:outline-none transition-colors"
+          className="fixed top-2 left-2 z-50 lg:hidden bg-white dark:bg-black/80 border border-gray-300 dark:border-gray-700 shadow-lg rounded-full p-2 flex items-center justify-center focus:outline-none transition-colors"
           aria-label="Open sidebar"
         >
           <Menu className="w-6 h-6 text-gray-700 dark:text-cyan-400" />
@@ -124,13 +146,15 @@ const Layout = ({ children }) => {
       )}
 
       {/* Sidebar */}
+      <div className="flex min-h-screen  overflow-hidden">
 <div
-        className={`fixed lg:relative inset-y-0 left-0 z-50 w-64 md:w-56 sm:w-48 max-w-full
+        className={`fixed top-0 left-0 h-screen w-64 md:w-56 sm:w-48 z-50
     bg-[#f8fafc] text-black 
     dark:bg-black/40 dark:backdrop-blur-md dark:text-white 
     transform transition-transform duration-300 ease-in-out 
-          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-          flex flex-col
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full '}
+          lg:translate-x-0
+          flex flex-col overflow-y-auto
         `}
 >
           {/* Logo */}
@@ -170,16 +194,23 @@ const Layout = ({ children }) => {
           </nav>
           {/* User info */}
         <div className="p-2 md:p-4 border-t border-[#00e0ff] dark:border-avengers-silver/20">
-        {loading ? (
-    <Loader />
-  ) : user?.name && user?.codename ? (
+        {loading || loadingProfile ? (
+  <Loader />
+) : user?.name && user?.codename ? (
           <Link to="/profile" className="flex items-center space-x-2 md:space-x-3 mb-2 md:mb-4 hover:bg-gray-200 dark:hover:bg-gray-700 p-2 rounded transition cursor-pointer">
-            <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br rounded-full flex items-center justify-center text-xl md:text-2xl">
-                {user?.avatar}
-              </div>
+            <img
+    src={
+      user?.profilePhoto
+        ? user.profilePhoto
+        : "https://ui-avatars.com/api/?name=" + encodeURIComponent(user?.name || "Unknown")
+    }
+    alt="Profile"
+    className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover border-2 border-white shadow"
+  />
+
               <div className="flex-1">
-              <p className="text-xs md:text-sm font-semibold dark:text-white">{user?.name}</p>
-                <p className="text-xs dark:text-avengers-silver font-medium text-gray-700">{user?.codename}</p>
+              <p className="text-xs md:text-sm font-semibold dark:text-white">{user.name || "Unnamed Avenger"}</p>
+                <p className="text-xs dark:text-avengers-silver font-medium text-gray-700">{user.codename || "Codename missing"}</p>
               </div>
             </Link>
              ) : (
@@ -197,10 +228,12 @@ const Layout = ({ children }) => {
         </div>
       </div>
 
+</div>
+
       {/* Main content */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="ml-0 lg:ml-56 md:ml-56 sm:ml-4  flex-1 flex flex-col min-w-0">
         {/* Page content */}
-        <main className="flex-1 p-2 sm:p-4 md:p-6 overflow-auto mt-2 sm:mt-0">
+        <main className="flex-1 p-4 sm:p-4 md:p-6 overflow-y-auto mt-2 sm:mt-0">
           {children}
         </main>
         <Chatbot />

@@ -79,8 +79,7 @@ import axios from '../api/axios';
 
 const AuthContext = createContext();
 
-// Hook for consuming auth
-export const useAuth = () => useContext(AuthContext);
+
 
 // Auth Provider
 export const AuthProvider = ({ children }) => {
@@ -127,6 +126,7 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     user,
+    setUser,
     isAdmin:
       user?.role === 'admin' ||
       (user?.tempAdmin && user?.adminStart && user?.adminEnd &&
@@ -144,3 +144,5 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+// Hook for consuming auth
+export const useAuth = () => useContext(AuthContext);
