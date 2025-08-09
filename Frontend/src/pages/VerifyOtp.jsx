@@ -11,8 +11,9 @@ const VerifyOtp = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const queryParams = new URLSearchParams(location.search);
-  const email = queryParams.get("email");
+const queryParams = new URLSearchParams(location.search);
+const storedEmail = localStorage.getItem("pendingEmail");
+const email = storedEmail || queryParams.get("email") || location.state?.email;
 
   useEffect(() => {
     if (cooldown > 0) {

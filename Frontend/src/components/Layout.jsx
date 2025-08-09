@@ -154,7 +154,7 @@ const Layout = ({ children }) => {
     transform transition-transform duration-300 ease-in-out 
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full '}
           lg:translate-x-0
-          flex flex-col overflow-y-auto
+          flex flex-col overflow-hidden
         `}
 >
           {/* Logo */}

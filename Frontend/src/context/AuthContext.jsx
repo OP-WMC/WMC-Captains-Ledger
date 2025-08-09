@@ -1,22 +1,26 @@
-// // src/context/AuthContext.jsx
-// import { createContext, useContext, useState, useEffect } from 'react';
-// import axios from '../api/axios';
+// import { createContext, useContext, useState, useEffect } from "react";
+// import axios from "../api/axios"; // make sure axios.js has withCredentials: true set
 
-// const AuthContext = createContext();
+
 
 // export const AuthProvider = ({ children }) => {
 //   const [user, setUser] = useState(null);
 //   const [loading, setLoading] = useState(true);
 
+//   // Fetch logged-in user
 //   useEffect(() => {
 //     const fetchUser = async () => {
 //       setLoading(true);
 //       try {
-//         const res = await axios.get('/auth/me');
+//         const res = await axios.get("/auth/me");
 //         setUser(res.data);
 //       } catch (error) {
-//         console.error('Error fetching user:', error);
-//         setUser(null);
+//         if (error.response?.status === 401) {
+//           // No logged-in user
+//           setUser(null);
+//         } else {
+//           console.error("Error fetching user:", error);
+//         }
 //       } finally {
 //         setLoading(false);
 //       }
@@ -25,37 +29,42 @@
 //     fetchUser();
 //   }, []);
 
+//   // Login user
 //   const login = async (credentials) => {
 //     try {
 //       setLoading(true);
-//       await axios.post('/auth/login', credentials);
-//       const res = await axios.get('/auth/me');
+//       await axios.post("/auth/login", credentials);
+//       const res = await axios.get("/auth/me");
 //       setUser(res.data);
 //     } catch (error) {
-//       console.error('Login error:', error);
+//       console.error("Login error:", error);
+//       throw error; // let UI handle errors
 //     } finally {
 //       setLoading(false);
 //     }
 //   };
 
+//   // Logout user
 //   const logout = async () => {
 //     try {
-//       await axios.post('/auth/logout');
+//       await axios.post("/auth/logout");
 //     } catch (error) {
-//       console.error('Logout error:', error);
+//       console.error("Logout error:", error);
 //     }
 //     setUser(null);
-//     window.location.href = '/login';
+//     window.location.href = "/login";
 //   };
 
+//   // Update user balance locally
 //   const updateUserBalance = (newBalance) => {
 //     if (user) {
 //       setUser({ ...user, balance: newBalance });
 //     }
 //   };
 
+//   // Admin check
 //   const isAdmin =
-//     user?.role === 'admin' ||
+//     user?.role === "admin" ||
 //     (user?.tempAdmin &&
 //       user?.adminStart &&
 //       user?.adminEnd &&
@@ -63,17 +72,19 @@
 //       new Date() <= new Date(user.adminEnd));
 
 //   return (
-//     <AuthContext.Provider value={{ user, loading, login, logout, isAdmin, updateUserBalance }}>
+//     <AuthContext.Provider
+//       value={{ user, setUser, loading, login, logout, isAdmin, updateUserBalance }}
+//     >
 //       {children}
 //     </AuthContext.Provider>
 //   );
 // };
 
-// function useAuth() {
+// export function useAuth() {
 //   return useContext(AuthContext);
 // }
+// const AuthContext = createContext();
 
-// export { useAuth };
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from '../api/axios';
 

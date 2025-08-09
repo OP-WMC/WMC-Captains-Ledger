@@ -100,6 +100,9 @@ const Register = () => {
         role: 'user',
       });
 
+      // ✅ Store email locally for OTP page
+  localStorage.setItem("pendingEmail", formData.email);
+  
       // 🔁 Redirect to OTP page after successful registration
   navigate("/verify-otp", { state: { email: formData.email } });
       // alert('Registered successfully. Please log in.');
