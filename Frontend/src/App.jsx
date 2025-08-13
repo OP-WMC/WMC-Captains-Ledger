@@ -24,6 +24,7 @@ import { Toaster } from "react-hot-toast";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import ParticlesBackground from "./components/ParticlesBackground";
+import CookieConsent from './components/CookieConsent';
 
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
         <Toaster />
         {/* <ParticlesBackground /> */}
         <div className="relative min-h-screen  App">
+          <CookieConsent />
           <Routes>
             <Route path="/" element={<Landing />} />
             {/* Public Routes */}

@@ -108,8 +108,8 @@ useEffect(() => {
     try {
       const [userRes, missionsRes, usersRes, announcementsRes, feedbackRes] = await Promise.all([
         axios.get("/auth/me", { withCredentials: true }),
-        axios.get("/missions"),
-        axios.get("/auth/users"),
+        axios.get("/missions", { withCredentials: true }),
+        axios.get("/auth/users", { withCredentials: true }),
         fetchAnnouncements(),
         axios.get("/feedback", { withCredentials: true })
       ]);

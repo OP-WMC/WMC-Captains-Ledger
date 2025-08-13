@@ -102,7 +102,7 @@ const handleSubmit = async (e) => {
   setLoading(true);
 
   try {
-    const res = await axios.post('/auth/login', formData);
+    const res = await axios.post('/auth/login', formData, { withCredentials: true });
     const user = res.data.user;
 
     login(user);
