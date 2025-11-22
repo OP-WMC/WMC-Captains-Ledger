@@ -146,6 +146,6 @@ This project is created for competing in WMC(By Programming Club at Ahmedabad Un
 
 ---
 
-**"I can do this all day."** - Captain America
+**"I can do this all day..."** - Captain America
 
 Built with ❤️ for the Avengers Initiative
