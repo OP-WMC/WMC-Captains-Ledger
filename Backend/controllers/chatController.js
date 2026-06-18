@@ -105,16 +105,16 @@ If the user asks something unrelated to Captain's Ledger, answer in a fun, assis
 The user's name is ${userName}, codename: ${user.codename || user.name || ''}. Their role is: ${user.role}.
 `;
 
-    // Compose messages for OpenAI
+    // Compose messages for the AI model
     const openaiMessages = [
       { role: 'system', content: systemPrompt },
       ...messages,
     ];
 
-    // Log the request
+    // Log the incoming chat request
     console.log(`[CHAT] User: ${user.email}, Role: ${user.role}, Msg: ${messages[messages.length-1]?.content}`);
 
-    // Call OpenAI (v4)
+    // Call the external AI service API
     const completion = await openai.chat.completions.create({
       model: 'llama3-70b-8192',
       messages: openaiMessages,

@@ -1,4 +1,5 @@
-// ✅ transactionController.js (UPDATED)
+// Backend/controllers/transactionController.js
+// Handles Stripe checkout sessions, transaction statistics, and admin approvals.
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const sendEmail = require("../utils/sendEmail");
 const Transaction = require("../models/Transaction");

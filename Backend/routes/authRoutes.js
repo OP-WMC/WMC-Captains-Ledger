@@ -22,7 +22,7 @@ router.get("/me", verifyToken, getMyProfile);
 router.put("/me", verifyToken, updateProfile);
 router.post("/make-temp-admin", verifyToken, assignTempAdmin);
 
-// 🔁 Password Reset routes
+// Password reset routes
 router.post("/forgot-password", forgotPassword);            // /api/auth/forgot-password
 router.post("/reset-password/:token", resetPassword);       // /api/auth/reset-password/:token?email=
 

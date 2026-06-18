@@ -140,7 +140,7 @@ exports.getAttendanceStats = async (req, res) => {
 
 exports.hasMarkedToday = async (req, res) => {
   try {
-    const today = new Date().toLocaleDateString("en-CA"); // ✅ local "YYYY-MM-DD"
+    const today = new Date().toLocaleDateString("en-CA"); // Use local "YYYY-MM-DD" format
 
     const records = await AttendanceRecord.find({ user: req.user._id });
 
@@ -161,7 +161,7 @@ exports.getAttendanceDates = async (req, res) => {
     const records = await AttendanceRecord.find({ user: req.user._id });
 
     const dates = records.map(r =>
-  new Date(r.markedAt).toLocaleDateString("en-CA") // ✅ "YYYY-MM-DD" in local timezone
+  new Date(r.markedAt).toLocaleDateString("en-CA") // Local "YYYY-MM-DD" timezone representation
 ); // "YYYY-MM-DD"
     res.json(dates);
   } catch (err) {

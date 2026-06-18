@@ -16,11 +16,11 @@ exports.register = async (req, res) => {
 
     const hashed = await bcrypt.hash(password, 10);
 
-     // 🔢 Generate 6-digit OTP
+    // Generate 6-digit OTP
     const rawOtp = Math.floor(100000 + Math.random() * 900000).toString();
     const hashedOtp = await bcrypt.hash(rawOtp, 10);
 
-    // ⏳ Set expiry to 10 minutes
+    // Set expiry to 10 minutes
     const otpExpires = Date.now() + 10 * 60 * 1000;
 
 
@@ -32,7 +32,7 @@ exports.register = async (req, res) => {
       email,
       password: hashed,
       role,
-      balance: startingBalance, // 💰 Set balance
+      balance: startingBalance, // Set starting wallet balance
       codename: name, // Set codename to name for consistency
       power,
       abilities,
@@ -48,7 +48,7 @@ exports.register = async (req, res) => {
     });
 
    
-// 📧 Send OTP to user's email
+    // Send OTP to user's email address
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -60,7 +60,7 @@ exports.register = async (req, res) => {
     await transporter.sendMail({
       from: `"Avengers HQ" <${process.env.EMAIL_USER}>`,
       to: email,
-      subject: "🛡️ Verify Your Avengers Account",
+      subject: "Verify Your Avengers Account",
       html: `
         <h2>Welcome to the Avengers Initiative, ${name}!</h2>
         <p>Your one-time verification code is:</p>
@@ -88,25 +88,25 @@ exports.login = async (req, res) => {
       return res.status(400).json({ error: "Email and password are required" });
     }
 
-    console.log("🔐 Login attempt:", email);
+    console.log("Login attempt:", email);
 
     // Case-insensitive search
     const user = await User.findOne({ email: new RegExp(`^${email}$`, 'i') });
     if (!user) {
-      console.warn("❌ Login failed: User not found");
+      console.warn("Login failed: User not found");
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
     // Check if email is verified
     if (!user.isVerified) {
-      console.warn("❌ Login blocked: Email not verified");
+      console.warn("Login blocked: Email not verified");
       return res.status(401).json({ error: "Please verify your email before logging in" });
     }
 
     // Compare password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      console.warn("❌ Login failed: Incorrect password");
+      console.warn("Login failed: Incorrect password");
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
@@ -122,7 +122,7 @@ exports.login = async (req, res) => {
     // Set HTTP-only cookie
     res.cookie("token", token, {
       httpOnly: true,
-      secure: isProduction, // use HTTPS in production
+      secure: isProduction, // Use HTTPS in production
       sameSite: isProduction ? "None" : "Lax",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
@@ -238,37 +238,36 @@ exports.verifyOtp = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    console.log("🧾 Raw User Data:", user);
-    console.log("🕒 Current Time:", Date.now());
-    console.log("📅 OTP Expires At:", user.otpExpires);
-    console.log("🔢 Entered OTP:", otp);
-    console.log("🔐 Stored Hashed OTP:", user.otp);
+    console.log("Raw User Data:", user);
+    console.log("Current Time:", Date.now());
+    console.log("OTP Expires At:", user.otpExpires);
+    console.log("Entered OTP:", otp);
+    console.log("Stored Hashed OTP:", user.otp);
 
     if (user.isVerified) {
       return res.status(400).json({ error: "User already verified" });
     }
 
-   const isExpired = new Date(user.otpExpiry).getTime() < Date.now();
+    const isExpired = new Date(user.otpExpires).getTime() < Date.now();
 
-if (isExpired) {
-  return res.status(400).json({ error: "OTP expired. Please request a new one." });
-}
-
+    if (isExpired) {
+      return res.status(400).json({ error: "OTP expired. Please request a new one." });
+    }
 
     const isMatch = await bcrypt.compare(otp, user.otp);
-    console.log("✅ OTP match result:", isMatch);
+    console.log("OTP match result:", isMatch);
 
     if (!isMatch) {
       return res.status(400).json({ error: "Invalid OTP" });
     }
 
-    // ✅ Mark user as verified and clear OTP fields
+    // Mark user as verified and clear OTP fields
     user.isVerified = true;
     user.otp = undefined;
     user.otpExpires = undefined;
     await user.save();
 
-    // ✅ Generate JWT token
+    // Generate JWT token
     const token = jwt.sign(
       { _id: user._id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
@@ -313,17 +312,16 @@ const user = await User.findOne({ email: new RegExp(`^${trimmedEmail}$`, 'i') })
     if (!user) return res.status(404).json({ error: "User not found" });
     if (user.isVerified) return res.status(400).json({ error: "User already verified" });
 
-    // ✅ Respond immediately to frontend
+    // Respond immediately to frontend
     res.status(200).json({ message: "OTP is being resent. Please check your email shortly." });
 
-
-    // ✅ Process OTP and email in background
+    // Process OTP and email in background
     (async () => {
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
       const hashedOtp = await bcrypt.hash(otp, 10);
 
       user.otp = hashedOtp;
-      user.otpExpiry = Date.now() + 2 * 60 * 1000; // 10 mins
+      user.otpExpires = Date.now() + 10 * 60 * 1000; // 10 mins
       await user.save();
 
       const emailHtml = `
@@ -335,7 +333,7 @@ const user = await User.findOne({ email: new RegExp(`^${trimmedEmail}$`, 'i') })
     <br />
     This OTP is valid for 10 minutes.<br />
     <br />
-    🛡️ Assemble,<br />
+    Assemble,<br />
     The Captain's Ledger Team
   </p>
 `;
@@ -357,7 +355,7 @@ const user = await User.findOne({ email: new RegExp(`^${trimmedEmail}$`, 'i') })
   }
 };
 
-// 🌐 POST /api/auth/forgot-password
+// POST /api/auth/forgot-password
 exports.forgotPassword = async (req, res) => {
   const { email } = req.body;
 
@@ -365,16 +363,16 @@ exports.forgotPassword = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ error: "Email not found" });
 
-    // 🔐 Generate secure token
+    // Generate secure token
     const token = crypto.randomBytes(32).toString("hex");
     const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
 
-    // ⏳ Set token & expiration
+    // Set token & expiration
     user.resetPasswordToken = tokenHash;
     user.resetPasswordExpires = Date.now() + 10 * 60 * 1000; // 10 min
     await user.save();
 
-    // 📧 Email link
+    // Email link
     const resetUrl = `http://localhost:5173/reset-password/${token}?email=${email}`;
 
     await sendEmail({
@@ -395,7 +393,7 @@ exports.forgotPassword = async (req, res) => {
   }
 };
 
-// 🌐 POST /api/auth/reset-password/:token
+// POST /api/auth/reset-password/:token
 exports.resetPassword = async (req, res) => {
   const { token } = req.params;
   const { email } = req.query;
@@ -418,7 +416,7 @@ exports.resetPassword = async (req, res) => {
       return res.status(400).json({ error: "Reset link invalid or expired" });
     }
 
-    // 🔐 Update password
+    // Update password
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(newPassword, salt);
     user.resetPasswordToken = undefined;

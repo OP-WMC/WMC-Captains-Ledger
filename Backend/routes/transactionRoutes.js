@@ -19,7 +19,7 @@ const { getUserTransactions } = require("../controllers/getUserTransactions");
 router.post("/stripe-checkout", authMiddleware, createStripeCheckout);
 router.get("/my-transactions", authMiddleware, getUserTransactions);
 
-// ✅ Add new feedback mail route
+// Route to send feedback email notification
 router.post("/send-feedback-mail", authMiddleware, sendFeedbackMail);
 
 // Get payment statistics (admin only)

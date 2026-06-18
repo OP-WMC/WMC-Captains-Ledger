@@ -28,12 +28,12 @@ exports.handleStripeWebhook = async (req, res) => {
     const metadata = session.metadata;
 
     try {
-       // ✅ CHECK if already handled
-    const existingTransaction = await Transaction.findOne({ stripeSessionId: session.id });
-    if (existingTransaction) {
-      console.log("⚠️ Transaction already processed.");
-      return res.status(200).json({ message: "Transaction already processed." });
-    }
+      // Check if this transaction has already been processed
+      const existingTransaction = await Transaction.findOne({ stripeSessionId: session.id });
+      if (existingTransaction) {
+        console.log("⚠️ Transaction already processed.");
+        return res.status(200).json({ message: "Transaction already processed." });
+      }
 
       // Support multiple recipients
       let receiverEmails = metadata.receiverEmails;
